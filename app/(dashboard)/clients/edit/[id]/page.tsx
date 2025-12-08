@@ -53,7 +53,9 @@ export default function EditClientPage() {
   const transformClientData = (clientData: any): Client => {
     return {
       id: clientData.id,
-      name: clientData.name,
+      first_name: clientData.first_name,
+      last_name: clientData.last_name,
+      name: `${clientData.first_name} ${clientData.last_name}`,
       email: clientData.email || '',
       phone: clientData.phone || '',
       address: clientData.address || '',
@@ -62,7 +64,7 @@ export default function EditClientPage() {
       statusColor: getStatusColor(clientData.status),
       lastContact: clientData.last_contact ? formatDate(clientData.last_contact) : 'Never',
       dealValue: formatCurrency(clientData.deal_value),
-      initials: clientData.initials || clientData.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()
+      initials: clientData.initials || `${clientData.first_name.charAt(0)}${clientData.last_name.charAt(0)}`.toUpperCase()
     }
   }
 
@@ -154,7 +156,7 @@ export default function EditClientPage() {
           <div>
             <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Edit Client</h1>
             <p className="text-sm text-slate-600 mt-1">
-              Update {client.name}'s information
+              Update {`${client.first_name} ${client.last_name}`}'s information
             </p>
           </div>
         </div>

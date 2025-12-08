@@ -60,7 +60,7 @@ interface QuickAddClientProps {
 interface QuickAddDealProps {
   onSubmit: (data: any) => Promise<void>
   onCancel: () => void
-  clients: Array<{ id: string; name: string }>
+  clients: Array<{ id: string; first_name: string; last_name: string }>
 }
 
 export function MobileForm({ 
@@ -399,7 +399,7 @@ export function QuickAddDeal({ onSubmit, onCancel, clients }: QuickAddDealProps)
       type: 'select',
       label: 'Client',
       required: true,
-      options: clients.map(client => ({ value: client.id, label: client.name }))
+      options: clients.map(client => ({ value: client.id, label: `${client.first_name} ${client.last_name}` }))
     },
     {
       id: 'value',

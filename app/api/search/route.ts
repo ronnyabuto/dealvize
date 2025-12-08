@@ -89,7 +89,7 @@ export async function GET(request: NextRequest) {
     
     if (enableCache) {
       try {
-        const cachedResults = await cachedFetch(
+        const cachedResults: { results: any[] } = await cachedFetch(
           `/api/search?q=${encodeURIComponent(query)}&type=${type}`,
           cacheKey,
           1 // 60 seconds for better performance
@@ -113,7 +113,7 @@ export async function GET(request: NextRequest) {
     // Search clients with fuzzy matching
     if (type === 'all' || type === 'clients') {
       // Build multiple OR conditions for better matching
-      const searchConditions = []
+      const searchConditions: string[] = []
       
       // Add exact match conditions first (highest priority)
       searchConditions.push(`name.ilike.${query}`) // Fixed: use 'name' field not 'first_name/last_name'
@@ -156,7 +156,7 @@ export async function GET(request: NextRequest) {
 
       const { data: clients, error: clientError } = await supabase
         .from('clients')
-        .select('id, first_name, last_name, email, phone, company, status')
+        .select('id, first_name, last_name, email, phone, company, address, status, created_at')
         .eq('user_id', user.id)
         .or(orQuery)
         .limit(10)
@@ -204,7 +204,7 @@ export async function GET(request: NextRequest) {
         
         results.push(...topClients.map(client => ({
           id: client.id,
-          title: client.name || 'Unnamed Client', // Fixed: use single name field
+          title: `${client.first_name} ${client.last_name}` || 'Unnamed Client',
           subtitle: `${client.email}${client.company ? ` • ${client.company}` : ''}`,
           type: 'client',
           url: `/clients/edit/${client.id}`,
@@ -221,7 +221,7 @@ export async function GET(request: NextRequest) {
 
     // Search deals with fuzzy matching
     if (type === 'all' || type === 'deals') {
-      const searchConditions = []
+      const searchConditions: string[] = []
       
       for (const variation of searchVariations) {
         const words = variation.split(' ')
@@ -241,7 +241,7 @@ export async function GET(request: NextRequest) {
         .from('deals')
         .select(`
           id, title, value, status, property_address,
-          clients(name)
+          clients(first_name, last_name)
         `)
         .eq('user_id', user.id)
         .or(orQuery)
@@ -279,7 +279,7 @@ export async function GET(request: NextRequest) {
         results.push(...topDeals.map((deal: any) => ({
           id: deal.id,
           title: deal.title,
-          subtitle: `$${deal.value?.toLocaleString() || '0'} • ${deal.status} • ${deal.clients?.name || 'No Client'}`, // Fixed: use single name field
+          subtitle: `$${deal.value?.toLocaleString() || '0'} • ${deal.status} • ${deal.clients ? `${deal.clients.first_name} ${deal.clients.last_name}` : 'No Client'}`, 
           type: 'deal',
           url: `/deals/edit/${deal.id}`,
           status: deal.status,
@@ -291,7 +291,7 @@ export async function GET(request: NextRequest) {
 
     // Search tasks with fuzzy matching
     if (type === 'all' || type === 'tasks') {
-      const searchConditions = []
+      const searchConditions: string[] = []
       
       for (const variation of searchVariations) {
         const words = variation.split(' ')
@@ -314,7 +314,7 @@ export async function GET(request: NextRequest) {
         .from('tasks')
         .select(`
           id, title, description, due_date, priority, status,
-          clients(name)
+          clients(first_name, last_name)
         `)
         .eq('user_id', user.id)
         .or(orQuery)
@@ -351,7 +351,7 @@ export async function GET(request: NextRequest) {
         results.push(...topTasks.map((task: any) => ({
           id: task.id,
           title: task.title,
-          subtitle: `${task.due_date ? new Date(task.due_date).toLocaleDateString() : 'No due date'} • ${task.priority}${task.clients ? ` • ${task.clients.name}` : ''}`, // Fixed: use single name field
+          subtitle: `${task.due_date ? new Date(task.due_date).toLocaleDateString() : 'No due date'} • ${task.priority}${task.clients ? ` • ${task.clients.first_name} ${task.clients.last_name}` : ''}`,
           type: 'task',
           url: `/tasks/edit/${task.id}`,
           status: task.status,
@@ -367,7 +367,7 @@ export async function GET(request: NextRequest) {
         .from('notes')
         .select(`
           id, content, created_at,
-          clients(name)
+          clients(first_name, last_name)
         `)
         .eq('user_id', user.id)
         .ilike('content', `%${query}%`)
@@ -382,7 +382,7 @@ export async function GET(request: NextRequest) {
         results.push(...notes.map((note: any) => ({
           id: note.id,
           title: note.content.substring(0, 50) + (note.content.length > 50 ? '...' : ''),
-          subtitle: `Note • ${new Date(note.created_at).toLocaleDateString()}${note.clients ? ` • ${note.clients.name}` : ''}`, // Fixed: use single name field
+          subtitle: `Note • ${new Date(note.created_at).toLocaleDateString()}${note.clients ? ` • ${note.clients.first_name} ${note.clients.last_name}` : ''}`,
           type: 'note',
           url: `/notes?id=${note.id}`
         })))

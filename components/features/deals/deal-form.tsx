@@ -304,7 +304,7 @@ export function DealForm({ deal, mode }: DealFormProps) {
                     <SelectContent>
                       {clientOptions.map((client) => (
                         <SelectItem key={client.id} value={client.id}>
-                          {client.name}
+                          {`${client.first_name} ${client.last_name}`}
                         </SelectItem>
                       ))}
                     </SelectContent>

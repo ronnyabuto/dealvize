@@ -54,10 +54,11 @@ export default function EditTaskPage() {
           clientId: data.client_id || '',
           dealId: data.deal_id || '',
           client: data.clients ? {
-            name: data.clients.name || 'Unknown Client',
+            first_name: data.clients.first_name || '',
+            last_name: data.clients.last_name || '',
             initials: data.clients.initials || 
-              (data.clients.name
-                ? data.clients.name.split(' ').map(n => n.charAt(0)).join('').toUpperCase().substring(0, 2)
+              (data.clients.first_name && data.clients.last_name
+                ? `${data.clients.first_name.charAt(0)}${data.clients.last_name.charAt(0)}`.toUpperCase()
                 : 'UC')
           } : undefined,
           deal: data.deals ? {

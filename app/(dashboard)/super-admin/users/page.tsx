@@ -4,6 +4,7 @@
 import { redirect } from 'next/navigation'
 
 
+import { AppSidebar } from '@/components/layout/app-sidebar'
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -48,10 +49,10 @@ export default async function SuperAdminUsersPage() {
   }
 
   return (
-    
+    <div className="flex"> 
       <AppSidebar user={sidebarUser} />
       
-        <div className="min-h-screen bg-gray-50/50 overflow-auto">
+        <div className="min-h-screen bg-gray-50/50 overflow-auto flex-1">
           {/* Header */}
           <header className="bg-white border-b border-gray-200 px-6 py-4">
             <div className="flex items-center gap-4">
@@ -148,7 +149,6 @@ export default async function SuperAdminUsersPage() {
             </Card>
           </main>
         </div>
-      
-    
+    </div>
   )
 }

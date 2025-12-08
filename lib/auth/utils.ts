@@ -44,6 +44,14 @@ export async function getUser(): Promise<User | null> {
   }
 }
 
+export async function requireAdmin(): Promise<User> {
+  const user = await getUser()
+  if (!user || user.role !== 'Admin') {
+    redirect('/unauthorized')
+  }
+  return user
+}
+
 export async function requireAuth(): Promise<User> {
   const user = await getUser()
   if (!user) {

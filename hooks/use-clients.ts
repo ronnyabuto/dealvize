@@ -4,8 +4,10 @@ import { useState, useEffect, useCallback } from 'react'
 import { refreshDashboardMetrics } from '@/components/features/analytics/dashboard-metrics'
 
 export interface Client {
-  id: string
-  name: string
+  id: string;
+  first_name: string;
+  last_name: string;
+  name: string; // Keep for display purposes
   email: string
   phone: string
   address: string
@@ -35,7 +37,7 @@ interface UseClientsReturn {
   currentPage: number
   refetch: () => Promise<void>
   refreshClients: () => Promise<void>
-  createClient: (clientData: Omit<Client, 'id' | 'initials' | 'statusColor' | 'lastContact' | 'dealValue'>) => Promise<Client | null>
+    createClient: (clientData: Omit<Client, 'id' | 'name' | 'initials' | 'statusColor' | 'lastContact' | 'dealValue'>) => Promise<Client | null>
   updateClient: (id: string, clientData: Partial<Client>) => Promise<Client | null>
   deleteClient: (id: string) => Promise<boolean>
   exportClients: () => Promise<void>
@@ -84,7 +86,7 @@ export function useClients(params: UseClientsParams = {}): UseClientsReturn {
     }
   }, [params.search, params.status, params.page, params.limit, params.sortBy, params.sortOrder])
 
-  const createClient = async (clientData: Omit<Client, 'id' | 'initials' | 'statusColor' | 'lastContact' | 'dealValue'>): Promise<Client | null> => {
+    const createClient = async (clientData: Omit<Client, 'id' | 'name' | 'initials' | 'statusColor' | 'lastContact' | 'dealValue'>): Promise<Client | null> => {
     try {
       setError(null)
       

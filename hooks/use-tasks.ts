@@ -80,10 +80,11 @@ const transformTaskData = (taskData: any): Task => {
     dealId: taskData.deal_id,
     type: taskData.type as Task['type'],
     client: taskData.clients ? {
-      name: taskData.clients.name || 'Unknown Client',
+      first_name: taskData.clients.first_name || '',
+      last_name: taskData.clients.last_name || '',
       initials: taskData.clients.initials || 
-        (taskData.clients.name
-          ? taskData.clients.name.split(' ').map(n => n.charAt(0)).join('').toUpperCase().substring(0, 2)
+        (taskData.clients.first_name && taskData.clients.last_name
+          ? `${taskData.clients.first_name.charAt(0)}${taskData.clients.last_name.charAt(0)}`.toUpperCase()
           : 'UC')
     } : undefined,
     deal: taskData.deals ? {
@@ -100,7 +101,8 @@ const useTasksResource = createResourceHook<Task>({
     *,
     clients (
       id,
-      name,
+      first_name,
+      last_name,
       initials
     ),
     deals (

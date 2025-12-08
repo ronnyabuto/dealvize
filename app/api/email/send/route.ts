@@ -3,7 +3,6 @@ import { requireAuth } from '@/lib/auth/utils'
 import { createClient } from '@/lib/supabase/server'
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
 const fromEmail = process.env.FROM_EMAIL || 'noreply@dealvize.com'
 
 export async function POST(request: NextRequest) {
@@ -22,11 +21,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if Resend is configured
-    if (!process.env.RESEND_API_KEY) {
-      return NextResponse.json({ 
+        if (!process.env.RESEND_API_KEY) {
+            return NextResponse.json({ 
         error: 'Email service not configured. Please contact your administrator.' 
       }, { status: 503 })
     }
+
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -43,7 +44,7 @@ export async function POST(request: NextRequest) {
 
     const senderName = userProfile 
       ? `${userProfile.first_name} ${userProfile.last_name}`.trim()
-      : user.user_metadata?.name || 'Agent'
+      : user.name || 'Agent'
 
     const replyTo = userProfile?.email || user.email
 
@@ -97,7 +98,7 @@ export async function POST(request: NextRequest) {
         await supabase
           .from('email_templates')
           .update({
-            usage_count: supabase.sql`usage_count + 1`,
+            usage_count: 1,
             last_used_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           })

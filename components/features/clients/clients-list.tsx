@@ -75,7 +75,7 @@ export function ClientsList({ search = '', status = '', page = 1, limit = 10, so
             <div className="space-y-2 min-w-0 flex-1">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
                 <h3 className="text-base sm:text-lg font-semibold text-slate-900 truncate">
-                  {client.name}
+                  {`${client.first_name} ${client.last_name}`}
                 </h3>
                 <Badge className={client.statusColor} variant="secondary">
                   {client.status}
@@ -138,7 +138,7 @@ export function ClientsList({ search = '', status = '', page = 1, limit = 10, so
               {client.email && (
                 <EmailDialog 
                   clientId={client.id}
-                  clientName={client.name}
+                  clientName={`${client.first_name} ${client.last_name}`}
                   clientEmail={client.email}
                   trigger={
                     <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
@@ -151,7 +151,7 @@ export function ClientsList({ search = '', status = '', page = 1, limit = 10, so
               {client.phone && (
                 <SmsDialog 
                   clientId={client.id}
-                  clientName={client.name}
+                  clientName={`${client.first_name} ${client.last_name}`}
                   clientPhone={client.phone}
                   trigger={
                     <DropdownMenuItem onSelect={(e) => e.preventDefault()}>

@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
     // Get all clients for this user
     const { data: allClients, error: clientsError } = await supabase
       .from('clients')
-      .select('id, name, email, phone, company, address, status, created_at')
+      .select('id, first_name, last_name, email, phone, company, address, status, created_at')
       .eq('user_id', user.id)
       .order('created_at', { ascending: true })
 
@@ -186,10 +186,10 @@ export async function POST(request: NextRequest) {
             }
 
           } else {
-            result.errors.push(`Failed to initialize lead scoring for ${client.name} (${client.id})`)
+            result.errors.push(`Failed to initialize lead scoring for ${client.first_name} ${client.last_name} (${client.id})`)
           }
         } catch (error) {
-          const errorMsg = `Error processing ${client.name}: ${error instanceof Error ? error.message : 'Unknown error'}`
+          const errorMsg = `Error processing ${client.first_name} ${client.last_name}: ${error instanceof Error ? error.message : 'Unknown error'}`
           result.errors.push(errorMsg)
           console.error(`Lead scoring sync error for client ${client.id}:`, error)
         }

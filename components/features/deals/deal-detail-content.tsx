@@ -18,8 +18,9 @@ interface DealDetailContentProps {
 }
 
 interface Client {
-  id: string
-  name: string
+  id: string;
+  first_name: string;
+  last_name: string;
   email: string
   phone: string
   status: string
@@ -221,11 +222,11 @@ export function DealDetailContent({ deal }: DealDetailContentProps) {
                   <Avatar className="h-12 w-12">
                     <AvatarImage src="/placeholder.svg?height=48&width=48" />
                     <AvatarFallback className="bg-blue-600 text-white font-bold">
-                      {client.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                      {`${client.first_name.charAt(0)}${client.last_name.charAt(0)}`}
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <h3 className="font-semibold text-lg">{client.name}</h3>
+                    <h3 className="font-semibold text-lg">{`${client.first_name} ${client.last_name}`}</h3>
                     <Badge className={getStatusColor(client.status)} variant="secondary">
                       {client.status}
                     </Badge>

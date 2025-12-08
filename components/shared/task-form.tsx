@@ -290,7 +290,7 @@ export function TaskForm({ task, mode }: TaskFormProps) {
                             <SelectItem value="none">No client</SelectItem>
                             {clients.map((client) => (
                               <SelectItem key={client.id} value={client.id}>
-                                {client.name}
+                                {`${client.first_name} ${client.last_name}`}
                               </SelectItem>
                             ))}
                           </SelectContent>

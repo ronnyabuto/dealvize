@@ -37,7 +37,7 @@ export function ClientDetailHeader({ client }: ClientDetailHeaderProps) {
   }
 
   const handleDeleteClient = async () => {
-    if (!confirm(`Are you sure you want to delete ${client.name}? This action cannot be undone.`)) {
+    if (!confirm(`Are you sure you want to delete ${`${client.first_name} ${client.last_name}`}? This action cannot be undone.`)) {
       return
     }
 
@@ -75,7 +75,7 @@ export function ClientDetailHeader({ client }: ClientDetailHeaderProps) {
               </AvatarFallback>
             </Avatar>
             <div>
-              <h2 className="font-semibold text-lg">{client.name}</h2>
+              <h2 className="font-semibold text-lg">{`${client.first_name} ${client.last_name}`}</h2>
               <div className="flex items-center gap-2">
                 <Badge className={client.statusColor} variant="secondary">
                   {client.status}
@@ -110,7 +110,7 @@ export function ClientDetailHeader({ client }: ClientDetailHeaderProps) {
               {client.email && (
                 <EmailDialog 
                   clientId={client.id}
-                  clientName={client.name}
+                  clientName={`${client.first_name} ${client.last_name}`}
                   clientEmail={client.email}
                   trigger={
                     <DropdownMenuItem onSelect={(e) => e.preventDefault()}>

@@ -252,7 +252,7 @@ function FilterDialog({
           <SelectContent>
             <SelectItem value="all">All Clients</SelectItem>
             {clients.map(client => (
-              <SelectItem key={client.id} value={client.id}>{client.name}</SelectItem>
+              <SelectItem key={client.id} value={client.id}>{`${client.first_name} ${client.last_name}`}</SelectItem>
             ))}
           </SelectContent>
         </Select>

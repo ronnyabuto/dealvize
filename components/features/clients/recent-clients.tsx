@@ -10,8 +10,9 @@ import Link from "next/link"
 import { toast } from "sonner"
 
 interface Client {
-  id: string
-  name: string
+  id: string;
+  first_name: string;
+  last_name: string;
   status: string
   statusColor: string
   lastContact: string
@@ -43,7 +44,7 @@ export function RecentClients() {
   }, [])
 
   const filteredClients = clients.filter(client =>
-    client.name.toLowerCase().includes(searchTerm.toLowerCase())
+    `${client.first_name} ${client.last_name}`.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   if (loading) {
@@ -125,7 +126,7 @@ export function RecentClients() {
                 href={`/client/${client.id}`}
                 className="grid grid-cols-4 gap-4 items-center py-2 hover:bg-gray-50 rounded-lg px-2 transition-colors"
               >
-                <div className="font-medium text-slate-900">{client.name}</div>
+                <div className="font-medium text-slate-900">{`${client.first_name} ${client.last_name}`}</div>
                 <div>
                   <Badge className={client.statusColor} variant="secondary">
                     {client.status}

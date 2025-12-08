@@ -2,6 +2,8 @@ import React from 'react'
 
 export interface Client {
   id: string;
+  first_name: string;
+  last_name: string;
   name: string;
   email: string;
   phone: string;
@@ -65,8 +67,9 @@ export interface Task {
   clientId?: string;
   dealId?: string;
   type: 'Call' | 'Email' | 'Meeting' | 'Document' | 'Follow-up' | 'Other';
-  client?: {
-    name: string;
+    client?: {
+    first_name: string;
+    last_name: string;
     initials: string;
   };
   deal?: {

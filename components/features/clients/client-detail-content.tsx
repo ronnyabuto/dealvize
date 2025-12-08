@@ -170,7 +170,7 @@ export function ClientDetailContent({ client }: ClientDetailContentProps) {
         </Avatar>
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2">
-            <h1 className="text-3xl font-bold text-slate-900">{client.name}</h1>
+            <h1 className="text-3xl font-bold text-slate-900">{`${client.first_name} ${client.last_name}`}</h1>
             <Badge className={client.statusColor} variant="secondary">
               {client.status}
             </Badge>
@@ -197,7 +197,7 @@ export function ClientDetailContent({ client }: ClientDetailContentProps) {
                 </div>
                 <EmailDialog 
                   clientId={client.id}
-                  clientName={client.name}
+                  clientName={`${client.first_name} ${client.last_name}`}
                   clientEmail={client.email}
                   trigger={
                     <Button variant="ghost" size="sm" className="h-6 px-2">
@@ -220,7 +220,7 @@ export function ClientDetailContent({ client }: ClientDetailContentProps) {
                 </div>
                 <SmsDialog 
                   clientId={client.id}
-                  clientName={client.name}
+                  clientName={`${client.first_name} ${client.last_name}`}
                   clientPhone={client.phone}
                   trigger={
                     <Button variant="ghost" size="sm" className="h-6 px-2">
@@ -443,7 +443,7 @@ export function ClientDetailContent({ client }: ClientDetailContentProps) {
               {client.email && (
                 <EmailDialog 
                   clientId={client.id}
-                  clientName={client.name}
+                  clientName={`${client.first_name} ${client.last_name}`}
                   clientEmail={client.email}
                   trigger={
                     <Button variant="outline" size="sm" className="justify-start">
@@ -456,7 +456,7 @@ export function ClientDetailContent({ client }: ClientDetailContentProps) {
               {client.phone && (
                 <SmsDialog 
                   clientId={client.id}
-                  clientName={client.name}
+                  clientName={`${client.first_name} ${client.last_name}`}
                   clientPhone={client.phone}
                   trigger={
                     <Button variant="outline" size="sm" className="justify-start">
@@ -473,7 +473,7 @@ export function ClientDetailContent({ client }: ClientDetailContentProps) {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Notes & Communication Section */}
-        <ClientNotes clientId={client.id} clientName={client.name} />
+        <ClientNotes clientId={client.id} clientName={`${client.first_name} ${client.last_name}`} />
         
         {/* Activity Timeline */}
         <ActivityTimeline clientId={client.id} />

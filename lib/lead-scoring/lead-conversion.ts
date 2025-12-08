@@ -210,7 +210,7 @@ export class LeadConversionService {
         .from('lead_scores')
         .select(`
           *,
-          client:clients(id, name, email, phone, status)
+          client:clients(id, first_name, last_name, email, phone, status)
         `)
         .eq('user_id', userId)
         .gte('current_score', conversionCriteria.minScore)
@@ -278,7 +278,7 @@ export class LeadConversionService {
             userId,
             lead.client_id,
             {
-              title: `Opportunity for ${lead.client.name}`,
+              title: `Opportunity for ${lead.client.first_name} ${lead.client.last_name}`,
               value: 0, // Default value, can be updated later
               property_address: ''
             }
@@ -288,11 +288,11 @@ export class LeadConversionService {
             results.converted++
           } else {
             results.failed++
-            results.errors.push(`${lead.client.name}: ${conversionResult.error}`)
+            results.errors.push(`${lead.client.first_name} ${lead.client.last_name}: ${conversionResult.error}`)
           }
         } catch (error) {
           results.failed++
-          results.errors.push(`${lead.client.name}: ${error instanceof Error ? error.message : 'Unknown error'}`)
+          results.errors.push(`${lead.client.first_name} ${lead.client.last_name}: ${error instanceof Error ? error.message : 'Unknown error'}`)
         }
       }
 

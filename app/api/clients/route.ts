@@ -5,7 +5,8 @@ import { LeadScoringService } from '@/lib/lead-scoring/lead-service'
 import { LeadScoringActivities } from '@/lib/lead-scoring-utils'
 
 const createClientSchema = z.object({
-  name: z.string().min(1, 'Name is required').max(100, 'Name too long'),
+  first_name: z.string().min(1, 'First name is required').max(50, 'First name too long'),
+  last_name: z.string().min(1, 'Last name is required').max(50, 'Last name too long'),
   email: z.string().email('Invalid email').optional().or(z.literal('')),
   phone: z.string().min(1, 'Phone is required').max(20, 'Phone too long'),
   address: z.string().max(500, 'Address too long').optional().or(z.literal('')),
@@ -172,7 +173,15 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const validatedData = createClientSchema.parse(body)
+        const nameParts = body.name ? body.name.split(' ') : [body.first_name || '', body.last_name || ''];
+    const firstName = nameParts[0] || '';
+    const lastName = nameParts.slice(1).join(' ') || '';
+
+    const validatedData = createClientSchema.parse({
+      ...body,
+      first_name: firstName,
+      last_name: lastName,
+    });
 
     // Robust user profile check
     const { data: userProfile } = await supabase
@@ -193,7 +202,14 @@ export async function POST(request: NextRequest) {
     const { data: client, error } = await supabase
       .from('clients')
       .insert({
-        ...validatedData,
+                first_name: validatedData.first_name,
+        last_name: validatedData.last_name,
+        name: `${validatedData.first_name} ${validatedData.last_name}`.trim(), // Keep name for compatibility
+        email: validatedData.email,
+        phone: validatedData.phone,
+        address: validatedData.address,
+        company: validatedData.company,
+        status: validatedData.status,
         user_id: user.id,
         last_contact: new Date().toISOString(),
       })

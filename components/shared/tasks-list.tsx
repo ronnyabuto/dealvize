@@ -154,7 +154,7 @@ export function TasksList({ search = '', status = '', priority = '', dueSoon = f
                               {task.client.initials}
                             </AvatarFallback>
                           </Avatar>
-                          <span className="truncate">{task.client.name}</span>
+                          <span className="truncate">{`${task.client.first_name} ${task.client.last_name}`}</span>
                         </div>
                       )}
 

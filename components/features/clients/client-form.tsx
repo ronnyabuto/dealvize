@@ -18,7 +18,8 @@ import { useDeals } from '@/hooks/use-deals'
 import { z } from 'zod'
 
 const clientSchema = z.object({
-  name: z.string().min(1, 'Name is required').max(100, 'Name too long'),
+  first_name: z.string().min(1, 'First name is required').max(50, 'First name too long'),
+  last_name: z.string().min(1, 'Last name is required').max(50, 'Last name too long'),
   email: z.string().email('Invalid email').optional().or(z.literal('')),
   phone: z.string().min(1, 'Phone is required').max(20, 'Phone too long'),
   address: z.string().max(500, 'Address too long').optional().or(z.literal('')),
@@ -53,7 +54,8 @@ export function ClientForm({ client, mode }: ClientFormProps) {
   const form = useForm<ClientFormData>({
     resolver: zodResolver(clientSchema),
     defaultValues: {
-      name: client?.name ?? '',
+            first_name: client?.first_name ?? '',
+      last_name: client?.last_name ?? '',
       email: client?.email ?? '',
       phone: client?.phone ?? '',
       address: client?.address ?? '',
@@ -100,11 +102,12 @@ export function ClientForm({ client, mode }: ClientFormProps) {
 
   const onSubmit = async (data: ClientFormData) => {
     try {
-      const clientData = {
-        name: data.name.trim(),
-        email: data.email.trim(),
+            const clientData = {
+        first_name: data.first_name.trim(),
+        last_name: data.last_name.trim(),
+        email: (data.email || '').trim(),
         phone: data.phone.trim(),
-        address: data.address.trim(),
+        address: (data.address || '').trim(),
         company: data.company?.trim() || '',
         status: data.status
       }
@@ -195,18 +198,34 @@ export function ClientForm({ client, mode }: ClientFormProps) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
-                    name="name"
+                    name="first_name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Full Name *</FormLabel>
+                        <FormLabel>First Name *</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter full name" {...field} />
+                          <Input placeholder="Enter first name" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                   
+                                    <FormField
+                    control={form.control}
+                    name="last_name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Last Name *</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter last name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
                     name="email"
