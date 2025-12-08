@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
-import { AppSidebar } from "@/components/app-sidebar"
+import { AppSidebar } from "@/components/layout/app-sidebar"
 import { SidebarInset } from "@/components/ui/sidebar"
-import { DashboardHeader } from "@/components/dashboard-header"
+import { DashboardHeader } from "@/components/layout/dashboard-header"
 import { DashboardMetrics } from "@/components/dashboard-metrics"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"

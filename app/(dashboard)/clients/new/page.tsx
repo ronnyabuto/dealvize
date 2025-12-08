@@ -1,10 +1,10 @@
 'use client'
 
 import { Suspense } from 'react'
-import { AppSidebar } from "@/components/app-sidebar"
+import { AppSidebar } from "@/components/layout/app-sidebar"
 import { SidebarInset } from "@/components/ui/sidebar"
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { ClientForm } from "@/components/client-form"
+import { ClientForm } from "@/components/features/clients/client-form"
 
 export const dynamic = 'force-dynamic'
 

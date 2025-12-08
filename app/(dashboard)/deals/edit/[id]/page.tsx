@@ -2,10 +2,10 @@
 
 import { Suspense, useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
-import { AppSidebar } from "@/components/app-sidebar"
+import { AppSidebar } from "@/components/layout/app-sidebar"
 import { SidebarInset } from "@/components/ui/sidebar"
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { DealForm } from "@/components/deal-form"
+import { DealForm } from "@/components/features/deals/deal-form"
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Loader2, AlertCircle } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'

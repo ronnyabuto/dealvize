@@ -1,10 +1,10 @@
 'use client'
 
 import { Suspense } from 'react'
-import { AppSidebar } from "@/components/app-sidebar"
+import { AppSidebar } from "@/components/layout/app-sidebar"
 import { SidebarInset } from "@/components/ui/sidebar"
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { DealForm } from "@/components/deal-form"
+import { DealForm } from "@/components/features/deals/deal-form"
 import { useMobileDetection } from "@/hooks/use-mobile-detection"
 
 export const dynamic = 'force-dynamic'

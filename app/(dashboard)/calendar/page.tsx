@@ -9,9 +9,9 @@ import { CalendarDays, Clock, MapPin, Plus, Filter } from "lucide-react"
 import { format, isToday, isTomorrow, isPast } from "date-fns"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { createClient } from "@/lib/supabase/client"
-import { AppSidebar } from "@/components/app-sidebar"
+import { AppSidebar } from "@/components/layout/app-sidebar"
 import { SidebarInset } from "@/components/ui/sidebar"
-import { BreadcrumbNav } from "@/components/breadcrumb-nav"
+import { BreadcrumbNav } from "@/components/layout/breadcrumb-nav"
 
 export const dynamic = 'force-dynamic'
 

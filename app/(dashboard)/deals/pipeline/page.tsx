@@ -1,10 +1,10 @@
 'use client'
 
-import { AppSidebar } from "@/components/app-sidebar"
+import { AppSidebar } from "@/components/layout/app-sidebar"
 import { SidebarInset } from "@/components/ui/sidebar"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
-import { DealPipeline } from "@/components/deal-pipeline"
+import { DealPipeline } from "@/components/features/deals/deal-pipeline"
 import { ArrowLeft, Plus } from "lucide-react"
 import { useRouter } from "next/navigation"
 

@@ -1,6 +1,6 @@
-import { AppSidebar } from "@/components/app-sidebar"
+import { AppSidebar } from "@/components/layout/app-sidebar"
 import { SidebarInset } from "@/components/ui/sidebar"
-import { MarketingHeader } from "@/components/marketing-header"
+import { MarketingHeader } from "@/components/layout/marketing-header"
 import { MarketingContent } from "@/components/marketing-content"
 
 export default function MarketingPage() {

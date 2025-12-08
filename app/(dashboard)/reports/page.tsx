@@ -1,9 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { AppSidebar } from "@/components/app-sidebar"
+import { AppSidebar } from "@/components/layout/app-sidebar"
 import { SidebarInset } from "@/components/ui/sidebar"
-import { ReportsHeader } from "@/components/reports-header"
+import { ReportsHeader } from "@/components/layout/reports-header"
 import { ReportsContent } from "@/components/reports-content"
 
 export const dynamic = 'force-dynamic'

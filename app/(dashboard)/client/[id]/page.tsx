@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
-import { AppSidebar } from "@/components/app-sidebar"
+import { AppSidebar } from "@/components/layout/app-sidebar"
 import { SidebarInset } from "@/components/ui/sidebar"
-import { ClientDetailHeader } from "@/components/client-detail-header"
-import { ClientDetailContent } from "@/components/client-detail-content"
+import { ClientDetailHeader } from "@/components/layout/client-detail-header"
+import { ClientDetailContent } from "@/components/features/clients/client-detail-content"
 import { createClient } from '@/lib/supabase/client'
 import { type Client } from '@/lib/types'
 import { Alert, AlertDescription } from '@/components/ui/alert'

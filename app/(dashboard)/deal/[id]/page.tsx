@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
-import { AppSidebar } from "@/components/app-sidebar"
+import { AppSidebar } from "@/components/layout/app-sidebar"
 import { SidebarInset } from "@/components/ui/sidebar"
-import { DealDetailHeader } from "@/components/deal-detail-header"
-import { DealDetailContent } from "@/components/deal-detail-content"
+import { DealDetailHeader } from "@/components/layout/deal-detail-header"
+import { DealDetailContent } from "@/components/features/deals/deal-detail-content"
 import { createClient } from '@/lib/supabase/client'
 import { type Deal } from '@/lib/types'
 import { Alert, AlertDescription } from '@/components/ui/alert'

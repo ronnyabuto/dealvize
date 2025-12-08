@@ -15,14 +15,14 @@ import {
 } from "@/components/ui/sidebar"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { 
-  Home, 
-  Users, 
-  Building, 
-  CheckSquare, 
-  BarChart3, 
-  Settings, 
-  HelpCircle, 
+import {
+  Home,
+  Users,
+  Building,
+  CheckSquare,
+  BarChart3,
+  Settings,
+  HelpCircle,
   LogOut,
   Shield,
   Database,
@@ -30,7 +30,8 @@ import {
   Target,
   Crown,
   Building2,
-  Share2
+  Share2,
+  Zap
 } from "lucide-react"
 import { clientAuthUtils } from '@/lib/auth/client-utils'
 import { usePathname } from 'next/navigation'
@@ -44,6 +45,7 @@ const MAIN_MENU_ITEMS = [
   { title: "Deals", url: "/deals", icon: Building },
   { title: "Tasks", url: "/tasks", icon: CheckSquare },
   { title: "Messages", url: "/messages", icon: Mail },
+  { title: "Automation", url: "/automation", icon: Zap },
   { title: "Lead Scoring", url: "/lead-scoring", icon: Target },
   { title: "Reports", url: "/reports", icon: BarChart3 },
 ]
@@ -145,8 +147,8 @@ export function AppSidebar({ user }: AppSidebarProps) {
           </>
         )}
 
-        {/* Regular Admin Menu - Show only if user is admin but not super admin */}
-        {user?.role === 'Admin' && !user.isSuperAdmin && (
+        {/* Regular Admin Menu - Show for Admin, Broker, or Owner roles (but not super admin) */}
+        {['Admin', 'Broker', 'Owner'].includes(user?.role || '') && !user.isSuperAdmin && (
           <>
             <SidebarMenu>
               <SidebarMenuItem>

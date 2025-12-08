@@ -1,9 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { AppSidebar } from "@/components/app-sidebar"
+import { AppSidebar } from "@/components/layout/app-sidebar"
 import { SidebarInset } from "@/components/ui/sidebar"
-import { BreadcrumbNav } from "@/components/breadcrumb-nav"
+import { BreadcrumbNav } from "@/components/layout/breadcrumb-nav"
 
 export const dynamic = 'force-dynamic'
 

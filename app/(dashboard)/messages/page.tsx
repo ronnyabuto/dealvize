@@ -1,9 +1,9 @@
 'use client'
 
-import { AppSidebar } from "@/components/app-sidebar"
+import { AppSidebar } from "@/components/layout/app-sidebar"
 import { SidebarInset } from "@/components/ui/sidebar"
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { MessagesContent } from "@/components/messages-content"
+import { MessagesContent } from "@/components/features/messaging/messages-content"
 
 export const dynamic = 'force-dynamic'
 

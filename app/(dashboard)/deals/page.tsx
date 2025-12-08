@@ -1,11 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { AppSidebar } from "@/components/app-sidebar"
+import { AppSidebar } from "@/components/layout/app-sidebar"
 import { SidebarInset } from "@/components/ui/sidebar"
-import { DealsHeader } from "@/components/deals-header"
-import { DealsList } from "@/components/deals-list"
-import { BreadcrumbNav } from "@/components/breadcrumb-nav"
+import { DealsHeader } from "@/components/layout/deals-header"
+import { DealsList } from "@/components/features/deals/deals-list"
+import { BreadcrumbNav } from "@/components/layout/breadcrumb-nav"
 import { SmartActionBar } from "@/components/smart-action-bar"
 import { Zap, DollarSign, Calendar } from "lucide-react"
 

@@ -10,7 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Loader2, Mail, Phone, MapPin, Building2, DollarSign, Calendar, Plus, AlertCircle, MessageSquare } from "lucide-react"
 import { createClient } from '@/lib/supabase/client'
 import { type Client } from "@/lib/types"
-import { ClientNotes } from "@/components/client-notes"
+import { ClientNotes } from "@/components/features/clients/client-notes"
 import { ActivityTimeline } from "@/components/activity-timeline"
 import { SmsDialog } from "@/components/sms-dialog"
 import { SmsHistory } from "@/components/sms-history"

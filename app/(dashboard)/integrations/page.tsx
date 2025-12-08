@@ -1,6 +1,6 @@
-import { AppSidebar } from "@/components/app-sidebar"
+import { AppSidebar } from "@/components/layout/app-sidebar"
 import { SidebarInset } from "@/components/ui/sidebar"
-import { IntegrationsHeader } from "@/components/integrations-header"
+import { IntegrationsHeader } from "@/components/layout/integrations-header"
 import { IntegrationsContent } from "@/components/integrations-content"
 
 export default function IntegrationsPage() {

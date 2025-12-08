@@ -7,7 +7,7 @@ import { ErrorBoundary } from "@/components/error-boundary"
 import { PopupMessageProvider } from "@/contexts/popup-message-context"
 import { StructuredData } from "@/components/seo/structured-data"
 import { baseMetadata } from "@/lib/seo/metadata"
-import { SiteFooter } from "@/components/site-footer"
+import { SiteFooter } from "@/components/layout/site-footer"
 
 const inter = Inter({ 
   subsets: ["latin"],
