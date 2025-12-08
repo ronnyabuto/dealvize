@@ -6,12 +6,10 @@ const __dirname = dirname(__filename)
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    turbopack: {},
   trailingSlash: true,
   
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  
+    
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -76,15 +74,7 @@ const nextConfig = {
       'tailwind-merge'
     ],
     // Advanced performance features
-    turbo: {
-      rules: {
-        '*.svg': {
-          loaders: ['@svgr/webpack'],
-          as: '*.js',
-        },
-      },
-    },
-    // Enable more aggressive caching
+        // Enable more aggressive caching
     staleTimes: {
       dynamic: 30,
       static: 180,

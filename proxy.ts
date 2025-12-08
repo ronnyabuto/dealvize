@@ -25,7 +25,7 @@ const securityHeaders = {
 // Apply CSRF protection to API routes
 const protectedMiddleware = withCSRFProtection(updateSession)
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   try {
     let response: NextResponse
 

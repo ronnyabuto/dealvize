@@ -760,7 +760,7 @@ export function MessagesContent() {
                     rows={8}
                   />
                   <p className="text-xs text-gray-500 mt-1">
-                    Available variables: {'{'}{'{'}}client_name{'}'}{'}'}, {'{'}{'{'}}deal_title{'}'}{'}'}, {'{'}{'{'}}agent_name{'}'}{'}'}, {'{'}{'{'}}property_address{'}'}{'}'}
+                    Available variables: {`{{client_name}}`}, {`{{deal_title}}`}, {`{{agent_name}}`}, {`{{property_address}}`}
                   </p>
                 </div>
                 <div className="flex justify-end gap-2">
