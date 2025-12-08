@@ -7,8 +7,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
-import { AppSidebar } from "@/components/layout/app-sidebar"
-import { SidebarInset } from "@/components/ui/sidebar"
+
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Save, Eye, ArrowLeft, Calendar } from "lucide-react"
@@ -111,10 +111,10 @@ export default function NewBlogPostPage() {
   }
 
   return (
-    <>
-      <AppSidebar />
-      <SidebarInset>
-        <div className="min-h-screen bg-gray-50">
+    
+      
+      
+        <div className="min-h-screen bg-gray-50/50 overflow-auto">
           {/* Header */}
           <header className="bg-white border-b border-gray-200 px-6 py-4">
             <div className="flex items-center justify-between">
@@ -126,7 +126,7 @@ export default function NewBlogPostPage() {
                   </Button>
                 </Link>
                 <div>
-                  <h1 className="text-2xl font-bold text-slate-900">New Blog Post</h1>
+                  <h1 className="text-2xl font-bold text-slate-900 tracking-tight">New Blog Post</h1>
                   <p className="text-gray-600">Create and publish a new blog post</p>
                 </div>
               </div>
@@ -210,7 +210,7 @@ export default function NewBlogPostPage() {
                         rows={15}
                         className="mt-1"
                       />
-                      <p className="text-sm text-gray-500 mt-1">
+                      <p className="text-sm text-slate-600 mt-1">
                         {post.content.length} characters
                       </p>
                     </div>
@@ -233,7 +233,7 @@ export default function NewBlogPostPage() {
                         onChange={(e) => setPost({...post, metaTitle: e.target.value})}
                         className="mt-1"
                       />
-                      <p className="text-sm text-gray-500 mt-1">
+                      <p className="text-sm text-slate-600 mt-1">
                         {(post.metaTitle || post.title).length}/60 characters
                       </p>
                     </div>
@@ -248,7 +248,7 @@ export default function NewBlogPostPage() {
                         rows={3}
                         className="mt-1"
                       />
-                      <p className="text-sm text-gray-500 mt-1">
+                      <p className="text-sm text-slate-600 mt-1">
                         {(post.metaDescription || post.excerpt).length}/160 characters
                       </p>
                     </div>
@@ -317,7 +317,7 @@ export default function NewBlogPostPage() {
             </div>
           </main>
         </div>
-      </SidebarInset>
-    </>
+      
+    
   )
 }

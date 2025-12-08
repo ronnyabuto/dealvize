@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { AppSidebar } from "@/components/layout/app-sidebar"
-import { SidebarInset } from "@/components/ui/sidebar"
+
+
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Search, Plus, MoreHorizontal, Edit, Trash2, Eye, Calendar, User } from "lucide-react"
 import { useState } from "react"
@@ -79,15 +79,15 @@ export default function BlogAdminPage() {
   }
 
   return (
-    <>
-      <AppSidebar />
-      <SidebarInset>
-        <div className="min-h-screen bg-gray-50">
+    
+      
+      
+        <div className="min-h-screen bg-gray-50/50 overflow-auto">
           {/* Header */}
           <header className="bg-white border-b border-gray-200 px-6 py-4">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h1 className="text-2xl font-bold text-slate-900">Blog Management</h1>
+                <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Blog Management</h1>
                 <p className="text-gray-600">Manage your blog posts and content</p>
               </div>
               
@@ -151,7 +151,7 @@ export default function BlogAdminPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-gray-600">Total Posts</p>
-                      <p className="text-2xl font-bold text-slate-900">{mockPosts.length}</p>
+                      <p className="text-2xl font-bold text-slate-900 tracking-tight">{mockPosts.length}</p>
                     </div>
                     <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
                       <Edit className="h-4 w-4 text-blue-600" />
@@ -165,7 +165,7 @@ export default function BlogAdminPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-gray-600">Published</p>
-                      <p className="text-2xl font-bold text-slate-900">
+                      <p className="text-2xl font-bold text-slate-900 tracking-tight">
                         {mockPosts.filter(p => p.status === 'published').length}
                       </p>
                     </div>
@@ -181,7 +181,7 @@ export default function BlogAdminPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-gray-600">Drafts</p>
-                      <p className="text-2xl font-bold text-slate-900">
+                      <p className="text-2xl font-bold text-slate-900 tracking-tight">
                         {mockPosts.filter(p => p.status === 'draft').length}
                       </p>
                     </div>
@@ -197,7 +197,7 @@ export default function BlogAdminPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-gray-600">Total Views</p>
-                      <p className="text-2xl font-bold text-slate-900">
+                      <p className="text-2xl font-bold text-slate-900 tracking-tight">
                         {mockPosts.reduce((total, post) => total + post.views, 0).toLocaleString()}
                       </p>
                     </div>
@@ -234,7 +234,7 @@ export default function BlogAdminPage() {
                           </Badge>
                           <Badge variant="outline">{post.category}</Badge>
                         </div>
-                        <div className="flex items-center gap-4 text-sm text-gray-500">
+                        <div className="flex items-center gap-4 text-sm text-slate-600">
                           <div className="flex items-center">
                             <User className="h-4 w-4 mr-1" />
                             {post.author}
@@ -288,7 +288,7 @@ export default function BlogAdminPage() {
 
                   {filteredPosts.length === 0 && (
                     <div className="text-center py-8">
-                      <p className="text-gray-500">No posts found matching your criteria.</p>
+                      <p className="text-slate-600">No posts found matching your criteria.</p>
                       <Button
                         variant="outline"
                         className="mt-4"
@@ -306,7 +306,7 @@ export default function BlogAdminPage() {
             </Card>
           </main>
         </div>
-      </SidebarInset>
-    </>
+      
+    
   )
 }

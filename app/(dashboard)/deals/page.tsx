@@ -1,8 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { AppSidebar } from "@/components/layout/app-sidebar"
-import { SidebarInset } from "@/components/ui/sidebar"
 import { DealsHeader } from "@/components/features/deals/deals-header"
 import { DealsList } from "@/components/features/deals/deals-list"
 import { BreadcrumbNav } from "@/components/layout/breadcrumb-nav"
@@ -79,30 +77,25 @@ export default function DealsPage() {
   ]
 
   return (
-    <>
-      <AppSidebar />
-      <SidebarInset>
-        <div className="min-h-screen bg-gray-50">
-          <DealsHeader 
-            onSearchChange={setSearch}
-            onStatusChange={setStatus}
-            onFiltersChange={handleFiltersChange}
-          />
-          <main className="p-6">
-            <BreadcrumbNav />
-            <SmartActionBar 
-              actions={smartActions}
-              title="Smart Deal Automation"
-              className="mb-6"
-            />
-            <DealsList 
-              search={search}
-              status={status}
-              filters={filters}
-            />
-          </main>
-        </div>
-      </SidebarInset>
-    </>
+    <div className="min-h-screen bg-gray-50/50 overflow-auto">
+      <DealsHeader
+        onSearchChange={setSearch}
+        onStatusChange={setStatus}
+        onFiltersChange={handleFiltersChange}
+      />
+      <main className="p-6">
+        <BreadcrumbNav />
+        <SmartActionBar
+          actions={smartActions}
+          title="Smart Deal Automation"
+          className="mb-6"
+        />
+        <DealsList
+          search={search}
+          status={status}
+          filters={filters}
+        />
+      </main>
+    </div>
   )
 }

@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { AppSidebar } from "@/components/layout/app-sidebar"
-import { SidebarInset } from "@/components/ui/sidebar"
 import { BreadcrumbNav } from "@/components/layout/breadcrumb-nav"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
@@ -86,20 +84,17 @@ export default function NewNotePage() {
   }
 
   return (
-    <>
-      <AppSidebar />
-      <SidebarInset>
-        <div className="min-h-screen bg-gray-50">
-          <header className="bg-white border-b border-gray-200 px-6 py-4">
-            <div className="flex items-center justify-between">
-              <h1 className="text-2xl font-bold text-slate-900">Add Note</h1>
-              <Button variant="ghost" onClick={handleCancel}>
-                <X className="h-4 w-4 mr-2" />
-                Cancel
-              </Button>
-            </div>
-          </header>
-          <main className="p-6">
+    <div className="min-h-screen bg-gray-50/50 overflow-auto">
+      <header className="bg-white border-b border-gray-200 px-6 py-4">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Add Note</h1>
+          <Button variant="ghost" onClick={handleCancel}>
+            <X className="h-4 w-4 mr-2" />
+            Cancel
+          </Button>
+        </div>
+      </header>
+      <main className="p-6">
             <BreadcrumbNav />
             
             <div className="max-w-2xl mx-auto">
@@ -165,8 +160,6 @@ export default function NewNotePage() {
               </Card>
             </div>
           </main>
-        </div>
-      </SidebarInset>
-    </>
+    </div>
   )
 }

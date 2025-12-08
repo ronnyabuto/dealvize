@@ -1,8 +1,6 @@
 'use client'
 
 import { useState } from "react"
-import { AppSidebar } from "@/components/layout/app-sidebar"
-import { SidebarInset } from "@/components/ui/sidebar"
 import { ClientsHeader } from "@/components/features/clients/clients-header"
 import { ClientsList } from "@/components/features/clients/clients-list"
 import { BreadcrumbNav } from "@/components/layout/breadcrumb-nav"
@@ -58,35 +56,30 @@ export default function ClientsPage() {
   }
 
   return (
-    <>
-      <AppSidebar />
-      <SidebarInset>
-        <div className="min-h-screen bg-gray-50">
-          <ClientsHeader 
-            onSearchChange={handleSearchChange}
-            onStatusFilter={handleStatusFilter}
-            onSortChange={handleSortChange}
-            onExport={exportClients}
-            onImport={handleImport}
-            currentSearch={search}
-            currentStatus={status}
-            currentSort={sort}
-            totalCount={totalCount}
-          />
-          <main className="p-6">
-            <BreadcrumbNav />
-            <ClientsList 
-              search={search}
-              status={status}
-              page={page}
-              limit={limit}
-              sortBy={sort.field}
-              sortOrder={sort.order}
-            />
-            {/* TODO: Add pagination component */}
-          </main>
-        </div>
-      </SidebarInset>
-    </>
+    <div className="min-h-screen bg-gray-50/50 overflow-auto">
+      <ClientsHeader
+        onSearchChange={handleSearchChange}
+        onStatusFilter={handleStatusFilter}
+        onSortChange={handleSortChange}
+        onExport={exportClients}
+        onImport={handleImport}
+        currentSearch={search}
+        currentStatus={status}
+        currentSort={sort}
+        totalCount={totalCount}
+      />
+      <main className="p-6">
+        <BreadcrumbNav />
+        <ClientsList
+          search={search}
+          status={status}
+          page={page}
+          limit={limit}
+          sortBy={sort.field}
+          sortOrder={sort.order}
+        />
+        {/* TODO: Add pagination component */}
+      </main>
+    </div>
   )
 }

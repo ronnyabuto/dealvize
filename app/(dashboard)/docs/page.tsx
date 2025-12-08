@@ -1,8 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { AppSidebar } from "@/components/layout/app-sidebar"
-import { SidebarInset } from "@/components/ui/sidebar"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -46,25 +44,17 @@ export default function APIDocsPage() {
 
   if (loading) {
     return (
-      <>
-        <AppSidebar />
-        <SidebarInset>
-          <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-            <div className="text-center">
-              <BookOpen className="h-8 w-8 animate-pulse mx-auto mb-4 text-blue-600" />
-              <p className="text-gray-600">Loading API documentation...</p>
-            </div>
-          </div>
-        </SidebarInset>
-      </>
+      <div className="min-h-screen bg-gray-50/50 overflow-auto flex items-center justify-center">
+        <div className="text-center">
+          <BookOpen className="h-8 w-8 animate-pulse mx-auto mb-4 text-blue-600" />
+          <p className="text-gray-600">Loading API documentation...</p>
+        </div>
+      </div>
     )
   }
 
   return (
-    <>
-      <AppSidebar />
-      <SidebarInset>
-        <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen bg-gray-50/50 overflow-auto p-8">
           <div className="max-w-7xl mx-auto space-y-8">
             {/* Header */}
             <div className="text-center space-y-4">
@@ -428,8 +418,6 @@ export default function APIDocsPage() {
               </TabsContent>
             </Tabs>
           </div>
-        </div>
-      </SidebarInset>
-    </>
+    </div>
   )
 }

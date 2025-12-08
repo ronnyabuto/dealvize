@@ -2,8 +2,8 @@
 // Simple, Fast, Secure
 
 import { redirect } from 'next/navigation'
-import { AppSidebar } from "@/components/layout/app-sidebar"
-import { SidebarInset } from "@/components/ui/sidebar"
+
+
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -48,10 +48,10 @@ export default async function SuperAdminUsersPage() {
   }
 
   return (
-    <>
+    
       <AppSidebar user={sidebarUser} />
-      <SidebarInset>
-        <div className="min-h-screen bg-gray-50">
+      
+        <div className="min-h-screen bg-gray-50/50 overflow-auto">
           {/* Header */}
           <header className="bg-white border-b border-gray-200 px-6 py-4">
             <div className="flex items-center gap-4">
@@ -59,8 +59,8 @@ export default async function SuperAdminUsersPage() {
               <div className="flex items-center gap-3">
                 <Users className="h-6 w-6 text-blue-600" />
                 <div>
-                  <h1 className="text-2xl font-bold text-slate-900">User Management</h1>
-                  <p className="text-sm text-gray-500">
+                  <h1 className="text-2xl font-bold text-slate-900 tracking-tight">User Management</h1>
+                  <p className="text-sm text-slate-600">
                     Manage all platform users ({allUsers.length} total)
                   </p>
                 </div>
@@ -74,7 +74,7 @@ export default async function SuperAdminUsersPage() {
               <Card>
                 <CardContent className="p-6 text-center">
                   <Users className="h-8 w-8 mx-auto mb-2 text-blue-500" />
-                  <p className="text-2xl font-bold text-slate-900">{allUsers.length}</p>
+                  <p className="text-2xl font-bold text-slate-900 tracking-tight">{allUsers.length}</p>
                   <p className="text-sm text-gray-600">Total Users</p>
                 </CardContent>
               </Card>
@@ -82,7 +82,7 @@ export default async function SuperAdminUsersPage() {
               <Card>
                 <CardContent className="p-6 text-center">
                   <Shield className="h-8 w-8 mx-auto mb-2 text-red-500" />
-                  <p className="text-2xl font-bold text-slate-900">
+                  <p className="text-2xl font-bold text-slate-900 tracking-tight">
                     {allUsers.filter(u => u.role === 'Admin').length}
                   </p>
                   <p className="text-sm text-gray-600">Admins</p>
@@ -92,7 +92,7 @@ export default async function SuperAdminUsersPage() {
               <Card>
                 <CardContent className="p-6 text-center">
                   <User className="h-8 w-8 mx-auto mb-2 text-green-500" />
-                  <p className="text-2xl font-bold text-slate-900">
+                  <p className="text-2xl font-bold text-slate-900 tracking-tight">
                     {allUsers.filter(u => u.role === 'Agent').length}
                   </p>
                   <p className="text-sm text-gray-600">Agents</p>
@@ -128,13 +128,13 @@ export default async function SuperAdminUsersPage() {
                               <span className="ml-1">{platformUser.role}</span>
                             </Badge>
                             {platformUser.phone && (
-                              <span className="text-sm text-gray-500">• {platformUser.phone}</span>
+                              <span className="text-sm text-slate-600">• {platformUser.phone}</span>
                             )}
                           </div>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="text-right text-sm text-gray-500">
+                        <div className="text-right text-sm text-slate-600">
                           <p>Joined {new Date(platformUser.created_at).toLocaleDateString()}</p>
                         </div>
                         <Button variant="outline" size="sm">
@@ -148,7 +148,7 @@ export default async function SuperAdminUsersPage() {
             </Card>
           </main>
         </div>
-      </SidebarInset>
-    </>
+      
+    
   )
 }

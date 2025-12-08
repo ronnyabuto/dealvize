@@ -2,8 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
-import { AppSidebar } from "@/components/layout/app-sidebar"
-import { SidebarInset } from "@/components/ui/sidebar"
 import { DealDetailHeader } from "@/components/features/deals/deal-detail-header"
 import { DealDetailContent } from "@/components/features/deals/deal-detail-content"
 import { createClient } from '@/lib/supabase/client'
@@ -113,67 +111,47 @@ export default function DealDetailPage() {
 
   if (loading) {
     return (
-      <>
-        <AppSidebar />
-        <SidebarInset>
-          <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-            <div className="flex items-center space-x-2">
-              <Loader2 className="h-6 w-6 animate-spin" />
-              <span>Loading deal details...</span>
-            </div>
-          </div>
-        </SidebarInset>
-      </>
+      <div className="min-h-screen bg-gray-50/50 overflow-auto flex items-center justify-center">
+        <div className="flex items-center space-x-2">
+          <Loader2 className="h-6 w-6 animate-spin" />
+          <span>Loading deal details...</span>
+        </div>
+      </div>
     )
   }
 
   if (error) {
     return (
-      <>
-        <AppSidebar />
-        <SidebarInset>
-          <div className="min-h-screen bg-gray-50 p-6">
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                {error}
-              </AlertDescription>
-            </Alert>
-          </div>
-        </SidebarInset>
-      </>
+      <div className="min-h-screen bg-gray-50/50 overflow-auto p-6">
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            {error}
+          </AlertDescription>
+        </Alert>
+      </div>
     )
   }
 
   if (!deal) {
     return (
-      <>
-        <AppSidebar />
-        <SidebarInset>
-          <div className="min-h-screen bg-gray-50 p-6">
-            <Alert>
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                Deal not found
-              </AlertDescription>
-            </Alert>
-          </div>
-        </SidebarInset>
-      </>
+      <div className="min-h-screen bg-gray-50/50 overflow-auto p-6">
+        <Alert>
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            Deal not found
+          </AlertDescription>
+        </Alert>
+      </div>
     )
   }
 
   return (
-    <>
-      <AppSidebar />
-      <SidebarInset>
-        <div className="min-h-screen bg-gray-50">
-          <DealDetailHeader deal={deal} />
-          <main className="p-6">
-            <DealDetailContent deal={deal} />
-          </main>
-        </div>
-      </SidebarInset>
-    </>
+    <div className="min-h-screen bg-gray-50/50 overflow-auto">
+      <DealDetailHeader deal={deal} />
+      <main className="p-6">
+        <DealDetailContent deal={deal} />
+      </main>
+    </div>
   )
 }

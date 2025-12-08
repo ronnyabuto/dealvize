@@ -1,6 +1,4 @@
 import { Suspense } from 'react'
-import { AppSidebar } from "@/components/layout/app-sidebar"
-import { SidebarInset } from "@/components/ui/sidebar"
 import { DashboardHeader } from "@/components/features/analytics/dashboard-header"
 import { MLSSettings } from "@/components/shared/mls-settings"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -27,29 +25,16 @@ const MLSSettingsSkeleton = () => (
 
 export default async function MLSSettingsPage() {
   const user = await getUser()
-  
-  const sidebarUser = user ? {
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    role: user.role,
-    isSuperAdmin: user.isSuperAdmin || false
-  } : undefined
 
   return (
-    <>
-      <AppSidebar user={sidebarUser} />
-      <SidebarInset>
-        <div className="min-h-screen bg-gray-50">
-          <DashboardHeader user={user} />
-          <main className="p-4 sm:p-6">
-            <Suspense fallback={<MLSSettingsSkeleton />}>
-              <MLSSettings />
-            </Suspense>
-          </main>
-        </div>
-      </SidebarInset>
-    </>
+    <div className="min-h-screen bg-gray-50/50 overflow-auto">
+      <DashboardHeader user={user} />
+      <main className="p-4 sm:p-6">
+        <Suspense fallback={<MLSSettingsSkeleton />}>
+          <MLSSettings />
+        </Suspense>
+      </main>
+    </div>
   )
 }
 

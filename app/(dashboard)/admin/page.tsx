@@ -1,8 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { AppSidebar } from "@/components/layout/app-sidebar"
-import { SidebarInset } from "@/components/ui/sidebar"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { AdminDashboard } from "@/components/features/analytics/admin-dashboard"
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -39,62 +37,47 @@ export default function AdminPage() {
 
   if (loading) {
     return (
-      <>
-        <AppSidebar />
-        <SidebarInset>
-          <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-            <div className="flex items-center space-x-2">
-              <Loader2 className="h-6 w-6 animate-spin" />
-              <span>Loading admin dashboard...</span>
-            </div>
-          </div>
-        </SidebarInset>
-      </>
+      <div className="min-h-screen bg-gray-50/50 flex items-center justify-center">
+        <div className="flex items-center space-x-2">
+          <Loader2 className="h-6 w-6 animate-spin text-sidebar-primary" />
+          <span>Loading admin dashboard...</span>
+        </div>
+      </div>
     )
   }
 
   if (error) {
     return (
-      <>
-        <AppSidebar />
-        <SidebarInset>
-          <div className="min-h-screen bg-gray-50 p-6">
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                {error}
-              </AlertDescription>
-            </Alert>
-          </div>
-        </SidebarInset>
-      </>
+      <div className="min-h-screen bg-gray-50/50 p-6">
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            {error}
+          </AlertDescription>
+        </Alert>
+      </div>
     )
   }
 
   return (
-    <>
-      <AppSidebar />
-      <SidebarInset>
-        <div className="min-h-screen bg-gray-50">
-          <header className="bg-white border-b border-gray-200 px-6 py-4">
-            <div className="flex items-center gap-4">
-              <SidebarTrigger />
-              <div className="flex items-center gap-3">
-                <Shield className="h-6 w-6 text-red-600" />
-                <div>
-                  <h1 className="text-2xl font-bold text-slate-900">Admin Dashboard</h1>
-                  <p className="text-sm text-gray-500 mt-1">
-                    Manage team members and monitor system activity
-                  </p>
-                </div>
-              </div>
+    <div className="min-h-screen bg-gray-50/50 overflow-auto">
+      <header className="bg-white border-b border-gray-200 px-6 py-4">
+        <div className="flex items-center gap-4">
+          <SidebarTrigger />
+          <div className="flex items-center gap-3">
+            <Shield className="h-6 w-6 text-red-600" />
+            <div>
+              <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Admin Dashboard</h1>
+              <p className="text-sm text-slate-600 mt-1">
+                Manage team members and monitor system activity
+              </p>
             </div>
-          </header>
-          <main className="p-6">
-            <AdminDashboard data={adminData} />
-          </main>
+          </div>
         </div>
-      </SidebarInset>
-    </>
+      </header>
+      <main className="p-6">
+        <AdminDashboard data={adminData} />
+      </main>
+    </div>
   )
 }

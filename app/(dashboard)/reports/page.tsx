@@ -1,8 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { AppSidebar } from "@/components/layout/app-sidebar"
-import { SidebarInset } from "@/components/ui/sidebar"
 import { ReportsHeader } from "@/components/features/analytics/reports-header"
 import { ReportsContent } from "@/components/features/analytics/reports-content"
 
@@ -26,16 +24,11 @@ export default function ReportsPage() {
   }
 
   return (
-    <>
-      <AppSidebar />
-      <SidebarInset>
-        <div className="min-h-screen bg-gray-50">
-          <ReportsHeader filters={filters} onFiltersChange={handleFiltersChange} />
-          <main className="p-6">
-            <ReportsContent filters={filters} />
-          </main>
-        </div>
-      </SidebarInset>
-    </>
+    <div className="min-h-screen bg-gray-50/50 overflow-auto">
+      <ReportsHeader filters={filters} onFiltersChange={handleFiltersChange} />
+      <main className="p-6">
+        <ReportsContent filters={filters} />
+      </main>
+    </div>
   )
 }

@@ -2,8 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
-import { AppSidebar } from "@/components/layout/app-sidebar"
-import { SidebarInset } from "@/components/ui/sidebar"
 import { ClientDetailHeader } from "@/components/features/clients/client-detail-header"
 import { ClientDetailContent } from "@/components/features/clients/client-detail-content"
 import { createClient } from '@/lib/supabase/client'
@@ -112,67 +110,47 @@ export default function ClientDetailPage() {
 
   if (loading) {
     return (
-      <>
-        <AppSidebar />
-        <SidebarInset>
-          <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-            <div className="flex items-center space-x-2">
-              <Loader2 className="h-6 w-6 animate-spin" />
-              <span>Loading client details...</span>
-            </div>
-          </div>
-        </SidebarInset>
-      </>
+      <div className="min-h-screen bg-gray-50/50 overflow-auto flex items-center justify-center">
+        <div className="flex items-center space-x-2">
+          <Loader2 className="h-6 w-6 animate-spin" />
+          <span>Loading client details...</span>
+        </div>
+      </div>
     )
   }
 
   if (error) {
     return (
-      <>
-        <AppSidebar />
-        <SidebarInset>
-          <div className="min-h-screen bg-gray-50 p-6">
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                {error}
-              </AlertDescription>
-            </Alert>
-          </div>
-        </SidebarInset>
-      </>
+      <div className="min-h-screen bg-gray-50/50 overflow-auto p-6">
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            {error}
+          </AlertDescription>
+        </Alert>
+      </div>
     )
   }
 
   if (!client) {
     return (
-      <>
-        <AppSidebar />
-        <SidebarInset>
-          <div className="min-h-screen bg-gray-50 p-6">
-            <Alert>
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                Client not found
-              </AlertDescription>
-            </Alert>
-          </div>
-        </SidebarInset>
-      </>
+      <div className="min-h-screen bg-gray-50/50 overflow-auto p-6">
+        <Alert>
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            Client not found
+          </AlertDescription>
+        </Alert>
+      </div>
     )
   }
 
   return (
-    <>
-      <AppSidebar />
-      <SidebarInset>
-        <div className="min-h-screen bg-gray-50">
-          <ClientDetailHeader client={client} />
-          <main className="p-6">
-            <ClientDetailContent client={client} />
-          </main>
-        </div>
-      </SidebarInset>
-    </>
+    <div className="min-h-screen bg-gray-50/50 overflow-auto">
+      <ClientDetailHeader client={client} />
+      <main className="p-6">
+        <ClientDetailContent client={client} />
+      </main>
+    </div>
   )
 }

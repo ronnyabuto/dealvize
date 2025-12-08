@@ -1,6 +1,4 @@
 import { Suspense } from 'react'
-import { AppSidebar } from "@/components/layout/app-sidebar"
-import { SidebarInset } from "@/components/ui/sidebar"
 import { DashboardHeader } from "@/components/features/analytics/dashboard-header"
 import { DashboardMetrics } from "@/components/features/analytics/dashboard-metrics"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -76,50 +74,39 @@ const ChartSkeleton = () => (
 
 export default async function DashboardPage() {
   const user = await getUser()
-  
-  const sidebarUser = user ? {
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    role: user.role,
-    isSuperAdmin: user.isSuperAdmin || false
-  } : undefined
 
   return (
     <SmartDashboard>
-      <AppSidebar user={sidebarUser} />
-      <SidebarInset>
-        <div className="min-h-screen bg-gray-50">
-          <DashboardHeader user={user} />
-          <main className="p-4 sm:p-6">
-            <DashboardMetrics />
-            
-            {/* Advanced Analytics Section - Lazy loaded */}
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6 mt-8">
-              <Suspense fallback={<ChartSkeleton />}>
-                <LazyRevenueChart />
+      <div className="min-h-screen bg-gray-50/50 overflow-auto">
+        <DashboardHeader user={user} />
+        <main className="p-4 sm:p-6">
+          <DashboardMetrics />
+
+          {/* Advanced Analytics Section - Lazy loaded */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6 mt-8">
+            <Suspense fallback={<ChartSkeleton />}>
+              <LazyRevenueChart />
+            </Suspense>
+            <Suspense fallback={<ChartSkeleton />}>
+              <LazyConversionChart />
+            </Suspense>
+          </div>
+
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6 mt-6">
+            <Suspense fallback={<ChartSkeleton />}>
+              <LazyPipelineChart />
+            </Suspense>
+            <div className="grid grid-cols-1 gap-4 sm:gap-6">
+              <Suspense fallback={<DashboardSkeleton />}>
+                <LazyRecentClients />
               </Suspense>
-              <Suspense fallback={<ChartSkeleton />}>
-                <LazyConversionChart />
+              <Suspense fallback={<DashboardSkeleton />}>
+                <LazyTasksDueToday />
               </Suspense>
             </div>
-            
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6 mt-6">
-              <Suspense fallback={<ChartSkeleton />}>
-                <LazyPipelineChart />
-              </Suspense>
-              <div className="grid grid-cols-1 gap-4 sm:gap-6">
-                <Suspense fallback={<DashboardSkeleton />}>
-                  <LazyRecentClients />
-                </Suspense>
-                <Suspense fallback={<DashboardSkeleton />}>
-                  <LazyTasksDueToday />
-                </Suspense>
-              </div>
-            </div>
-          </main>
-        </div>
-      </SidebarInset>
+          </div>
+        </main>
+      </div>
     </SmartDashboard>
   )
 }

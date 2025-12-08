@@ -2,8 +2,6 @@
 // Modern Next.js 15 - Clean, Fast, Secure
 
 import { redirect } from 'next/navigation'
-import { AppSidebar } from "@/components/layout/app-sidebar"
-import { SidebarInset } from "@/components/ui/sidebar"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -64,11 +62,9 @@ export default async function SuperAdminPage() {
 
   return (
     <SuperAdminWrapper>
-      <AppSidebar user={{ id: user.id, name: user.name, email: user.email, role: user.role, isSuperAdmin: true }} />
-      <SidebarInset>
-        <div className="min-h-screen bg-gray-50">
-          {/* Header */}
-          <header className="bg-white border-b border-gray-200 px-6 py-4">
+      <div className="min-h-screen bg-gray-50/50 overflow-auto">
+        {/* Header */}
+        <header className="bg-white border-b border-gray-200 px-6 py-4">
             <div className="flex items-center gap-4">
               <SidebarTrigger />
               <div className="flex items-center gap-3">
@@ -404,8 +400,7 @@ export default async function SuperAdminPage() {
             </section>
 
           </main>
-        </div>
-      </SidebarInset>
+      </div>
     </SuperAdminWrapper>
   )
 }

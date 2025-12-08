@@ -2,8 +2,8 @@
 
 import { Suspense, useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
-import { AppSidebar } from "@/components/layout/app-sidebar"
-import { SidebarInset } from "@/components/ui/sidebar"
+
+
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { DealForm } from "@/components/features/deals/deal-form"
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -116,25 +116,25 @@ export default function EditDealPage() {
 
   if (loading) {
     return (
-      <>
-        <AppSidebar />
-        <SidebarInset>
+      
+        
+        
           <div className="min-h-screen bg-gray-50 flex items-center justify-center">
             <div className="flex items-center space-x-2">
               <Loader2 className="h-6 w-6 animate-spin" />
               <span>Loading deal...</span>
             </div>
           </div>
-        </SidebarInset>
-      </>
+        
+      
     )
   }
 
   if (error) {
     return (
-      <>
-        <AppSidebar />
-        <SidebarInset>
+      
+        
+        
           <div className="min-h-screen bg-gray-50 p-6">
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
@@ -143,16 +143,16 @@ export default function EditDealPage() {
               </AlertDescription>
             </Alert>
           </div>
-        </SidebarInset>
-      </>
+        
+      
     )
   }
 
   if (!deal) {
     return (
-      <>
-        <AppSidebar />
-        <SidebarInset>
+      
+        
+        
           <div className="min-h-screen bg-gray-50 p-6">
             <Alert>
               <AlertCircle className="h-4 w-4" />
@@ -161,22 +161,22 @@ export default function EditDealPage() {
               </AlertDescription>
             </Alert>
           </div>
-        </SidebarInset>
-      </>
+        
+      
     )
   }
 
   return (
-    <>
-      <AppSidebar />
-      <SidebarInset>
-        <div className="min-h-screen bg-gray-50">
+    
+      
+      
+        <div className="min-h-screen bg-gray-50/50 overflow-auto">
           <header className="bg-white border-b border-gray-200 px-6 py-4">
             <div className="flex items-center gap-4">
               <SidebarTrigger />
               <div>
-                <h1 className="text-2xl font-bold text-slate-900">Edit Deal</h1>
-                <p className="text-sm text-gray-500 mt-1">
+                <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Edit Deal</h1>
+                <p className="text-sm text-slate-600 mt-1">
                   Update deal information for "{deal.title}"
                 </p>
               </div>
@@ -188,7 +188,7 @@ export default function EditDealPage() {
             </Suspense>
           </main>
         </div>
-      </SidebarInset>
-    </>
+      
+    
   )
 }

@@ -27,18 +27,20 @@ const MAIN_MENU_ITEMS = [
   { title: "Dashboard", url: "/dashboard", icon: Home },
   { title: "Clients", url: "/clients", icon: Users },
   { title: "Deals", url: "/deals", icon: Building },
+  { title: "Pipeline", url: "/deals/pipeline", icon: BarChart3 },
   { title: "Tasks", url: "/tasks", icon: CheckSquare },
   { title: "Messages", url: "/messages", icon: Mail },
   { title: "Automation", url: "/automation", icon: Zap },
+] as const
+
+const ANALYTICS_MENU_ITEMS = [
   { title: "Lead Scoring", url: "/lead-scoring", icon: Target },
   { title: "Reports", url: "/reports", icon: BarChart3 },
 ] as const
 
 const BOTTOM_MENU_ITEMS = [
   { title: "MLS Settings", url: "/mls-settings", icon: Building2 },
-  { title: "Partner Hub", url: "/affiliate", icon: Share2 },
   { title: "Settings", url: "/settings", icon: Settings },
-  { title: "Docs", url: "/docs", icon: HelpCircle },
 ] as const
 
 interface SidebarUser {
@@ -69,40 +71,44 @@ export const AppSidebar = React.memo(function AppSidebar({ user }: { user?: Side
   const isAdminOrBroker = ['Admin', 'Broker', 'Owner'].includes(user?.role || '') && !isSuperAdmin
 
   return (
-    <Sidebar className="bg-white border-r border-gray-100" variant="sidebar" collapsible="icon">
-      <SidebarHeader className="p-4">
-        <div className="flex items-center gap-3 overflow-hidden group-data-[collapsible=icon]:justify-center">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm transition-transform hover:scale-105">
+    <Sidebar variant="sidebar" collapsible="icon" className="border-r-0">
+      <SidebarHeader className="h-16 flex items-center px-4 border-b border-sidebar-border">
+        <div className="flex items-center gap-3 overflow-hidden group-data-[collapsible=icon]:justify-center w-full transition-all">
+          <div className="flex items-center justify-center flex-shrink-0">
             <Image
-              src="/icon.svg" // Use local SVG for instant load instead of remote URL
-              alt="Logo"
-              width={20}
-              height={20}
-              className="invert"
-              priority // Prioritize loading logic
+              src="/icon.svg"
+              alt="Dealvize"
+              width={28}
+              height={28}
+              className="w-7 h-7"
+              priority
             />
           </div>
-          <span className="text-lg font-bold text-gray-900 group-data-[collapsible=icon]:hidden transition-opacity duration-200">
+          <span className="text-lg font-bold tracking-tight text-sidebar-foreground group-data-[collapsible=icon]:hidden transition-opacity duration-200">
             Dealvize
           </span>
         </div>
       </SidebarHeader>
 
-      <SidebarContent className="px-3 py-2 scrollbar-thin scrollbar-thumb-gray-200">
+      <SidebarContent className="px-2 py-4 gap-4 scrollbar-hide">
+        {/* Main Section */}
         <SidebarMenu>
           {MAIN_MENU_ITEMS.map((item) => {
-            const isActive = pathname === item.url || pathname.startsWith(`${item.url}/`)
+            const isActive = pathname === item.url || (pathname.startsWith(item.url) && pathname !== '/' && item.url !== '/dashboard')
             return (
               <SidebarMenuItem key={item.url}>
                 <SidebarMenuButton
                   asChild
                   isActive={isActive}
                   tooltip={item.title}
-                  className="w-full justify-start hover:bg-gray-100 data-[active=true]:bg-blue-50 data-[active=true]:text-blue-700 transition-colors duration-200"
+                  className="h-9 transition-all hover:translate-x-1 duration-200"
+                  data-active={isActive}
                 >
-                  <Link href={item.url} prefetch={true}>
-                    <item.icon className={`h-5 w-5 ${isActive ? 'text-blue-600' : 'text-gray-500'}`} />
-                    <span className="font-medium group-data-[collapsible=icon]:hidden">{item.title}</span>
+                  <Link href={item.url} className={isActive ? "bg-sidebar-accent" : ""}>
+                    <item.icon className={isActive ? "text-sidebar-primary" : "text-sidebar-foreground/70"} />
+                    <span className={isActive ? "font-semibold text-sidebar-foreground" : "text-sidebar-foreground/80"}>
+                      {item.title}
+                    </span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -110,74 +116,96 @@ export const AppSidebar = React.memo(function AppSidebar({ user }: { user?: Side
           })}
         </SidebarMenu>
 
-        <SidebarSeparator className="my-4 mx-2" />
+        {/* Analytics Section - Grouping for clarity */}
+        <div className="group-data-[collapsible=icon]:hidden">
+          <div className="px-2 mb-2 mt-4 text-[10px] font-bold text-sidebar-foreground/40 uppercase tracking-widest">
+            Intelligence
+          </div>
+          <SidebarMenu>
+            {ANALYTICS_MENU_ITEMS.map((item) => {
+              const isActive = pathname === item.url
+              return (
+                <SidebarMenuItem key={item.url}>
+                  <SidebarMenuButton asChild isActive={isActive} tooltip={item.title} className="h-9 hover:translate-x-1 transition-all">
+                    <Link href={item.url}>
+                      <item.icon className={isActive ? "text-sidebar-primary" : "text-sidebar-foreground/70"} />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )
+            })}
+          </SidebarMenu>
+        </div>
 
-        {/* Optimized Admin Sections */}
+        {/* Admin Section */}
         {(isSuperAdmin || isAdminOrBroker) && (
-          <>
-            <div className="px-2 mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider group-data-[collapsible=icon]:hidden">
-              Administration
+          <div className="group-data-[collapsible=icon]:hidden">
+            <div className="px-2 mb-2 mt-4 text-[10px] font-bold text-sidebar-foreground/40 uppercase tracking-widest">
+              Admin
             </div>
             <SidebarMenu>
               {isSuperAdmin && (
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild isActive={pathname.startsWith('/super-admin')} tooltip="Super Admin">
-                    <Link href="/super-admin" className="text-yellow-700 hover:bg-yellow-50">
-                      <Crown className="h-5 w-5" />
-                      <span className="group-data-[collapsible=icon]:hidden">Super Admin</span>
+                  <SidebarMenuButton asChild isActive={pathname.startsWith('/super-admin')} tooltip="Super Admin" className="h-9">
+                    <Link href="/super-admin" className="text-amber-400 hover:text-amber-300">
+                      <Crown className="h-4 w-4" />
+                      <span>Super Admin</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               )}
               {isAdminOrBroker && (
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild isActive={pathname.startsWith('/admin')} tooltip="Admin">
+                  <SidebarMenuButton asChild isActive={pathname.startsWith('/admin')} tooltip="Admin" className="h-9">
                     <Link href="/admin">
-                      <Shield className="h-5 w-5" />
-                      <span className="group-data-[collapsible=icon]:hidden">Admin</span>
+                      <Shield className="h-4 w-4" />
+                      <span>Administration</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               )}
             </SidebarMenu>
-            <SidebarSeparator className="my-4 mx-2" />
-          </>
+          </div>
         )}
 
-        <SidebarMenu>
-          {BOTTOM_MENU_ITEMS.map((item) => (
-            <SidebarMenuItem key={item.url}>
-              <SidebarMenuButton asChild isActive={pathname.startsWith(item.url)} tooltip={item.title}>
-                <Link href={item.url} prefetch={false}> {/* Defer prefetch for settings */}
-                  <item.icon className="h-5 w-5 text-gray-500" />
-                  <span className="group-data-[collapsible=icon]:hidden">{item.title}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
-        </SidebarMenu>
+        <div className="mt-auto">
+          <SidebarSeparator className="my-2 opacity-50" />
+          <SidebarMenu>
+            {BOTTOM_MENU_ITEMS.map((item) => (
+              <SidebarMenuItem key={item.url}>
+                <SidebarMenuButton asChild isActive={pathname.startsWith(item.url)} tooltip={item.title} className="h-9">
+                  <Link href={item.url}>
+                    <item.icon className="h-4 w-4 text-sidebar-foreground/60" />
+                    <span>{item.title}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </div>
       </SidebarContent>
 
-      <SidebarFooter className="p-4 border-t border-gray-100">
+      <SidebarFooter className="p-4 border-t border-sidebar-border bg-sidebar-accent/10">
         <div className="flex items-center gap-3 overflow-hidden group-data-[collapsible=icon]:justify-center">
-          <Avatar className="h-8 w-8 border-2 border-white shadow-sm cursor-pointer hover:opacity-80 transition-opacity">
+          <Avatar className="h-8 w-8 border border-sidebar-border shadow-sm cursor-pointer hover:ring-2 hover:ring-sidebar-primary transition-all">
             <AvatarImage src={user?.avatar} />
-            <AvatarFallback className="bg-blue-100 text-blue-700 text-xs font-bold">
+            <AvatarFallback className="bg-sidebar-primary text-sidebar-primary-foreground text-xs font-bold">
               {user?.name?.charAt(0).toUpperCase() || 'U'}
             </AvatarFallback>
           </Avatar>
-          <div className="flex-1 min-w-0 group-data-[collapsible=icon]:hidden transition-all">
-            <p className="text-sm font-medium text-gray-900 truncate">{user?.name || 'User'}</p>
-            <p className="text-xs text-gray-500 truncate capitalize">{user?.role || 'Agent'}</p>
+          <div className="flex-1 min-w-0 group-data-[collapsible=icon]:hidden">
+            <p className="text-xs font-medium text-sidebar-foreground truncate">{user?.name || 'User'}</p>
+            <p className="text-[10px] text-sidebar-foreground/50 truncate uppercase tracking-wider">{user?.role || 'Agent'}</p>
           </div>
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 text-gray-400 hover:text-red-600 group-data-[collapsible=icon]:hidden"
+            className="h-7 w-7 text-sidebar-foreground/50 hover:text-red-400 hover:bg-red-900/20 group-data-[collapsible=icon]:hidden"
             onClick={handleLogout}
             disabled={isLoggingOut}
           >
-            <LogOut className="h-4 w-4" />
+            <LogOut className="h-3 w-3" />
           </Button>
         </div>
       </SidebarFooter>

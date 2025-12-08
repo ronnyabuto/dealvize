@@ -1,14 +1,12 @@
 'use client'
 
 import { Suspense } from 'react'
-import { AppSidebar } from "@/components/layout/app-sidebar"
-import { SidebarInset } from "@/components/ui/sidebar"
+import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { BarChart3, TrendingUp, Users, DollarSign, Target, Clock } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 
-// Force dynamic rendering
 export const dynamic = 'force-dynamic'
 
 // Loading skeleton component
@@ -81,25 +79,23 @@ const analyticsCards = [
 
 export default function AnalyticsPage() {
   return (
-    <>
-      <AppSidebar />
-      <SidebarInset>
-        <div className="min-h-screen bg-gray-50">
-          {/* Header */}
-          <div className="border-b border-gray-200 bg-white px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">Analytics</h1>
-                <p className="text-gray-600">Track your performance and business metrics</p>
-              </div>
-              <Badge variant="secondary" className="bg-dealvize-teal/10 text-dealvize-teal">
-                Real-time Data
-              </Badge>
+    <div className="min-h-screen bg-gray-50/50 overflow-auto">
+      <header className="border-b border-gray-200 bg-white px-6 py-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <SidebarTrigger />
+            <div>
+              <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Analytics</h1>
+              <p className="text-slate-600">Track your performance and business metrics</p>
             </div>
           </div>
+          <Badge variant="secondary" className="bg-dealvize-teal/10 text-dealvize-teal">
+            Real-time Data
+          </Badge>
+        </div>
+      </header>
 
-          {/* Main Content */}
-          <main className="p-6">
+      <main className="p-6">
             <Suspense fallback={<AnalyticsSkeleton />}>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                 {analyticsCards.map((card, index) => (
@@ -164,8 +160,6 @@ export default function AnalyticsPage() {
               </div>
             </Suspense>
           </main>
-        </div>
-      </SidebarInset>
-    </>
+    </div>
   )
 }
