@@ -126,8 +126,8 @@ export async function GET(request: NextRequest) {
         return sum + val
       }, 0) || 0
 
-      // Handle both separate names and full name field
-      const displayName = client.name || `${client.first_name || ''} ${client.last_name || ''}`.trim() || 'Unknown'
+      // Concatenate first and last names
+      const displayName = `${client.first_name || ''} ${client.last_name || ''}`.trim() || 'Unknown'
 
       return {
         ...client,
