@@ -131,6 +131,15 @@ export function MessagesContent() {
   
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
 
+  // Template management
+  const [isCreatingTemplate, setIsCreatingTemplate] = useState(false)
+  const [newTemplate, setNewTemplate] = useState({
+    name: '',
+    category: 'general',
+    subject: '',
+    body_text: ''
+  })
+
   useEffect(() => {
     fetchMessages()
     fetchTemplates()
@@ -339,6 +348,33 @@ export function MessagesContent() {
     }
   }
 
+  const handleCreateTemplate = async () => {
+    if (!newTemplate.name || !newTemplate.subject || !newTemplate.body_text) {
+      setMessage({ type: 'error', text: 'Please fill in all template fields' })
+      return
+    }
+
+    try {
+      const response = await fetch('/api/email-templates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newTemplate)
+      })
+
+      if (response.ok) {
+        setMessage({ type: 'success', text: 'Template created successfully' })
+        fetchTemplates()
+        setIsCreatingTemplate(false)
+        setNewTemplate({ name: '', category: 'general', subject: '', body_text: '' })
+      } else {
+        const error = await response.json()
+        setMessage({ type: 'error', text: error.error || 'Failed to create template' })
+      }
+    } catch (error) {
+      setMessage({ type: 'error', text: 'Failed to create template' })
+    }
+  }
+
   const getChannelIcon = (channelName: string) => {
     const IconComponent = channelIcons[channelName] || MessageSquare
     return <IconComponent className="h-4 w-4" />
@@ -533,6 +569,7 @@ export function MessagesContent() {
           <TabsTrigger value="starred">Starred</TabsTrigger>
           <TabsTrigger value="sent">Sent</TabsTrigger>
           <TabsTrigger value="archived">Archived</TabsTrigger>
+          <TabsTrigger value="templates">Email Templates</TabsTrigger>
         </TabsList>
 
         <TabsContent value={activeTab} className="space-y-4">
@@ -655,6 +692,146 @@ export function MessagesContent() {
                       </div>
                     </div>
                   </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+
+        {/* Email Templates Tab */}
+        <TabsContent value="templates" className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-medium">Saved Templates</h3>
+            <Button onClick={() => setIsCreatingTemplate(true)}>
+              <Plus className="w-4 h-4 mr-2" /> New Template
+            </Button>
+          </div>
+
+          {/* Template Creation Dialog */}
+          <Dialog open={isCreatingTemplate} onOpenChange={setIsCreatingTemplate}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Create Email Template</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="template-name">Template Name</Label>
+                  <Input
+                    id="template-name"
+                    placeholder="e.g., Welcome Email"
+                    value={newTemplate.name}
+                    onChange={e => setNewTemplate({...newTemplate, name: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="template-category">Category</Label>
+                  <Select
+                    value={newTemplate.category}
+                    onValueChange={value => setNewTemplate({...newTemplate, category: value})}
+                  >
+                    <SelectTrigger id="template-category">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="general">General</SelectItem>
+                      <SelectItem value="follow_up">Follow Up</SelectItem>
+                      <SelectItem value="welcome">Welcome</SelectItem>
+                      <SelectItem value="deal_update">Deal Update</SelectItem>
+                      <SelectItem value="property_alert">Property Alert</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="template-subject">Subject Line</Label>
+                  <Input
+                    id="template-subject"
+                    placeholder="e.g., Welcome to Our Service"
+                    value={newTemplate.subject}
+                    onChange={e => setNewTemplate({...newTemplate, subject: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="template-body">Email Body</Label>
+                  <Textarea
+                    id="template-body"
+                    placeholder="Use {{client_name}}, {{deal_title}}, and other variables"
+                    value={newTemplate.body_text}
+                    onChange={e => setNewTemplate({...newTemplate, body_text: e.target.value})}
+                    rows={8}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Available variables: {'{'}{'{'}}client_name{'}'}{'}'}, {'{'}{'{'}}deal_title{'}'}{'}'}, {'{'}{'{'}}agent_name{'}'}{'}'}, {'{'}{'{'}}property_address{'}'}{'}'}
+                  </p>
+                </div>
+                <div className="flex justify-end gap-2">
+                  <Button variant="outline" onClick={() => setIsCreatingTemplate(false)}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleCreateTemplate}>
+                    Save Template
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          {/* Templates Grid */}
+          {templates.length === 0 ? (
+            <Card>
+              <CardContent className="flex items-center justify-center py-16">
+                <div className="text-center">
+                  <Mail className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No templates yet</h3>
+                  <p className="text-gray-500 mb-4">Create your first email template to speed up your communication.</p>
+                  <Button onClick={() => setIsCreatingTemplate(true)}>
+                    <Plus className="w-4 h-4 mr-2" /> Create Template
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {templates.map(template => (
+                <Card key={template.id} className="p-4 hover:shadow-md transition-shadow">
+                  <div className="flex justify-between items-start mb-2">
+                    <div className="flex-1">
+                      <h4 className="font-bold text-lg">{template.name}</h4>
+                      <Badge variant="outline" className="mt-1">
+                        {template.category}
+                      </Badge>
+                    </div>
+                    {template.is_system && (
+                      <Badge className="bg-blue-100 text-blue-800">System</Badge>
+                    )}
+                  </div>
+                  <p className="text-sm font-medium text-gray-700 mt-2">
+                    Subject: {template.subject}
+                  </p>
+                  <p className="text-sm text-gray-500 mt-2 line-clamp-3">
+                    {template.body_text}
+                  </p>
+                  {template.variables && template.variables.length > 0 && (
+                    <div className="mt-3 flex flex-wrap gap-1">
+                      {template.variables.map((variable, idx) => (
+                        <Badge key={idx} variant="secondary" className="text-xs">
+                          {'{'}{'{'}{variable}{'}'}{'}'}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                  <div className="flex gap-2 mt-4">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        setComposeData(prev => ({ ...prev, template_id: template.id }))
+                        handleTemplateSelect(template.id)
+                        setComposeOpen(true)
+                      }}
+                    >
+                      <Send className="w-3 h-3 mr-1" /> Use Template
+                    </Button>
+                  </div>
                 </Card>
               ))}
             </div>

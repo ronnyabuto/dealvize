@@ -7,6 +7,7 @@ import { ErrorBoundary } from "@/components/error-boundary"
 import { PopupMessageProvider } from "@/contexts/popup-message-context"
 import { StructuredData } from "@/components/seo/structured-data"
 import { baseMetadata } from "@/lib/seo/metadata"
+import { SiteFooter } from "@/components/site-footer"
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -58,6 +59,7 @@ export default function MarketingLayout({
         <ErrorBoundary>
           <PopupMessageProvider>
             {children}
+            <SiteFooter />
             <Toaster />
           </PopupMessageProvider>
         </ErrorBoundary>
