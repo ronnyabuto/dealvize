@@ -4,7 +4,7 @@ import { Suspense } from 'react'
 import { AppSidebar } from "@/components/layout/app-sidebar"
 import { SidebarInset } from "@/components/ui/sidebar"
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { TaskForm } from "@/components/task-form"
+import { TaskForm } from "@/components/shared/task-form"
 
 export const dynamic = 'force-dynamic'
 

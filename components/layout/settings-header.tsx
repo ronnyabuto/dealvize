@@ -1,7 +1,7 @@
 "use client"
 
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { GlobalSearch } from "./global-search"
+import { GlobalSearch } from "@/components/shared/global-search"
 
 export function SettingsHeader() {
   return (

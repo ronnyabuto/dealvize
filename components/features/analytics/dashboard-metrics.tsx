@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { TrendingUp, TrendingDown, Users, Building, DollarSign, Calendar } from "lucide-react"
 import { useEffect, useState, useCallback } from "react"
-import { APIErrorBoundary } from "@/components/error-boundary"
+import { APIErrorBoundary } from "@/components/shared/error-boundary"
 import { cachedFetch, cacheKeys, backgroundRefresh } from "@/lib/cache/query-cache"
 import Link from "next/link"
 

@@ -3,8 +3,8 @@
 import { useState } from 'react'
 import { AppSidebar } from "@/components/layout/app-sidebar"
 import { SidebarInset } from "@/components/ui/sidebar"
-import { ReportsHeader } from "@/components/layout/reports-header"
-import { ReportsContent } from "@/components/reports-content"
+import { ReportsHeader } from "@/components/features/analytics/reports-header"
+import { ReportsContent } from "@/components/features/analytics/reports-content"
 
 export const dynamic = 'force-dynamic'
 

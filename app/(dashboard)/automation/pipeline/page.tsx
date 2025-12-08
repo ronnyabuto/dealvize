@@ -1,4 +1,4 @@
-import { PipelineAutomation } from "@/components/pipeline-automation"
+import { PipelineAutomation } from "@/components/features/automation/pipeline-automation"
 
 export default function PipelineAutomationPage() {
   return (

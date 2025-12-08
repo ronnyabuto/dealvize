@@ -1,4 +1,4 @@
-import { CollaborationHub } from "@/components/collaboration-hub"
+import { CollaborationHub } from "@/components/shared/collaboration-hub"
 
 export default function CollaborationPage() {
   return (

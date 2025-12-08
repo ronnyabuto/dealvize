@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { AppSidebar } from "@/components/layout/app-sidebar"
 import { SidebarInset } from "@/components/ui/sidebar"
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { TaskForm } from "@/components/task-form"
+import { TaskForm } from "@/components/shared/task-form"
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Loader2, AlertCircle } from 'lucide-react'
 export const dynamic = 'force-dynamic'

@@ -1,4 +1,4 @@
-import { CompetitiveAnalysis } from "@/components/competitive-analysis"
+import { CompetitiveAnalysis } from "@/components/shared/competitive-analysis"
 
 export default function CompetitiveAnalysisPage() {
   return (

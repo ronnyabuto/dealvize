@@ -1,4 +1,4 @@
-import { AILeadScoring } from "@/components/ai-lead-scoring"
+import { AILeadScoring } from "@/components/features/clients/ai-lead-scoring"
 
 export default function AILeadScoringPage() {
   return (

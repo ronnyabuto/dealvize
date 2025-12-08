@@ -1,4 +1,4 @@
-import { TenantManagement } from "@/components/tenant-management"
+import { TenantManagement } from "@/components/shared/tenant-management"
 
 export default function TenantsPage() {
   return (

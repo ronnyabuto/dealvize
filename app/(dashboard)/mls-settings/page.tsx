@@ -1,8 +1,8 @@
 import { Suspense } from 'react'
 import { AppSidebar } from "@/components/layout/app-sidebar"
 import { SidebarInset } from "@/components/ui/sidebar"
-import { DashboardHeader } from "@/components/layout/dashboard-header"
-import { MLSSettings } from "@/components/mls-settings"
+import { DashboardHeader } from "@/components/features/analytics/dashboard-header"
+import { MLSSettings } from "@/components/shared/mls-settings"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { getUser } from '@/lib/auth/utils'

@@ -1,6 +1,6 @@
-import { NurturingSequences } from "@/components/nurturing-sequences"
-import { ROIAnalytics } from "@/components/roi-analytics"
-import { SMSAutomation } from "@/components/sms-automation"
+import { NurturingSequences } from "@/components/features/automation/nurturing-sequences"
+import { ROIAnalytics } from "@/components/features/analytics/roi-analytics"
+import { SMSAutomation } from "@/components/features/messaging/sms-automation"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export default function AutomationPage() {

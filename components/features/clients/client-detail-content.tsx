@@ -11,11 +11,11 @@ import { Loader2, Mail, Phone, MapPin, Building2, DollarSign, Calendar, Plus, Al
 import { createClient } from '@/lib/supabase/client'
 import { type Client } from "@/lib/types"
 import { ClientNotes } from "@/components/features/clients/client-notes"
-import { ActivityTimeline } from "@/components/activity-timeline"
-import { SmsDialog } from "@/components/sms-dialog"
-import { SmsHistory } from "@/components/sms-history"
-import { EmailDialog } from "@/components/email-dialog"
-import { EmailHistory } from "@/components/email-history"
+import { ActivityTimeline } from "@/components/shared/activity-timeline"
+import { SmsDialog } from "@/components/features/messaging/sms-dialog"
+import { SmsHistory } from "@/components/features/messaging/sms-history"
+import { EmailDialog } from "@/components/features/messaging/email-dialog"
+import { EmailHistory } from "@/components/features/messaging/email-history"
 import { formatDate, formatCurrency } from "@/lib/utils"
 
 interface ClientDetailContentProps {

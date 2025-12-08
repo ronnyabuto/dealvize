@@ -1,42 +1,42 @@
 import { Suspense } from 'react'
 import { AppSidebar } from "@/components/layout/app-sidebar"
 import { SidebarInset } from "@/components/ui/sidebar"
-import { DashboardHeader } from "@/components/layout/dashboard-header"
-import { DashboardMetrics } from "@/components/dashboard-metrics"
+import { DashboardHeader } from "@/components/features/analytics/dashboard-header"
+import { DashboardMetrics } from "@/components/features/analytics/dashboard-metrics"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { getUser } from '@/lib/auth/utils'
-import { SmartDashboard } from '@/components/smart-dashboard'
+import { SmartDashboard } from '@/components/features/analytics/smart-dashboard'
 
 // Lazy load non-critical components with optimized loading
 import dynamic from 'next/dynamic'
 
 const LazyRecentClients = dynamic(
-  () => import("@/components/recent-clients").then(mod => ({ default: mod.RecentClients })),
+  () => import("@/components/features/clients/recent-clients").then(mod => ({ default: mod.RecentClients })),
   {
     loading: () => <DashboardSkeleton />
   }
 )
 
 const LazyTasksDueToday = dynamic(
-  () => import("@/components/tasks-due-today").then(mod => ({ default: mod.TasksDueToday })),
+  () => import("@/components/shared/tasks-due-today").then(mod => ({ default: mod.TasksDueToday })),
   {
     loading: () => <DashboardSkeleton />
   }
 )
 
 const LazyRevenueChart = dynamic(
-  () => import("@/components/enhanced-chart").then(mod => ({ default: mod.RevenueChart })),
+  () => import("@/components/shared/enhanced-chart").then(mod => ({ default: mod.RevenueChart })),
   { loading: () => <ChartSkeleton /> }
 )
 
 const LazyPipelineChart = dynamic(
-  () => import("@/components/enhanced-chart").then(mod => ({ default: mod.PipelineChart })),
+  () => import("@/components/shared/enhanced-chart").then(mod => ({ default: mod.PipelineChart })),
   { loading: () => <ChartSkeleton /> }
 )
 
 const LazyConversionChart = dynamic(
-  () => import("@/components/enhanced-chart").then(mod => ({ default: mod.ConversionChart })),
+  () => import("@/components/shared/enhanced-chart").then(mod => ({ default: mod.ConversionChart })),
   { loading: () => <ChartSkeleton /> }
 )
 

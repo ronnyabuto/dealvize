@@ -80,10 +80,10 @@ export function useDashboardPreload() {
   return useSmartPreload({
     routes: ['/clients', '/deals', '/tasks', '/calendar', '/settings'],
     components: [
-      () => import('@/components/clients-list'),
-      () => import('@/components/deals-list'),
-      () => import('@/components/tasks-list'),
-      () => import('@/components/enhanced-chart'),
+      () => import('@/components/features/clients/clients-list'),
+      () => import('@/components/features/deals/deals-list'),
+      () => import('@/components/shared/tasks-list'),
+      () => import('@/components/shared/enhanced-chart'),
     ],
     delay: 1500
   })

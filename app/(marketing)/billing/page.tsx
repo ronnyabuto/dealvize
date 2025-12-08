@@ -1,4 +1,4 @@
-import { SimpleBilling } from "@/components/billing-simple"
+import { SimpleBilling } from "@/components/shared/billing-simple"
 
 export default function BillingPage() {
   return (

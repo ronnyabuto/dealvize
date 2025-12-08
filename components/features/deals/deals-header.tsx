@@ -6,7 +6,7 @@ import { Search, Plus, Filter, TrendingUp, Calendar, DollarSign, Home, X, Downlo
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { GlobalSearch } from "./global-search"
+import { GlobalSearch } from "@/components/shared/global-search"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/ui/dropdown-menu"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Calendar as CalendarComponent } from "@/components/ui/calendar"

@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 import { useClients } from "@/hooks/use-clients"
 import { type Client } from "@/lib/types"
-import { EmailDialog } from "@/components/email-dialog"
+import { EmailDialog } from "@/components/features/messaging/email-dialog"
 
 interface ClientDetailHeaderProps {
   client: Client

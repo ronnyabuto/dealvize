@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import { AppSidebar } from "@/components/layout/app-sidebar"
 import { SidebarInset } from "@/components/ui/sidebar"
-import { DealDetailHeader } from "@/components/layout/deal-detail-header"
+import { DealDetailHeader } from "@/components/features/deals/deal-detail-header"
 import { DealDetailContent } from "@/components/features/deals/deal-detail-content"
 import { createClient } from '@/lib/supabase/client'
 import { type Deal } from '@/lib/types'

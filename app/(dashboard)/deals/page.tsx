@@ -3,10 +3,10 @@
 import { useState } from 'react'
 import { AppSidebar } from "@/components/layout/app-sidebar"
 import { SidebarInset } from "@/components/ui/sidebar"
-import { DealsHeader } from "@/components/layout/deals-header"
+import { DealsHeader } from "@/components/features/deals/deals-header"
 import { DealsList } from "@/components/features/deals/deals-list"
 import { BreadcrumbNav } from "@/components/layout/breadcrumb-nav"
-import { SmartActionBar } from "@/components/smart-action-bar"
+import { SmartActionBar } from "@/components/shared/smart-action-bar"
 import { Zap, DollarSign, Calendar } from "lucide-react"
 
 export const dynamic = 'force-dynamic'

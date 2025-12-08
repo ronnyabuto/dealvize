@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Calendar, User, LogOut, Settings, Bell, ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { GlobalSearch } from "./global-search"
+import { GlobalSearch } from "@/components/shared/global-search"
 import { 
   DropdownMenu, 
   DropdownMenuContent, 

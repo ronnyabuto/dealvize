@@ -7,12 +7,12 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { VirtualList } from "@/components/virtual-list"
+import { VirtualList } from "@/components/shared/virtual-list"
 import { MoreHorizontal, Phone, Mail, MapPin, Loader2, AlertCircle, MessageSquare } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { useClients } from "@/hooks/use-clients"
-import { SmsDialog } from "@/components/sms-dialog"
-import { EmailDialog } from "@/components/email-dialog"
+import { SmsDialog } from "@/components/features/messaging/sms-dialog"
+import { EmailDialog } from "@/components/features/messaging/email-dialog"
 
 interface ClientsListProps {
   search?: string

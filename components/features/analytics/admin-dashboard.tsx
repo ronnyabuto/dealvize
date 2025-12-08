@@ -25,10 +25,10 @@ import {
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { TeamMemberInvite } from "@/components/team-member-invite"
-import { TeamMemberList } from "@/components/team-member-list"
-import { ActivityMonitor } from "@/components/activity-monitor"
-import { LeadAssignment } from "@/components/lead-assignment"
+import { TeamMemberInvite } from "@/components/shared/team-member-invite"
+import { TeamMemberList } from "@/components/shared/team-member-list"
+import { ActivityMonitor } from "@/components/shared/activity-monitor"
+import { LeadAssignment } from "@/components/features/clients/lead-assignment"
 
 interface AdminData {
   plan: {

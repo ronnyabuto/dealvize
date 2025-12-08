@@ -1,4 +1,4 @@
-import { WorkflowBuilder } from "@/components/workflow-builder"
+import { WorkflowBuilder } from "@/components/shared/workflow-builder"
 
 export default function WorkflowsPage() {
   return (

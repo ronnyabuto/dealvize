@@ -6,7 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Skeleton } from "@/components/ui/skeleton"
-import { APIErrorBoundary } from "@/components/error-boundary"
+import { APIErrorBoundary } from "@/components/shared/error-boundary"
 
 interface Task {
   id: string

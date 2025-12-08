@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { refreshDashboardMetrics } from '@/components/dashboard-metrics'
+import { refreshDashboardMetrics } from '@/components/features/analytics/dashboard-metrics'
 
 export interface Client {
   id: string

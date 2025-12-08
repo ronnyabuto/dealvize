@@ -14,10 +14,10 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Share2 } from "lucide-react"
 // FIX: Use absolute import to resolve build error
-import { SimpleBilling } from "@/components/billing-simple"
+import { SimpleBilling } from "@/components/shared/billing-simple"
 import { userProfileSchema, userPreferencesSchema, type UserProfileFormData, type UserPreferencesFormData } from "@/lib/validations"
 import { CommissionForm } from "@/components/settings/commission-form"
-import { TenantManagement } from "@/components/tenant-management"
+import { TenantManagement } from "@/components/shared/tenant-management"
 
 export function SettingsContent() {
   const [success, setSuccess] = useState<string | null>(null)

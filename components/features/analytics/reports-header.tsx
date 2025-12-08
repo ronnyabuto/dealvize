@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Download, Filter, Calendar, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { GlobalSearch } from "./global-search"
+import { GlobalSearch } from "@/components/shared/global-search"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"

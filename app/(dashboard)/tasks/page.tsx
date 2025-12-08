@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { AppSidebar } from "@/components/layout/app-sidebar"
 import { SidebarInset } from "@/components/ui/sidebar"
 import { TasksHeader } from "@/components/layout/tasks-header"
-import { TasksList } from "@/components/tasks-list"
+import { TasksList } from "@/components/shared/tasks-list"
 import { BreadcrumbNav } from "@/components/layout/breadcrumb-nav"
 
 export const dynamic = 'force-dynamic'

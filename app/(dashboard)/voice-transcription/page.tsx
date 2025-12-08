@@ -1,4 +1,4 @@
-import { VoiceTranscription } from "@/components/voice-transcription"
+import { VoiceTranscription } from "@/components/shared/voice-transcription"
 
 export default function VoiceTranscriptionPage() {
   return (

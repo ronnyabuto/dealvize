@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { AppSidebar } from "@/components/layout/app-sidebar"
 import { SidebarInset } from "@/components/ui/sidebar"
-import { ClientsHeader } from "@/components/layout/clients-header"
+import { ClientsHeader } from "@/components/features/clients/clients-header"
 import { ClientsList } from "@/components/features/clients/clients-list"
 import { BreadcrumbNav } from "@/components/layout/breadcrumb-nav"
 import { useClients } from "@/hooks/use-clients"

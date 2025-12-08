@@ -1,4 +1,4 @@
-import { PredictiveAnalytics } from "@/components/predictive-analytics"
+import { PredictiveAnalytics } from "@/components/features/analytics/predictive-analytics"
 
 export default function PredictiveAnalyticsPage() {
   return (

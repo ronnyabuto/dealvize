@@ -1,4 +1,4 @@
-import { AttributionTracking } from "@/components/attribution-tracking"
+import { AttributionTracking } from "@/components/shared/attribution-tracking"
 
 export default function AttributionPage() {
   return (

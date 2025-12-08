@@ -3,7 +3,7 @@
 import { AppSidebar } from "@/components/layout/app-sidebar"
 import { SidebarInset } from "@/components/ui/sidebar"
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { LeadScoringContent } from "@/components/lead-scoring-content"
+import { LeadScoringContent } from "@/components/features/clients/lead-scoring-content"
 
 export const dynamic = 'force-dynamic'
 

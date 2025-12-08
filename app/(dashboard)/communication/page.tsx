@@ -1,5 +1,5 @@
 import { MessagesContent } from "@/components/features/messaging/messages-content"
-import { VideoMeetings } from "@/components/video-meetings"
+import { VideoMeetings } from "@/components/shared/video-meetings"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export default function CommunicationPage() {

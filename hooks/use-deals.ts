@@ -2,7 +2,7 @@
 
 import { useResource, createResourceHook, type ResourceOptions } from './use-resource'
 import { type Deal } from '@/lib/types'
-import { refreshDashboardMetrics } from '@/components/dashboard-metrics'
+import { refreshDashboardMetrics } from '@/components/features/analytics/dashboard-metrics'
 
 interface UseDealsOptions extends ResourceOptions {
   status?: string

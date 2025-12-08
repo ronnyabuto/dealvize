@@ -6,7 +6,7 @@ import { Search, Plus, Filter, Download, X, ArrowUpDown, ArrowUp, ArrowDown, Upl
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { GlobalSearch } from "./global-search"
+import { GlobalSearch } from "@/components/shared/global-search"
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -16,7 +16,7 @@ import {
   DropdownMenuLabel
 } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
-import { SmartImportDialog } from "./smart-import-dialog"
+import { SmartImportDialog } from "@/components/features/clients/smart-import-dialog"
 
 interface ClientsHeaderProps {
   onSearchChange: (search: string) => void
