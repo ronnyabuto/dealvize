@@ -1,5 +1,5 @@
-import { CalendarEvent, CalendarImportResult } from './types'
-import { Task } from '../types'
+import { CalendarEvent, CalendarImportResult } from '@/lib/smart-import/types'
+import { Task } from '@/lib/types'
 
 /**
  * Calendar Integration Service

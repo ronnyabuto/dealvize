@@ -8,9 +8,9 @@ import {
   MLSIntegrationStatus,
   MLSMarketAnalysis,
   MLSPropertyHistory 
-} from './types'
-import { MLSDataTransformer, mlsSearchCriteriaSchema } from './validators'
-import { mlsErrorHandler, MLSFallbackStrategies } from './error-handler'
+} from '@/lib/mls/types'
+import { MLSDataTransformer, mlsSearchCriteriaSchema } from '@/lib/mls/validators'
+import { mlsErrorHandler, MLSFallbackStrategies } from '@/lib/mls/error-handler'
 
 /**
  * Enterprise MLS API Client

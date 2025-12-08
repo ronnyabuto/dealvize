@@ -9,8 +9,8 @@ import {
   MLSSearchResult, 
   PropertyType,
   StandardStatus 
-} from './types'
-import { mlsErrorHandler } from './error-handler'
+} from '@/lib/mls/types'
+import { mlsErrorHandler } from '@/lib/mls/error-handler'
 
 interface RapidAPIConfig {
   apiKey: string

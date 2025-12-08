@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { PermissionChecker, PermissionResource, PermissionAction, PermissionScope, SYSTEM_ROLES } from './permissions'
+import { PermissionChecker, PermissionResource, PermissionAction, PermissionScope, SYSTEM_ROLES } from '@/lib/rbac/permissions'
 
 export interface RBACContext {
   userId: string

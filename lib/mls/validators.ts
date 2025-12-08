@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { PropertyType, StandardStatus, MLSSortField } from './types'
+import { PropertyType, StandardStatus, MLSSortField } from '@/lib/mls/types'
 
 /**
  * MLS Data Validation Schemas

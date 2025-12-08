@@ -30,7 +30,11 @@ async function checkRateLimit(identifier: string, limit: number, windowSeconds: 
     }
   } catch (error) {
     // Fail open in production if Redis is down, but log heavily
-    logger.error('Redis Rate Limit Error', error)
+    if (error instanceof Error) {
+      logger.error('Redis Rate Limit Error', error)
+    } else {
+      logger.error('Redis Rate Limit Error', new Error(String(error)))
+    }
     return { allowed: true, remaining: 1, reset: Date.now() }
   }
 }

@@ -1,12 +1,12 @@
-import { MLSClient } from './client'
+import { MLSClient } from '@/lib/mls/client'
 import { 
   MLSProperty, 
   MLSSearchCriteria, 
   MLSSearchResult,
   PropertyType,
   StandardStatus
-} from './types'
-import { AddressValidator } from './validators'
+} from '@/lib/mls/types'
+import { AddressValidator } from '@/lib/mls/validators'
 
 /**
  * Property Service

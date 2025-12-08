@@ -1,4 +1,4 @@
-import { offlineManager } from './offline-manager'
+import { offlineManager } from '@/lib/chat/offline-manager'
 
 export interface ChatError {
   code: string

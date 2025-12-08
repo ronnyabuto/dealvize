@@ -5,7 +5,7 @@ import { Search, Plus, Filter, Calendar } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { GlobalSearch } from "./global-search"
+import { GlobalSearch } from "@/components/global-search"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 interface TasksHeaderProps {

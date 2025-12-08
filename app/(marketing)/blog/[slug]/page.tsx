@@ -4,7 +4,7 @@ import { Calendar, Clock, User, Share2, ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { BlogPostClient, ShareButton } from './blog-post-client'
+import { BlogPostClient, ShareButton } from '@/app/(marketing)/blog/[slug]/blog-post-client'
 
 // Helper function to calculate read time
 function calculateReadTime(content: string): string {

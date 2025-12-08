@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { chatSecurity } from './chat-security'
+import { chatSecurity } from '@/lib/security/chat-security'
 import { requireAuth } from '@/lib/auth/utils'
 
 type SecurityMiddlewareResult = {

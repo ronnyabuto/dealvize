@@ -3,14 +3,14 @@
  * Columbus MLS Integration - Data Synchronization
  */
 
-import { MLSClient } from './client'
+import { MLSClient } from '@/lib/mls/client'
 import { 
   MLSProperty, 
   MLSSearchCriteria, 
   StandardStatus,
   MLSIntegrationStatus 
-} from './types'
-import { validateMLSProperty } from './validators'
+} from '@/lib/mls/types'
+import { validateMLSProperty } from '@/lib/mls/validators'
 
 interface CacheEntry<T> {
   data: T

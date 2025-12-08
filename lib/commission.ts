@@ -1,4 +1,4 @@
-import { Deal } from './types'
+import { Deal } from '@/lib/types'
 
 export const DEFAULT_COMMISSION_PERCENTAGE = 2.5
 

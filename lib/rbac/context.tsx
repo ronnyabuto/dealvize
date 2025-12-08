@@ -8,7 +8,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { User } from '@supabase/supabase-js'
-import { Role, SYSTEM_ROLES, PermissionChecker, PermissionResource, PermissionAction, PermissionScope } from './permissions'
+import { Role, SYSTEM_ROLES, PermissionChecker, PermissionResource, PermissionAction, PermissionScope } from '@/lib/rbac/permissions'
 
 interface TenantMember {
   id: string

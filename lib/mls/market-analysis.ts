@@ -3,7 +3,7 @@
  * Columbus MLS Integration
  */
 
-import { MLSClient } from './client'
+import { MLSClient } from '@/lib/mls/client'
 import { 
   MLSProperty, 
   MLSComparableProperty, 
@@ -11,8 +11,8 @@ import {
   MLSSearchCriteria,
   PropertyType,
   StandardStatus 
-} from './types'
-import { validateMLSProperty } from './validators'
+} from '@/lib/mls/types'
+import { validateMLSProperty } from '@/lib/mls/validators'
 
 export class MLSMarketAnalysisService {
   private client: MLSClient

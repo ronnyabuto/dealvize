@@ -1,6 +1,6 @@
 // Database backup and recovery utilities
 import { createClient } from '@/lib/supabase/server'
-import { backupConfig, BACKUP_TABLES, BackupMetadata, BackupType, RestoreOptions } from './config'
+import { backupConfig, BACKUP_TABLES, BackupMetadata, BackupType, RestoreOptions } from '@/lib/backup/config'
 import { logger } from '@/lib/errors'
 import * as crypto from 'crypto'
 import * as zlib from 'zlib'

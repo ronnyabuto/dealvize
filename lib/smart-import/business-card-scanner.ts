@@ -1,4 +1,4 @@
-import { BusinessCardData, BusinessCardScanResult } from './types'
+import { BusinessCardData, BusinessCardScanResult } from '@/lib/smart-import/types'
 
 /**
  * Business Card Scanner Service

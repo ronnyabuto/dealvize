@@ -3,13 +3,13 @@
  * Columbus MLS Integration - Property History Tracking
  */
 
-import { MLSClient } from './client'
+import { MLSClient } from '@/lib/mls/client'
 import { 
   MLSProperty, 
   MLSPropertyHistory, 
   MLSHistoryEvent, 
   StandardStatus 
-} from './types'
+} from '@/lib/mls/types'
 
 export class MLSPropertyHistoryService {
   private client: MLSClient

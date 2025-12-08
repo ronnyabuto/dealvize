@@ -1,4 +1,4 @@
-import { PropertyDetails, EmailParseResult } from './types'
+import { PropertyDetails, EmailParseResult } from '@/lib/smart-import/types'
 
 /**
  * Email Parser Service

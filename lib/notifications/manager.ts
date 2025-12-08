@@ -12,7 +12,7 @@ import {
   NotificationPreferences,
   defaultNotificationPreferences,
   NotificationData
-} from './types'
+} from '@/lib/notifications/types'
 import { logger } from '@/lib/errors'
 
 export class NotificationManager {

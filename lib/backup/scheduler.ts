@@ -1,5 +1,5 @@
-import { backupConfig } from './config'
-import { DatabaseBackup } from './database-backup'
+import { backupConfig } from '@/lib/backup/config'
+import { DatabaseBackup } from '@/lib/backup/database-backup'
 import { logger } from '@/lib/errors'
 import cron from 'node-cron'
 

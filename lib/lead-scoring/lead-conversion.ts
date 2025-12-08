@@ -6,7 +6,7 @@
  */
 
 import { createClient } from '@/lib/supabase/server'
-import { LeadScoringService } from './lead-service'
+import { LeadScoringService } from '@/lib/lead-scoring/lead-service'
 
 export interface LeadConversionResult {
   success: boolean
