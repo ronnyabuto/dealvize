@@ -1,8 +1,6 @@
 "use client"
 
-// Clean Sidebar Implementation
-// Minimal client-side logic, server-driven data
-
+import * as React from "react"
 import {
   Sidebar,
   SidebarContent,
@@ -16,29 +14,15 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
-  Home,
-  Users,
-  Building,
-  CheckSquare,
-  BarChart3,
-  Settings,
-  HelpCircle,
-  LogOut,
-  Shield,
-  Database,
-  Mail,
-  Target,
-  Crown,
-  Building2,
-  Share2,
-  Zap
+  Home, Users, Building, CheckSquare, BarChart3, Settings, HelpCircle,
+  LogOut, Shield, Mail, Target, Crown, Building2, Share2, Zap
 } from "lucide-react"
 import { clientAuthUtils } from '@/lib/auth/client-utils'
 import { usePathname } from 'next/navigation'
-import { useState, useEffect } from 'react'
 import Image from "next/image"
 import Link from "next/link"
 
+// Define menu items outside component to prevent re-creation
 const MAIN_MENU_ITEMS = [
   { title: "Dashboard", url: "/dashboard", icon: Home },
   { title: "Clients", url: "/clients", icon: Users },
@@ -48,14 +32,14 @@ const MAIN_MENU_ITEMS = [
   { title: "Automation", url: "/automation", icon: Zap },
   { title: "Lead Scoring", url: "/lead-scoring", icon: Target },
   { title: "Reports", url: "/reports", icon: BarChart3 },
-]
+] as const
 
 const BOTTOM_MENU_ITEMS = [
   { title: "MLS Settings", url: "/mls-settings", icon: Building2 },
   { title: "Partner Hub", url: "/affiliate", icon: Share2 },
   { title: "Settings", url: "/settings", icon: Settings },
   { title: "Docs", url: "/docs", icon: HelpCircle },
-]
+] as const
 
 interface SidebarUser {
   id: string
@@ -63,15 +47,12 @@ interface SidebarUser {
   email: string
   role: string
   isSuperAdmin: boolean
+  avatar?: string
 }
 
-interface AppSidebarProps {
-  user?: SidebarUser
-}
-
-export function AppSidebar({ user }: AppSidebarProps) {
+export const AppSidebar = React.memo(function AppSidebar({ user }: { user?: SidebarUser }) {
   const pathname = usePathname()
-  const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const [isLoggingOut, setIsLoggingOut] = React.useState(false)
 
   const handleLogout = async () => {
     try {
@@ -79,44 +60,49 @@ export function AppSidebar({ user }: AppSidebarProps) {
       await clientAuthUtils.signOut()
     } catch (error) {
       console.error('Error signing out:', error)
-    } finally {
       setIsLoggingOut(false)
     }
   }
 
+  // Memoize auth checks to strictly prevent recalculation
+  const isSuperAdmin = user?.isSuperAdmin
+  const isAdminOrBroker = ['Admin', 'Broker', 'Owner'].includes(user?.role || '') && !isSuperAdmin
+
   return (
-    <Sidebar className="bg-dealvize-sidebar border-r-0" variant="sidebar">
-      <SidebarHeader className="p-3 sm:p-4 bg-dealvize-sidebar">
-        <div className="flex items-center gap-2 sm:gap-3">
-          <div className="w-7 h-7 sm:w-8 sm:h-8 bg-dealvize-teal rounded-lg flex items-center justify-center flex-shrink-0">
+    <Sidebar className="bg-white border-r border-gray-100" variant="sidebar" collapsible="icon">
+      <SidebarHeader className="p-4">
+        <div className="flex items-center gap-3 overflow-hidden group-data-[collapsible=icon]:justify-center">
+          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm transition-transform hover:scale-105">
             <Image
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Logo-DQGQFiDau4o2hnDec2WcY3fv8SJ4K7.png"
-              alt="Dealvize Logo"
+              src="/icon.svg" // Use local SVG for instant load instead of remote URL
+              alt="Logo"
               width={20}
               height={20}
-              className="invert sm:w-6 sm:h-6"
+              className="invert"
+              priority // Prioritize loading logic
             />
           </div>
-          <span className="text-lg sm:text-xl font-bold text-dealvize-sidebar-foreground truncate">
+          <span className="text-lg font-bold text-gray-900 group-data-[collapsible=icon]:hidden transition-opacity duration-200">
             Dealvize
           </span>
         </div>
       </SidebarHeader>
 
-      <SidebarContent className="px-2 bg-dealvize-sidebar">
+      <SidebarContent className="px-3 py-2 scrollbar-thin scrollbar-thumb-gray-200">
         <SidebarMenu>
           {MAIN_MENU_ITEMS.map((item) => {
-            const isActive = pathname.startsWith(item.url)
+            const isActive = pathname === item.url || pathname.startsWith(`${item.url}/`)
             return (
-              <SidebarMenuItem key={item.title}>
+              <SidebarMenuItem key={item.url}>
                 <SidebarMenuButton
                   asChild
                   isActive={isActive}
-                  className="w-full justify-start text-dealvize-sidebar-foreground hover:bg-sidebar-accent data-[active=true]:bg-dealvize-teal data-[active=true]:text-white"
+                  tooltip={item.title}
+                  className="w-full justify-start hover:bg-gray-100 data-[active=true]:bg-blue-50 data-[active=true]:text-blue-700 transition-colors duration-200"
                 >
-                  <Link href={item.url} className="flex items-center gap-3 px-3 py-3 min-h-[44px] touch-manipulation">
-                    <item.icon className="h-5 w-5 flex-shrink-0" />
-                    <span className="truncate">{item.title}</span>
+                  <Link href={item.url} prefetch={true}>
+                    <item.icon className={`h-5 w-5 ${isActive ? 'text-blue-600' : 'text-gray-500'}`} />
+                    <span className="font-medium group-data-[collapsible=icon]:hidden">{item.title}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -124,99 +110,77 @@ export function AppSidebar({ user }: AppSidebarProps) {
           })}
         </SidebarMenu>
 
-        <SidebarSeparator className="my-4 bg-sidebar-border" />
+        <SidebarSeparator className="my-4 mx-2" />
 
-        {/* Super Admin Menu - Show only if user is super admin */}
-        {user?.isSuperAdmin && (
+        {/* Optimized Admin Sections */}
+        {(isSuperAdmin || isAdminOrBroker) && (
           <>
+            <div className="px-2 mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider group-data-[collapsible=icon]:hidden">
+              Administration
+            </div>
             <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname.startsWith('/super-admin')}
-                  className="w-full justify-start text-dealvize-sidebar-foreground hover:bg-sidebar-accent data-[active=true]:bg-yellow-600 data-[active=true]:text-white"
-                >
-                  <Link href="/super-admin" className="flex items-center gap-3 px-3 py-3 min-h-[44px] touch-manipulation">
-                    <Crown className="h-5 w-5 flex-shrink-0" />
-                    <span className="truncate">Super Admin</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+              {isSuperAdmin && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild isActive={pathname.startsWith('/super-admin')} tooltip="Super Admin">
+                    <Link href="/super-admin" className="text-yellow-700 hover:bg-yellow-50">
+                      <Crown className="h-5 w-5" />
+                      <span className="group-data-[collapsible=icon]:hidden">Super Admin</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
+              {isAdminOrBroker && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild isActive={pathname.startsWith('/admin')} tooltip="Admin">
+                    <Link href="/admin">
+                      <Shield className="h-5 w-5" />
+                      <span className="group-data-[collapsible=icon]:hidden">Admin</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
             </SidebarMenu>
-            <SidebarSeparator className="my-4 bg-sidebar-border" />
-          </>
-        )}
-
-        {/* Regular Admin Menu - Show for Admin, Broker, or Owner roles (but not super admin) */}
-        {['Admin', 'Broker', 'Owner'].includes(user?.role || '') && !user.isSuperAdmin && (
-          <>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname.startsWith('/admin')}
-                  className="w-full justify-start text-dealvize-sidebar-foreground hover:bg-sidebar-accent data-[active=true]:bg-dealvize-teal data-[active=true]:text-white"
-                >
-                  <Link href="/admin" className="flex items-center gap-3 px-3 py-3 min-h-[44px] touch-manipulation">
-                    <Shield className="h-5 w-5 flex-shrink-0" />
-                    <span className="truncate">Admin</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-            <SidebarSeparator className="my-4 bg-sidebar-border" />
+            <SidebarSeparator className="my-4 mx-2" />
           </>
         )}
 
         <SidebarMenu>
-          {BOTTOM_MENU_ITEMS.map((item) => {
-            const isActive = pathname.startsWith(item.url)
-            return (
-              <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton
-                  asChild
-                  isActive={isActive}
-                  className="w-full justify-start text-dealvize-sidebar-foreground hover:bg-sidebar-accent data-[active=true]:bg-dealvize-teal data-[active=true]:text-white"
-                >
-                  <Link href={item.url} className="flex items-center gap-3 px-3 py-3 min-h-[44px] touch-manipulation">
-                    <item.icon className="h-5 w-5 flex-shrink-0" />
-                    <span className="truncate">{item.title}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            )
-          })}
+          {BOTTOM_MENU_ITEMS.map((item) => (
+            <SidebarMenuItem key={item.url}>
+              <SidebarMenuButton asChild isActive={pathname.startsWith(item.url)} tooltip={item.title}>
+                <Link href={item.url} prefetch={false}> {/* Defer prefetch for settings */}
+                  <item.icon className="h-5 w-5 text-gray-500" />
+                  <span className="group-data-[collapsible=icon]:hidden">{item.title}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
         </SidebarMenu>
       </SidebarContent>
 
-      <SidebarFooter className="p-3 sm:p-4 bg-dealvize-sidebar space-y-2">
-        <div className="flex items-center gap-2 sm:gap-3">
-          <Avatar className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0">
-            <AvatarImage src={user?.avatar || "/placeholder.svg?height=32&width=32"} />
-            <AvatarFallback className="bg-dealvize-teal text-white text-xs sm:text-sm">
-              {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+      <SidebarFooter className="p-4 border-t border-gray-100">
+        <div className="flex items-center gap-3 overflow-hidden group-data-[collapsible=icon]:justify-center">
+          <Avatar className="h-8 w-8 border-2 border-white shadow-sm cursor-pointer hover:opacity-80 transition-opacity">
+            <AvatarImage src={user?.avatar} />
+            <AvatarFallback className="bg-blue-100 text-blue-700 text-xs font-bold">
+              {user?.name?.charAt(0).toUpperCase() || 'U'}
             </AvatarFallback>
           </Avatar>
-          <div className="flex-1 min-w-0">
-            <p className="text-xs sm:text-sm font-medium text-dealvize-sidebar-foreground truncate">
-              {user?.name || 'User'}
-            </p>
-            <p className="text-xs text-gray-400">
-              {user?.isSuperAdmin ? 'Super Admin' : user?.role || 'User'}
-            </p>
+          <div className="flex-1 min-w-0 group-data-[collapsible=icon]:hidden transition-all">
+            <p className="text-sm font-medium text-gray-900 truncate">{user?.name || 'User'}</p>
+            <p className="text-xs text-gray-500 truncate capitalize">{user?.role || 'Agent'}</p>
           </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-gray-400 hover:text-red-600 group-data-[collapsible=icon]:hidden"
+            onClick={handleLogout}
+            disabled={isLoggingOut}
+          >
+            <LogOut className="h-4 w-4" />
+          </Button>
         </div>
-        <Button
-          onClick={handleLogout}
-          disabled={isLoggingOut}
-          variant="ghost"
-          size="sm"
-          className="w-full justify-start text-dealvize-sidebar-foreground hover:bg-sidebar-accent h-10"
-        >
-          <LogOut className="h-4 w-4 mr-2" />
-          {isLoggingOut ? "Signing out..." : "Sign out"}
-        </Button>
       </SidebarFooter>
     </Sidebar>
   )
-}
+})

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Area, AreaChart, BarChart, Bar, PieChart, Pie, Cell } from 'recharts'
+import { ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Area, AreaChart, BarChart, Bar, PieChart, Pie, Cell } from 'recharts'
 import { Skeleton } from "@/components/ui/skeleton"
 
 interface RevenueData {
@@ -114,10 +114,10 @@ export function PipelineChart() {
             const aggregatedData: { [key: string]: { stage: string; count: number; value: number } } = {}
             
             pipeline.labels.forEach((label: string, index: number) => {
-              // Skip invalid labels
+              // Sanitize input to prevent null key crashes
               if (!label || label === 'null' || label === 'undefined') return;
               
-              const cleanLabel = label.trim();
+              const cleanLabel = String(label).trim();
               if (!aggregatedData[cleanLabel]) {
                 aggregatedData[cleanLabel] = { stage: cleanLabel, count: 0, value: 0 }
               }
@@ -163,7 +163,17 @@ export function PipelineChart() {
                  labelStyle={{ color: '#374151', fontWeight: '600' }}
                  contentStyle={{ backgroundColor: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '8px' }}
               />
-              <Bar dataKey="value" fill="#10b981" radius={[0, 6, 6, 0]} stroke="#059669" strokeWidth={1} />
+              {/* FIX: Use explicit Cells to guarantee unique keys and prevent 'rectangle-null' errors */}
+              <Bar dataKey="value" radius={[0, 6, 6, 0]}>
+                {data.map((entry, index) => (
+                  <Cell 
+                    key={`bar-cell-${index}-${entry.stage}`} 
+                    fill="#10b981" 
+                    stroke="#059669" 
+                    strokeWidth={1} 
+                  />
+                ))}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         )}
