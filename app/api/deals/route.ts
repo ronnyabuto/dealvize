@@ -40,7 +40,8 @@ export async function GET(request: NextRequest) {
         *,
         clients (
           id,
-          name,
+          first_name,
+          last_name,
           email
         )
       `)
@@ -106,7 +107,7 @@ export async function POST(request: NextRequest) {
         ...validatedData,
         user_id: user.id,
       })
-      .select(`*, clients(id, name, email)`)
+      .select(`*, clients(id, first_name, last_name, email)`)
       .single()
 
     if (error) {

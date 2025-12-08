@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
       .from('tasks')
       .select(`
         *,
-        clients ( id, name ),
+        clients ( id, first_name, last_name ),
         deals ( id, title )
       `)
       .eq('user_id', user.id)

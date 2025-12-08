@@ -27,7 +27,6 @@ const MAIN_MENU_ITEMS = [
   { title: "Dashboard", url: "/dashboard", icon: Home },
   { title: "Clients", url: "/clients", icon: Users },
   { title: "Deals", url: "/deals", icon: Building },
-  { title: "Pipeline", url: "/deals/pipeline", icon: BarChart3 },
   { title: "Tasks", url: "/tasks", icon: CheckSquare },
   { title: "Messages", url: "/messages", icon: Mail },
   { title: "Automation", url: "/automation", icon: Zap },

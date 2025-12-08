@@ -5,8 +5,6 @@ import { TasksHeader } from "@/components/layout/tasks-header"
 import { TasksList } from "@/components/shared/tasks-list"
 import { BreadcrumbNav } from "@/components/layout/breadcrumb-nav"
 
-export const dynamic = 'force-dynamic'
-
 export default function TasksPage() {
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState('')

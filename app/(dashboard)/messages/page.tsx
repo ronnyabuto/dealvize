@@ -3,8 +3,6 @@
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { MessagesContent } from "@/components/features/messaging/messages-content"
 
-export const dynamic = 'force-dynamic'
-
 export default function MessagesPage() {
   return (
     <div className="min-h-screen bg-gray-50/50 overflow-auto">

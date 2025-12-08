@@ -6,8 +6,6 @@ import { ClientsList } from "@/components/features/clients/clients-list"
 import { BreadcrumbNav } from "@/components/layout/breadcrumb-nav"
 import { useClients } from "@/hooks/use-clients"
 
-export const dynamic = 'force-dynamic'
-
 export default function ClientsPage() {
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState('')

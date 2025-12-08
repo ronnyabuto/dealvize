@@ -17,8 +17,8 @@ interface Task {
   client_id?: string
   clients?: {
     id: string
-    name: string
-    initials: string
+    first_name: string
+    last_name: string
   }
 }
 
@@ -264,7 +264,7 @@ export function TasksDueToday() {
                   <div className="flex items-center space-x-2">
                     {task.clients && (
                       <Badge variant="outline" className="text-xs">
-                        {task.clients.name}
+                        {`${task.clients.first_name || ''} ${task.clients.last_name || ''}`.trim() || 'Unknown'}
                       </Badge>
                     )}
                     <Badge 

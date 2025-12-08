@@ -61,13 +61,11 @@ export function SmsHistory({ clientId, showClientName = true }: SmsHistoryProps)
 
   const getClientName = (sms: SmsRecord) => {
     if (!sms.clients) return null
-    
-    if (sms.clients.name) return sms.clients.name
-    
+
     if (sms.clients.first_name && sms.clients.last_name) {
       return `${sms.clients.first_name} ${sms.clients.last_name}`
     }
-    
+
     return sms.clients.first_name || sms.clients.last_name || null
   }
 

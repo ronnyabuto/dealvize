@@ -66,13 +66,11 @@ export function EmailHistory({ clientId, showClientName = true }: EmailHistoryPr
 
   const getClientName = (email: EmailRecord) => {
     if (!email.clients) return null
-    
-    if (email.clients.name) return email.clients.name
-    
+
     if (email.clients.first_name && email.clients.last_name) {
       return `${email.clients.first_name} ${email.clients.last_name}`
     }
-    
+
     return email.clients.first_name || email.clients.last_name || null
   }
 

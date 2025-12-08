@@ -57,21 +57,22 @@ export function DealsList({ search, status, filters }: DealsListProps) {
       if (deals.length === 0) return
 
       const clientIds = [...new Set(deals.map(deal => deal.clientId))]
-      
+
       const { data } = await supabase
         .from('clients')
-        .select('id, name')
+        .select('id, first_name, last_name')
         .in('id', clientIds)
 
       if (data) {
         const clientsMap: ClientData = {}
         data.forEach(client => {
-          const fullName = client.name || 'Unknown Client'
-          const nameParts = fullName.split(' ')
+          const fullName = `${client.first_name || ''} ${client.last_name || ''}`.trim() || 'Unknown Client'
+          const firstName = client.first_name || ''
+          const lastName = client.last_name || ''
           clientsMap[client.id] = {
             name: fullName,
-            initials: nameParts.length > 1 
-              ? `${nameParts[0].charAt(0)}${nameParts[nameParts.length - 1].charAt(0)}`.toUpperCase()
+            initials: firstName && lastName
+              ? `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()
               : fullName.substring(0, 2).toUpperCase()
           }
         })

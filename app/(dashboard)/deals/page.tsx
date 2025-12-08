@@ -3,11 +3,13 @@
 import { useState } from 'react'
 import { DealsHeader } from "@/components/features/deals/deals-header"
 import { DealsList } from "@/components/features/deals/deals-list"
+import { DealPipeline } from "@/components/features/deals/deal-pipeline"
 import { BreadcrumbNav } from "@/components/layout/breadcrumb-nav"
 import { SmartActionBar } from "@/components/shared/smart-action-bar"
-import { Zap, DollarSign, Calendar } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Zap, DollarSign, Calendar, LayoutList, LayoutGrid } from "lucide-react"
 
-export const dynamic = 'force-dynamic'
+type ViewMode = 'list' | 'board'
 
 interface DealFilters {
   status: string
@@ -21,6 +23,7 @@ interface DealFilters {
 }
 
 export default function DealsPage() {
+  const [viewMode, setViewMode] = useState<ViewMode>('board') // Default to Pipeline/Board view
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState('')
   const [filters, setFilters] = useState<DealFilters>({
@@ -85,16 +88,46 @@ export default function DealsPage() {
       />
       <main className="p-6">
         <BreadcrumbNav />
-        <SmartActionBar
-          actions={smartActions}
-          title="Smart Deal Automation"
-          className="mb-6"
-        />
-        <DealsList
-          search={search}
-          status={status}
-          filters={filters}
-        />
+
+        {/* View Toggle */}
+        <div className="flex items-center justify-between mb-6">
+          <SmartActionBar
+            actions={smartActions}
+            title="Smart Deal Automation"
+            className="flex-1"
+          />
+          <div className="flex items-center gap-2 ml-4">
+            <Button
+              variant={viewMode === 'board' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setViewMode('board')}
+              className="gap-2"
+            >
+              <LayoutGrid className="h-4 w-4" />
+              Board
+            </Button>
+            <Button
+              variant={viewMode === 'list' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setViewMode('list')}
+              className="gap-2"
+            >
+              <LayoutList className="h-4 w-4" />
+              List
+            </Button>
+          </div>
+        </div>
+
+        {/* Render view based on mode */}
+        {viewMode === 'board' ? (
+          <DealPipeline />
+        ) : (
+          <DealsList
+            search={search}
+            status={status}
+            filters={filters}
+          />
+        )}
       </main>
     </div>
   )
