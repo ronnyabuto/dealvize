@@ -5,11 +5,11 @@ import { smartRateLimiter } from '@/lib/security/edge-rate-limiter'
 import { createClient } from '@/lib/supabase/server'
 
 // Essential security headers
+// NOTE: HSTS (Strict-Transport-Security) is applied conditionally in production only
 const securityHeaders = {
   'X-Frame-Options': 'DENY',
   'X-Content-Type-Options': 'nosniff',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
-  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
   'Content-Security-Policy': [
     "default-src 'self'",
     "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://vercel.live",
@@ -41,6 +41,12 @@ export async function middleware(request: NextRequest) {
     Object.entries(securityHeaders).forEach(([key, value]) => {
       response.headers.set(key, value)
     })
+
+    // FIX: Only apply HSTS in production to prevent localhost SSL errors
+    // Browsers cache HSTS aggressively, causing issues in local development
+    if (process.env.NODE_ENV === 'production') {
+      response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains')
+    }
 
     // Get client IP for rate limiting and security logging
     const clientIP = request.headers.get('x-forwarded-for') || 
