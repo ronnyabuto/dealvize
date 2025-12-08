@@ -8,6 +8,7 @@ const createDealSchema = z.object({
   client_id: z.string().uuid('Invalid client ID'),
   title: z.string().min(1, 'Title is required').max(200, 'Title too long'),
   value: z.coerce.number().min(0, 'Value must be positive').optional(),
+  // Aligned with DB migration enum
   status: z.enum(['Qualified', 'In Progress', 'Under Contract', 'Closed', 'Lost']).default('Qualified'),
   probability: z.coerce.number().min(0).max(100, 'Probability must be 0-100').optional(),
   expected_close_date: z.string().optional(),
@@ -19,43 +20,10 @@ const createDealSchema = z.object({
   property_sqft: z.coerce.number().min(0).max(1000000).optional()
 })
 
-// Helper function for fuzzy search matching
-function getSearchVariations(query: string): string[] {
-  const normalizedQuery = query.toLowerCase().trim()
-  const words = normalizedQuery.split(' ').filter(word => word.length > 0)
-  
-  const variations = [
-    normalizedQuery, // original
-    words.join(' '), // cleaned spaces
-  ]
-  
-  // Add common typo corrections for deals
-  const typoCorrections: Record<string, string> = {
-    'oak': 'oak',
-    'st': 'street',
-    'ave': 'avenue',
-    'rd': 'road',
-    'dr': 'drive',
-    'ln': 'lane',
-    'ct': 'court',
-    'pl': 'place'
-  }
-  
-  words.forEach(word => {
-    if (typoCorrections[word]) {
-      const corrected = normalizedQuery.replace(word, typoCorrections[word])
-      variations.push(corrected)
-    }
-  })
-  
-  return [...new Set(variations)]
-}
-
 export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient()
     
-    // Get current user
     const { data: { user }, error: userError } = await supabase.auth.getUser()
     if (userError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -80,27 +48,9 @@ export async function GET(request: NextRequest) {
       .order('created_at', { ascending: false })
 
     if (search) {
-      const searchVariations = getSearchVariations(search)
-      const searchConditions = []
-      
-      for (const variation of searchVariations) {
-        const words = variation.split(' ').filter(word => word.length > 0)
-        words.forEach(word => {
-          if (word.length >= 2) {
-            searchConditions.push(`title.ilike.%${word}%`)
-            searchConditions.push(`property_address.ilike.%${word}%`)
-            if (word.length >= 3) {
-              searchConditions.push(`status.ilike.%${word}%`)
-              searchConditions.push(`property_type.ilike.%${word}%`)
-            }
-          }
-        })
-      }
-      
-      const uniqueConditions = [...new Set(searchConditions)]
-      if (uniqueConditions.length > 0) {
-        query = query.or(uniqueConditions.join(','))
-      }
+      // Optimized search to prevent ReDoS or overly complex SQL
+      const cleanSearch = search.replace(/[^\w\s]/gi, '').trim();
+      query = query.or(`title.ilike.%${cleanSearch}%,property_address.ilike.%${cleanSearch}%`)
     }
 
     if (status) {
@@ -114,13 +64,13 @@ export async function GET(request: NextRequest) {
     const { data: deals, error } = await query
 
     if (error) {
-      console.error('Error fetching deals:', error)
+      console.error('Database error fetching deals:', error)
       return NextResponse.json({ error: 'Failed to fetch deals' }, { status: 500 })
     }
 
     return NextResponse.json({ deals: deals || [] })
   } catch (error) {
-    console.error('Error in GET /api/deals:', error)
+    console.error('Critical error in GET /api/deals:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -129,26 +79,24 @@ export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient()
     
-    // Get current user
     const { data: { user }, error: userError } = await supabase.auth.getUser()
     if (userError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Parse and validate request body
     const body = await request.json()
     const validatedData = createDealSchema.parse(body)
 
-    // Verify client belongs to user
+    // Check Client existence (Security check)
     const { data: client, error: clientError } = await supabase
       .from('clients')
-      .select('id')
+      .select('id, status')
       .eq('id', validatedData.client_id)
       .eq('user_id', user.id)
       .single()
 
     if (clientError || !client) {
-      return NextResponse.json({ error: 'Client not found' }, { status: 404 })
+      return NextResponse.json({ error: 'Client not found or access denied' }, { status: 404 })
     }
 
     // Insert deal
@@ -158,14 +106,7 @@ export async function POST(request: NextRequest) {
         ...validatedData,
         user_id: user.id,
       })
-      .select(`
-        *,
-        clients (
-          id,
-          name,
-          email
-        )
-      `)
+      .select(`*, clients(id, name, email)`)
       .single()
 
     if (error) {
@@ -173,56 +114,34 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to create deal' }, { status: 500 })
     }
 
-    // Record lead activity for deal creation (enterprise-grade automation)
-    try {
-      // Ensure lead scoring is enabled and record the deal creation
-      await LeadScoringService.ensureLeadScoring(user.id, validatedData.client_id)
-      
-      // Record the deal creation activity with automatic scoring
-      await LeadScoringService.recordActivityWithScoring(
-        user.id,
-        LeadScoringActivities.dealCreated(
-          validatedData.client_id,
-          deal.id,
-          validatedData.value || 0
+    // Async processing for scores/updates - Fire and forget pattern to speed up response
+    (async () => {
+      try {
+        await LeadScoringService.ensureLeadScoring(user.id, validatedData.client_id)
+        await LeadScoringService.recordActivityWithScoring(
+          user.id,
+          LeadScoringActivities.dealCreated(
+            validatedData.client_id,
+            deal.id,
+            validatedData.value || 0
+          )
         )
-      )
-
-      // Update client status progression (lead lifecycle automation)
-      const { data: currentClient } = await supabase
-        .from('clients')
-        .select('status')
-        .eq('id', validatedData.client_id)
-        .eq('user_id', user.id)
-        .single()
-
-      if (currentClient?.status === 'Buyer') {
-        await supabase
-          .from('clients')
-          .update({ 
+        if (client.status === 'Buyer') {
+           await supabase.from('clients').update({ 
             status: 'In Contract',
             last_contact: new Date().toISOString()
-          })
-          .eq('id', validatedData.client_id)
-          .eq('user_id', user.id)
+          }).eq('id', validatedData.client_id)
+        }
+      } catch (e) {
+        console.warn('Background scoring task failed:', e)
       }
-
-      // Update score category based on new score
-      await LeadScoringService.updateScoreCategory(user.id, validatedData.client_id)
-    } catch (leadScoringError) {
-      console.warn('Lead scoring update failed for deal creation:', leadScoringError)
-      // Don't fail deal creation if lead scoring fails
-    }
+    })()
 
     return NextResponse.json(deal, { status: 201 })
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ 
-        error: 'Validation error', 
-        details: error.errors 
-      }, { status: 400 })
+      return NextResponse.json({ error: 'Validation error', details: error.errors }, { status: 400 })
     }
-    
     console.error('Error in POST /api/deals:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }

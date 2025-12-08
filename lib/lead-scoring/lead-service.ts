@@ -18,7 +18,7 @@ export interface LeadScoreEntry {
   client_id: string
   current_score: number
   max_score: number
-  score_category: 'cold' | 'warm' | 'hot' | 'qualified'
+  category: 'cold' | 'warm' | 'hot' | 'qualified'
   last_activity_date: string
   last_score_change: string
 }
@@ -95,7 +95,7 @@ export class LeadScoringService {
 
       // Calculate initial score based on available data
       let initialScore = 10 // Base score
-      let category: LeadScoreEntry['score_category'] = 'cold'
+      let category: LeadScoreEntry['category'] = 'cold'
 
       // Add points for complete contact information
       if (client.email) initialScore += 5
@@ -131,7 +131,7 @@ export class LeadScoringService {
         client_id: clientId,
         current_score: initialScore,
         max_score: 100,
-        score_category: category,
+        category: category,
         last_activity_date: new Date().toISOString(),
         last_score_change: new Date().toISOString()
       }
@@ -243,7 +243,7 @@ export class LeadScoringService {
 
       const { data: stats, error } = await supabase
         .from('lead_scores')
-        .select('score_category, current_score')
+        .select('category, current_score')
         .eq('user_id', userId)
 
       if (error) {
@@ -271,10 +271,10 @@ export class LeadScoringService {
 
       return {
         total_leads: stats.length,
-        qualified: stats.filter(s => s.score_category === 'qualified').length,
-        hot: stats.filter(s => s.score_category === 'hot').length,
-        warm: stats.filter(s => s.score_category === 'warm').length,
-        cold: stats.filter(s => s.score_category === 'cold').length,
+        qualified: stats.filter(s => s.category === 'qualified').length,
+        hot: stats.filter(s => s.category === 'hot').length,
+        warm: stats.filter(s => s.category === 'warm').length,
+        cold: stats.filter(s => s.category === 'cold').length,
         average_score: Math.round(stats.reduce((sum, s) => sum + s.current_score, 0) / stats.length)
       }
     } catch (error) {
@@ -306,7 +306,7 @@ export class LeadScoringService {
 
       if (!leadScore) return false
 
-      let newCategory: LeadScoreEntry['score_category'] = 'cold'
+      let newCategory: LeadScoreEntry['category'] = 'cold'
       if (leadScore.current_score >= 80) newCategory = 'qualified'
       else if (leadScore.current_score >= 60) newCategory = 'hot'
       else if (leadScore.current_score >= 30) newCategory = 'warm'
@@ -315,7 +315,7 @@ export class LeadScoringService {
       const { error } = await supabase
         .from('lead_scores')
         .update({
-          score_category: newCategory,
+          category: newCategory,
           last_score_change: new Date().toISOString()
         })
         .eq('user_id', userId)

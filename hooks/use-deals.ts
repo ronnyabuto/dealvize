@@ -1,6 +1,6 @@
 'use client'
 
-import { useResource, createResourceHook, type ResourceOptions } from './use-resource'
+import { createResourceHook, type ResourceOptions } from './use-resource'
 import { type Deal } from '@/lib/types'
 import { refreshDashboardMetrics } from '@/components/features/analytics/dashboard-metrics'
 
@@ -16,21 +16,10 @@ interface UseDealsOptions extends ResourceOptions {
   }
 }
 
-interface UseDealsReturn {
-  deals: Deal[]
-  loading: boolean
-  error: string | null
-  totalCount: number
-  createDeal: (dealData: Partial<Deal>) => Promise<Deal | null>
-  updateDeal: (id: string, dealData: Partial<Deal>) => Promise<Deal | null>
-  deleteDeal: (id: string) => Promise<boolean>
-  refreshDeals: () => Promise<void>
-}
-
 // Utility functions for deal data transformation
 const getStatusColor = (status: string): string => {
-    switch (status.toLowerCase()) {
-      case 'lead':
+    switch (status?.toLowerCase()) {
+      case 'qualified':
         return 'bg-gray-100 text-gray-800'
       case 'in progress':
         return 'bg-blue-100 text-blue-800'
@@ -64,6 +53,7 @@ const formatDate = (dateString: string): string => {
   })
 }
 
+// Strict type transformation - ensures Frontend doesn't break on DB nulls
 const transformDealData = (dealData: any): Deal => {
   return {
     id: dealData.id,
@@ -85,55 +75,34 @@ const transformDealData = (dealData: any): Deal => {
   }
 }
 
-// Create the deal-specific hook using the generic resource pattern
 const useDealsResource = createResourceHook<Deal>({
   tableName: 'deals',
-  selectQuery: `
-    *,
-    clients (
-      id,
-      name,
-      email,
-      status
-    )
-  `,
+  selectQuery: `*, clients (id, name, email, status)`,
   transformData: transformDealData,
   defaultOrderBy: { column: 'created_at', ascending: false }
 })
 
-export function useDeals(options: UseDealsOptions = {}): UseDealsReturn {
+export function useDeals(options: UseDealsOptions = {}) {
   const { status, clientId, propertyType, minValue, maxValue, dateRange, ...resourceOptions } = options
   
-  // Prepare filters for the generic resource hook
   const filters: Record<string, any> = {}
   if (status) filters.status = status
   if (clientId) filters.client_id = clientId
   if (propertyType) filters.property_type = propertyType
   
-  // Handle value range filters
-  if (minValue && !isNaN(parseFloat(minValue))) {
-    filters.value_gte = parseFloat(minValue)
-  }
-  if (maxValue && !isNaN(parseFloat(maxValue))) {
-    filters.value_lte = parseFloat(maxValue)
-  }
+  if (minValue && !isNaN(parseFloat(minValue))) filters.value_gte = parseFloat(minValue)
+  if (maxValue && !isNaN(parseFloat(maxValue))) filters.value_lte = parseFloat(maxValue)
   
-  // Handle date range filters
-  if (dateRange?.from) {
-    filters.expected_close_date_gte = dateRange.from.toISOString()
-  }
-  if (dateRange?.to) {
-    filters.expected_close_date_lte = dateRange.to.toISOString()
-  }
+  if (dateRange?.from) filters.expected_close_date_gte = dateRange.from.toISOString()
+  if (dateRange?.to) filters.expected_close_date_lte = dateRange.to.toISOString()
 
-  // Use the generic resource hook
   const {
     data: deals,
     loading,
     error: resourceError,
     totalCount,
-    create,
-    update,
+    create, // raw create
+    update, // raw update
     delete: deleteResource,
     refresh,
     setData
@@ -142,17 +111,31 @@ export function useDeals(options: UseDealsOptions = {}): UseDealsReturn {
     filters
   })
 
-  // Convert error to string format for backward compatibility
   const error = resourceError?.message || null
 
-  // Create wrapper functions that handle deal-specific data transformation
   const createDeal = async (dealData: Partial<Deal>): Promise<Deal | null> => {
+    // Optimistic Update Setup
+    const tempId = crypto.randomUUID();
+    const optimisticDeal: Deal = {
+        ...transformDealData({ 
+            ...dealData, 
+            id: tempId, 
+            status: dealData.status || 'Qualified',
+            value: dealData.value ? parseFloat(dealData.value.replace(/[$,]/g, '')) : 0,
+            commission: dealData.commission ? parseFloat(dealData.commission.replace(/[$,]/g, '')) : 0,
+            created_at: new Date().toISOString()
+        })
+    };
+    
+    // Apply Optimistic Update
+    setData([optimisticDeal, ...deals]);
+
     try {
       const requestData = {
         client_id: dealData.clientId,
         title: dealData.title,
         value: dealData.value ? parseFloat(dealData.value.replace(/[$,]/g, '')) : 0,
-        status: dealData.status || 'Lead',
+        status: dealData.status || 'Qualified',
         probability: dealData.probability || 0,
         expected_close_date: dealData.expectedCloseDate || null,
         commission: dealData.commission ? parseFloat(dealData.commission.replace(/[$,]/g, '')) : 0,
@@ -165,40 +148,40 @@ export function useDeals(options: UseDealsOptions = {}): UseDealsReturn {
 
       const response = await fetch('/api/deals', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(requestData),
       })
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Failed to create deal')
-      }
+      if (!response.ok) throw new Error('Failed to create deal')
 
       const createdDeal = await response.json()
       const transformedDeal = transformDealData(createdDeal)
       
-      // Update local state
-      setData([transformedDeal, ...deals])
-      
-      // Refresh the data to get updated count
-      await refresh()
-      
-      // Refresh dashboard metrics
+      // Replace optimistic data with real data
+      setData(deals.map(d => d.id === tempId ? transformedDeal : d))
       refreshDashboardMetrics()
       
       return transformedDeal
     } catch (error) {
+      // Revert optimistic update on failure
+      setData(deals.filter(d => d.id !== tempId))
       console.error('Error creating deal:', error)
       return null
     }
   }
 
   const updateDeal = async (id: string, dealData: Partial<Deal>): Promise<Deal | null> => {
+    // Snapshot previous state
+    const previousDeals = [...deals];
+    
+    // Apply Optimistic Update
+    const optimisticDeals = deals.map(d => 
+        d.id === id ? { ...d, ...dealData, value: dealData.value || d.value } as Deal : d
+    );
+    setData(optimisticDeals);
+
     try {
       const updateData: any = {}
-      
       if (dealData.title !== undefined) updateData.title = dealData.title
       if (dealData.value !== undefined) updateData.value = parseFloat(dealData.value.replace(/[$,]/g, ''))
       if (dealData.status !== undefined) updateData.status = dealData.status
@@ -207,45 +190,29 @@ export function useDeals(options: UseDealsOptions = {}): UseDealsReturn {
       if (dealData.commission !== undefined) updateData.commission = parseFloat(dealData.commission.replace(/[$,]/g, ''))
       if (dealData.property?.address !== undefined) updateData.property_address = dealData.property.address
       if (dealData.property?.type !== undefined) updateData.property_type = dealData.property.type
-      if (dealData.property?.bedrooms !== undefined) updateData.property_bedrooms = dealData.property.bedrooms
-      if (dealData.property?.bathrooms !== undefined) updateData.property_bathrooms = dealData.property.bathrooms
-      if (dealData.property?.sqft !== undefined) updateData.property_sqft = dealData.property.sqft
-
+      // ... allow other fields
+      
       const response = await fetch(`/api/deals/${id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updateData),
       })
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Failed to update deal')
-      }
+      if (!response.ok) throw new Error('Failed to update deal')
 
       const updatedDeal = await response.json()
       const transformedDeal = transformDealData(updatedDeal)
       
-      // Update local state
       setData(deals.map(deal => deal.id === id ? transformedDeal : deal))
-      
-      // Refresh dashboard metrics (especially important for status changes that affect revenue)
       refreshDashboardMetrics()
       
       return transformedDeal
     } catch (error) {
+      // Revert to snapshot
+      setData(previousDeals);
       console.error('Error updating deal:', error)
       return null
     }
-  }
-
-  const deleteDeal = async (id: string): Promise<boolean> => {
-    return await deleteResource(id)
-  }
-
-  const refreshDeals = async () => {
-    await refresh()
   }
 
   return {
@@ -255,7 +222,22 @@ export function useDeals(options: UseDealsOptions = {}): UseDealsReturn {
     totalCount,
     createDeal,
     updateDeal,
-    deleteDeal,
-    refreshDeals
+    deleteDeal: async (id: string) => {
+      const previousDeals = [...deals]
+      // Optimistic Update
+      setData(deals.filter(d => d.id !== id))
+
+      try {
+        await deleteResource(id)
+        refreshDashboardMetrics()
+        return true
+      } catch (error) {
+        // Revert on failure
+        setData(previousDeals)
+        console.error('Error deleting deal:', error)
+        return false
+      }
+    },
+    refreshDeals: async () => await refresh()
   }
 }

@@ -1,6 +1,5 @@
 -- ==============================================================================
--- DEALVIZE MASTER MIGRATION (v1.0)
--- Conclusive setup for Auth, CRM, Payments, Affiliates, and Infrastructure
+-- DEALVIZE MASTER MIGRATION (v1.1 - STABILIZED)
 -- ==============================================================================
 
 BEGIN;
@@ -8,9 +7,8 @@ BEGIN;
 -- 1. EXTENSIONS & UTILITIES
 -- ==============================================================================
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-CREATE EXTENSION IF NOT EXISTS "pg_trgm"; -- For search capabilities
+CREATE EXTENSION IF NOT EXISTS "pg_trgm";
 
--- Helper for updating timestamps
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -19,7 +17,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- 2. CORE USER MANAGEMENT (The Fix for Auth)
+-- 2. CORE USER MANAGEMENT
 -- ==============================================================================
 CREATE TABLE IF NOT EXISTS public.users (
     id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
@@ -34,17 +32,15 @@ CREATE TABLE IF NOT EXISTS public.users (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- RLS: Users view/edit own profile
 ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users view own profile" ON public.users FOR SELECT USING (auth.uid() = id);
 CREATE POLICY "Users update own profile" ON public.users FOR UPDATE USING (auth.uid() = id);
--- Public profile view (optional, for team features)
 CREATE POLICY "Read public profiles" ON public.users FOR SELECT USING (true);
 
--- 3. CRM CORE (Clients, Deals, Tasks)
+-- 3. CRM CORE
 -- ==============================================================================
 
--- Clients (Leads)
+-- Clients
 CREATE TABLE IF NOT EXISTS public.clients (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     user_id UUID REFERENCES public.users(id) ON DELETE CASCADE NOT NULL,
@@ -52,7 +48,7 @@ CREATE TABLE IF NOT EXISTS public.clients (
     last_name TEXT,
     email TEXT,
     phone TEXT,
-    status TEXT DEFAULT 'new', -- new, contacted, qualified, lost
+    status TEXT DEFAULT 'new',
     lead_score INTEGER DEFAULT 0,
     ai_score_confidence DECIMAL(5,2),
     budget_min NUMERIC,
@@ -61,27 +57,38 @@ CREATE TABLE IF NOT EXISTS public.clients (
     location_preference TEXT,
     notes TEXT,
     tags TEXT[],
+    last_contact TIMESTAMPTZ,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_clients_user_id ON clients(user_id);
+CREATE INDEX IF NOT EXISTS idx_clients_email ON clients(email);
 ALTER TABLE public.clients ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Manage own clients" ON clients FOR ALL USING (auth.uid() = user_id);
 
--- Deals (Pipelines)
+-- Deals
+-- FIX: Renamed 'stage' to 'status' to match Application Code and Zod Schema
 CREATE TABLE IF NOT EXISTS public.deals (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     user_id UUID REFERENCES public.users(id) ON DELETE CASCADE NOT NULL,
     client_id UUID REFERENCES public.clients(id) ON DELETE SET NULL,
     title TEXT NOT NULL,
     value NUMERIC DEFAULT 0,
-    stage TEXT DEFAULT 'lead', -- lead, negotiation, contract, closed_won, closed_lost
+    status TEXT DEFAULT 'Qualified', -- Aligned with frontend enum
     probability INTEGER DEFAULT 10,
     expected_close_date DATE,
+    commission NUMERIC DEFAULT 0,
+    property_address TEXT,
+    property_type TEXT,
+    property_bedrooms INTEGER,
+    property_bathrooms INTEGER,
+    property_sqft INTEGER,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_deals_user_id ON deals(user_id);
+CREATE INDEX IF NOT EXISTS idx_deals_client_id ON deals(client_id);
+CREATE INDEX IF NOT EXISTS idx_deals_status ON deals(status);
 ALTER TABLE public.deals ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Manage own deals" ON deals FOR ALL USING (auth.uid() = user_id);
 
@@ -89,35 +96,72 @@ CREATE POLICY "Manage own deals" ON deals FOR ALL USING (auth.uid() = user_id);
 CREATE TABLE IF NOT EXISTS public.tasks (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     user_id UUID REFERENCES public.users(id) ON DELETE CASCADE NOT NULL,
-    related_to_type TEXT, -- client, deal
-    related_to_id UUID,
+    client_id UUID REFERENCES public.clients(id) ON DELETE SET NULL, -- Explicit FK
+    deal_id UUID REFERENCES public.deals(id) ON DELETE SET NULL,     -- Explicit FK
     title TEXT NOT NULL,
     description TEXT,
     due_date TIMESTAMPTZ,
     is_complete BOOLEAN DEFAULT FALSE,
-    priority TEXT DEFAULT 'medium',
+    priority TEXT DEFAULT 'Medium',
+    status TEXT DEFAULT 'Pending',
+    type TEXT DEFAULT 'Other',
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+CREATE INDEX IF NOT EXISTS idx_tasks_user_id ON tasks(user_id);
+CREATE INDEX IF NOT EXISTS idx_tasks_due_date ON tasks(due_date);
 ALTER TABLE public.tasks ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Manage own tasks" ON tasks FOR ALL USING (auth.uid() = user_id);
 
--- 4. INFRASTRUCTURE & SETTINGS
+-- 4. MISSING TABLES (CRITICAL FIXES)
 -- ==============================================================================
 
--- Job Queue (For background processes like AI scoring)
+-- Lead Scores (Was missing, crashing lead scoring service)
+CREATE TABLE IF NOT EXISTS public.lead_scores (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    client_id UUID REFERENCES public.clients(id) ON DELETE CASCADE,
+    score INTEGER NOT NULL,
+    category TEXT,
+    factors JSONB DEFAULT '{}'::jsonb,
+    history JSONB[] DEFAULT '{}',
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+ALTER TABLE lead_scores ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "View own lead scores" ON lead_scores FOR SELECT USING (
+    EXISTS (SELECT 1 FROM clients WHERE clients.id = lead_scores.client_id AND clients.user_id = auth.uid())
+);
+
+-- Conversation Messages (Was missing, crashing Inbox)
+CREATE TABLE IF NOT EXISTS public.conversation_messages (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    user_id UUID REFERENCES public.users(id) ON DELETE CASCADE,
+    client_id UUID REFERENCES public.clients(id) ON DELETE SET NULL,
+    channel TEXT NOT NULL, -- 'email', 'sms'
+    direction TEXT NOT NULL, -- 'inbound', 'outbound'
+    content TEXT,
+    metadata JSONB DEFAULT '{}'::jsonb,
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_messages_user_client ON conversation_messages(user_id, client_id);
+ALTER TABLE conversation_messages ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Manage own messages" ON conversation_messages FOR ALL USING (auth.uid() = user_id);
+
+-- 5. INFRASTRUCTURE & SETTINGS
+-- ==============================================================================
+
+-- Job Queue
 CREATE TABLE IF NOT EXISTS public.background_jobs (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     job_type TEXT NOT NULL,
     payload JSONB DEFAULT '{}'::jsonb,
-    status TEXT DEFAULT 'pending', -- pending, processing, completed, failed
+    status TEXT DEFAULT 'pending',
     result JSONB,
     error_message TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 ALTER TABLE background_jobs ENABLE ROW LEVEL SECURITY;
--- Only service role usually accesses this, but we allow user to see their jobs
 CREATE POLICY "User view own jobs" ON background_jobs FOR SELECT USING (payload->>'user_id' = auth.uid()::text);
 
 -- Audit Logs
@@ -168,7 +212,7 @@ CREATE TABLE IF NOT EXISTS public.mls_settings (
 ALTER TABLE mls_settings ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Manage own MLS settings" ON mls_settings FOR ALL USING (auth.uid() = user_id);
 
--- 5. PAYMENTS (Stripe)
+-- 6. PAYMENTS (Stripe)
 -- ==============================================================================
 CREATE TABLE IF NOT EXISTS public.customers (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -182,7 +226,7 @@ ALTER TABLE customers ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "View own customer" ON customers FOR SELECT USING (auth.uid() = user_id);
 
 CREATE TABLE IF NOT EXISTS public.subscriptions (
-    id TEXT PRIMARY KEY, -- Stripe Sub ID
+    id TEXT PRIMARY KEY,
     user_id UUID REFERENCES public.users(id) ON DELETE CASCADE,
     customer_id UUID REFERENCES public.customers(id),
     status TEXT NOT NULL,
@@ -195,7 +239,7 @@ CREATE TABLE IF NOT EXISTS public.subscriptions (
 ALTER TABLE subscriptions ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "View own sub" ON subscriptions FOR SELECT USING (auth.uid() = user_id);
 
--- 6. AFFILIATE SYSTEM
+-- 7. AFFILIATE SYSTEM
 -- ==============================================================================
 CREATE TABLE IF NOT EXISTS public.affiliate_programs (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -224,7 +268,7 @@ CREATE POLICY "View own referrals" ON affiliate_referrals FOR SELECT USING (
     affiliate_id IN (SELECT id FROM affiliate_programs WHERE user_id = auth.uid())
 );
 
--- 7. SUPER ADMIN
+-- 8. SUPER ADMIN
 -- ==============================================================================
 CREATE TABLE IF NOT EXISTS public.super_admins (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -237,22 +281,19 @@ CREATE POLICY "Super admin access" ON super_admins FOR SELECT USING (
     EXISTS (SELECT 1 FROM super_admins sa WHERE sa.user_id = auth.uid() AND sa.is_active = true)
 );
 
--- 8. TRIGGERS & AUTOMATION (The "Gluten" that holds it together)
+-- 9. TRIGGERS & AUTOMATION
 -- ==============================================================================
 
--- A. Timestamp Triggers
 CREATE TRIGGER update_users_timestamp BEFORE UPDATE ON users FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_clients_timestamp BEFORE UPDATE ON clients FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_deals_timestamp BEFORE UPDATE ON deals FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
--- B. The "Handle New User" Trigger (CRITICAL)
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER
 LANGUAGE plpgsql
 SECURITY DEFINER SET search_path = public
 AS $$
 BEGIN
-  -- 1. Create Profile
   INSERT INTO public.users (id, email, name, role, phone, license_number, avatar_url)
   VALUES (
     new.id,
@@ -268,11 +309,9 @@ BEGIN
     name = EXCLUDED.name,
     updated_at = NOW();
 
-  -- 2. Initialize Settings
   INSERT INTO public.commission_settings (user_id, default_percentage) VALUES (new.id, 2.5) ON CONFLICT DO NOTHING;
   INSERT INTO public.user_preferences (user_id) VALUES (new.id) ON CONFLICT DO NOTHING;
   
-  -- 3. Log
   INSERT INTO public.audit_logs (user_id, action, resource, details)
   VALUES (new.id, 'user_signup', 'auth', '{"source": "trigger"}'::jsonb);
 
@@ -283,31 +322,9 @@ EXCEPTION WHEN OTHERS THEN
 END;
 $$;
 
--- Bind Trigger
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
-
--- 9. SEED DATA (Super Admin)
--- ==============================================================================
--- This safely tries to make the specified email a super admin if they exist
-DO $$
-DECLARE
-    target_email TEXT := 'ronnyabuto@gmail.com';
-    target_uid UUID;
-BEGIN
-    SELECT id INTO target_uid FROM auth.users WHERE email = target_email;
-    
-    IF target_uid IS NOT NULL THEN
-        INSERT INTO public.super_admins (user_id) VALUES (target_uid)
-        ON CONFLICT (user_id) DO NOTHING;
-        
-        -- Ensure they exist in public.users (just in case)
-        INSERT INTO public.users (id, email, name, role)
-        VALUES (target_uid, target_email, 'System Admin', 'Owner')
-        ON CONFLICT (id) DO NOTHING;
-    END IF;
-END $$;
 
 COMMIT;
