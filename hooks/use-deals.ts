@@ -55,10 +55,11 @@ const formatDate = (dateString: string): string => {
 
 // Strict type transformation - ensures Frontend doesn't break on DB nulls
 const transformDealData = (dealData: any): Deal => {
+  const clientName = dealData.clients ? `${dealData.clients.first_name} ${dealData.clients.last_name}`.trim() : 'Unknown Client';
   return {
     id: dealData.id,
     clientId: dealData.client_id,
-    title: dealData.title,
+    title: dealData.title || clientName,
     value: formatCurrency(dealData.value),
     status: dealData.status as Deal['status'],
     statusColor: getStatusColor(dealData.status),
@@ -77,7 +78,7 @@ const transformDealData = (dealData: any): Deal => {
 
 const useDealsResource = createResourceHook<Deal>({
   tableName: 'deals',
-  selectQuery: `*, clients (id, name, email, status)`,
+  selectQuery: `*, clients (id, first_name, last_name, email, status)`,
   transformData: transformDealData,
   defaultOrderBy: { column: 'created_at', ascending: false }
 })

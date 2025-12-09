@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
     let query = supabase
       .from('clients')
       .select(`
-        id, user_id, first_name, last_name, name, email, phone, status, 
+        id, user_id, first_name, last_name, email, phone, status, 
         company, address, lead_score, created_at, last_contact,
         deals (
           value,
@@ -88,7 +88,7 @@ export async function GET(request: NextRequest) {
         // Safe simplified search to prevent regex DoS or sql injection
         const safeTerm = variation.replace(/[^\w\s@.-]/g, '')
         if (safeTerm.length >= 2) {
-            searchConditions.push(`name.ilike.%${safeTerm}%`)
+            searchConditions.push(`first_name.ilike.%${safeTerm}%`, `last_name.ilike.%${safeTerm}%`)
             searchConditions.push(`email.ilike.%${safeTerm}%`)
             searchConditions.push(`company.ilike.%${safeTerm}%`)
         }
@@ -103,7 +103,7 @@ export async function GET(request: NextRequest) {
     if (status) query = query.eq('status', status)
 
     const ascending = sortOrder === 'asc'
-    const sortCol = ['name', 'last_contact', 'status'].includes(sortBy) ? sortBy : 'created_at'
+    const sortCol = ['first_name', 'last_name', 'last_contact', 'status'].includes(sortBy) ? sortBy : 'created_at'
     query = query.order(sortCol, { ascending })
 
     if (!export_format) {

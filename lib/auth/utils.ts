@@ -1,8 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { type User } from '@/lib/types'
 import { redirect } from 'next/navigation'
+import { cache } from 'react'
 
-export async function getUser(): Promise<User | null> {
+export const getUser = cache(async (): Promise<User | null> => {
   const supabase = await createClient()
   
   const { data: { user: authUser }, error } = await supabase.auth.getUser()
@@ -42,7 +43,7 @@ export async function getUser(): Promise<User | null> {
     licenseNumber: userProfile.license_number,
     isSuperAdmin: false // Implement logic if needed
   }
-}
+})
 
 export async function requireAdmin(): Promise<User> {
   const user = await getUser()

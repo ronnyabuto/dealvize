@@ -116,7 +116,7 @@ export async function GET(request: NextRequest) {
       const searchConditions: string[] = []
       
       // Add exact match conditions first (highest priority)
-      searchConditions.push(`name.ilike.${query}`) // Fixed: use 'name' field not 'first_name/last_name'
+      searchConditions.push(`first_name.ilike.%${query}%`, `last_name.ilike.%${query}%`) // Fixed: use 'name' field not 'first_name/last_name'
       searchConditions.push(`email.ilike.${query}`)
       
       // Search each variation
@@ -126,16 +126,16 @@ export async function GET(request: NextRequest) {
         if (words.length >= 2) {
           // Handle full name searches (single name field)
           const fullNameQuery = words.join(' ')
-          searchConditions.push(`name.ilike.%${fullNameQuery}%`)
+          searchConditions.push(`first_name.ilike.%${words[0]}%`, `last_name.ilike.%${words[1]}%`)
           // Also try reversed order
           const reversedQuery = words.reverse().join(' ')
-          searchConditions.push(`name.ilike.%${reversedQuery}%`)
+          searchConditions.push(`first_name.ilike.%${words[1]}%`, `last_name.ilike.%${words[0]}%`)
         }
         
         // Individual field searches for each word
         words.forEach(word => {
           if (word.length >= 2) {
-            searchConditions.push(`name.ilike.%${word}%`) // Fixed: use single name field
+            searchConditions.push(`first_name.ilike.%${word}%`, `last_name.ilike.%${word}%`) // Fixed: use single name field
             searchConditions.push(`email.ilike.%${word}%`)
             if (word.length >= 3) {
               searchConditions.push(`company.ilike.%${word}%`)
@@ -151,7 +151,7 @@ export async function GET(request: NextRequest) {
       
       if (uniqueConditions.length === 0) {
         // Fallback to basic search if no conditions generated
-        searchConditions.push(`name.ilike.%${query}%`) // Fixed: use single name field
+        searchConditions.push(`first_name.ilike.%${query}%`, `last_name.ilike.%${query}%`) // Fixed: use single name field
       }
 
       const { data: clients, error: clientError } = await supabase

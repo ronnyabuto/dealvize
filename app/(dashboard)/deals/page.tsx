@@ -118,16 +118,18 @@ export default function DealsPage() {
           </div>
         </div>
 
-        {/* Render view based on mode */}
-        {viewMode === 'board' ? (
+        {/* Keep both views in DOM - toggle with CSS for instant switching */}
+        <div className={viewMode === 'board' ? 'block' : 'hidden'}>
           <DealPipeline />
-        ) : (
+        </div>
+
+        <div className={viewMode === 'list' ? 'block' : 'hidden'}>
           <DealsList
             search={search}
             status={status}
             filters={filters}
           />
-        )}
+        </div>
       </main>
     </div>
   )

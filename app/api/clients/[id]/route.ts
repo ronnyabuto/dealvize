@@ -61,12 +61,13 @@ export async function PUT(
     }
     
     const body = await request.json()
-    const { name, email, phone, address, company, status } = body
+    const { first_name, last_name, email, phone, address, company, status } = body
 
     const { data: client, error } = await supabase
       .from('clients')
       .update({
-        name,
+        first_name,
+        last_name,
         email,
         phone,
         address,

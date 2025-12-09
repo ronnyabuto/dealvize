@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { BreadcrumbNav } from "@/components/layout/breadcrumb-nav"
 import { Button } from "@/components/ui/button"
@@ -9,16 +9,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Loader2, Save, X } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
 
-export const dynamic = 'force-dynamic'
-
-export default function NewNotePage() {
+// Separate component that uses useSearchParams
+function NoteForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [content, setContent] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  
+
   const dealId = searchParams.get('deal')
   const clientId = searchParams.get('client')
   const taskId = searchParams.get('task')
@@ -84,82 +84,109 @@ export default function NewNotePage() {
   }
 
   return (
+    <div className="max-w-2xl mx-auto">
+      <Card>
+        <CardHeader>
+          <CardTitle>Create New Note</CardTitle>
+          {(dealId || clientId || taskId) && (
+            <p className="text-sm text-gray-600">
+              This note will be associated with the selected {dealId ? 'deal' : clientId ? 'client' : 'task'}.
+            </p>
+          )}
+        </CardHeader>
+        <CardContent>
+          {error && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <Label htmlFor="content">Note Content</Label>
+              <Textarea
+                id="content"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                placeholder="Enter your note here..."
+                rows={8}
+                className="mt-1"
+                required
+              />
+            </div>
+
+            <div className="flex gap-3">
+              <Button
+                type="submit"
+                disabled={loading}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <Save className="h-4 w-4 mr-2" />
+                    Save Note
+                  </>
+                )}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleCancel}
+                disabled={loading}
+              >
+                Cancel
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
+// Loading fallback for Suspense
+function NoteFormSkeleton() {
+  return (
+    <div className="max-w-2xl mx-auto">
+      <Card>
+        <CardHeader>
+          <Skeleton className="h-7 w-48" />
+          <Skeleton className="h-4 w-96 mt-2" />
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-32 w-full" />
+          </div>
+          <div className="flex gap-3">
+            <Skeleton className="h-10 w-28" />
+            <Skeleton className="h-10 w-20" />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
+export default function NewNotePage() {
+  return (
     <div className="min-h-screen bg-gray-50/50 overflow-auto">
       <header className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Add Note</h1>
-          <Button variant="ghost" onClick={handleCancel}>
-            <X className="h-4 w-4 mr-2" />
-            Cancel
-          </Button>
         </div>
       </header>
       <main className="p-6">
-            <BreadcrumbNav />
-            
-            <div className="max-w-2xl mx-auto">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Create New Note</CardTitle>
-                  {(dealId || clientId || taskId) && (
-                    <p className="text-sm text-gray-600">
-                      This note will be associated with the selected {dealId ? 'deal' : clientId ? 'client' : 'task'}.
-                    </p>
-                  )}
-                </CardHeader>
-                <CardContent>
-                  {error && (
-                    <Alert variant="destructive" className="mb-4">
-                      <AlertDescription>{error}</AlertDescription>
-                    </Alert>
-                  )}
-                  
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                      <Label htmlFor="content">Note Content</Label>
-                      <Textarea
-                        id="content"
-                        value={content}
-                        onChange={(e) => setContent(e.target.value)}
-                        placeholder="Enter your note here..."
-                        rows={8}
-                        className="mt-1"
-                        required
-                      />
-                    </div>
-                    
-                    <div className="flex gap-3">
-                      <Button 
-                        type="submit" 
-                        disabled={loading}
-                        className="bg-blue-600 hover:bg-blue-700"
-                      >
-                        {loading ? (
-                          <>
-                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                            Saving...
-                          </>
-                        ) : (
-                          <>
-                            <Save className="h-4 w-4 mr-2" />
-                            Save Note
-                          </>
-                        )}
-                      </Button>
-                      <Button 
-                        type="button" 
-                        variant="outline" 
-                        onClick={handleCancel}
-                        disabled={loading}
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  </form>
-                </CardContent>
-              </Card>
-            </div>
-          </main>
+        <BreadcrumbNav />
+        <Suspense fallback={<NoteFormSkeleton />}>
+          <NoteForm />
+        </Suspense>
+      </main>
     </div>
   )
 }

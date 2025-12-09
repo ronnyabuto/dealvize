@@ -132,35 +132,32 @@ export default function CalendarPage() {
   }
 
   return (
-    <>
-      <AppSidebar />
-      <SidebarInset>
-        <div className="min-h-screen bg-gray-50">
-          {/* Header - following tasks-header pattern */}
-          <header className="bg-white border-b border-gray-200 px-6 py-4">
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <SidebarTrigger />
-                <h1 className="text-2xl font-bold text-slate-900">Calendar</h1>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm">
-                  <Filter className="h-4 w-4 mr-2" />
-                  Filter
-                </Button>
-                <Button 
-                  className="bg-dealvize-teal hover:bg-dealvize-teal-dark text-white"
-                  size="sm"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  New Event
-                </Button>
-              </div>
-            </div>
-          </header>
+    <div className="min-h-screen bg-gray-50/50 overflow-auto">
+      {/* Header - following tasks-header pattern */}
+      <header className="bg-white border-b border-gray-200 px-6 py-4">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <SidebarTrigger />
+            <h1 className="text-2xl font-bold text-slate-900">Calendar</h1>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm">
+              <Filter className="h-4 w-4 mr-2" />
+              Filter
+            </Button>
+            <Button
+              className="bg-dealvize-teal hover:bg-dealvize-teal-dark text-white"
+              size="sm"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              New Event
+            </Button>
+          </div>
+        </div>
+      </header>
 
-          <main className="p-6">
-            <BreadcrumbNav />
+      <main className="p-6">
+        <BreadcrumbNav />
             
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mt-6">
               {/* Calendar Widget */}
@@ -305,8 +302,6 @@ export default function CalendarPage() {
               </div>
             </div>
           </main>
-        </div>
-      </SidebarInset>
-    </>
+    </div>
   )
 }

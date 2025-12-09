@@ -1,6 +1,7 @@
 import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
+import { Suspense } from "react"
 import "../globals.css"
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
 import { Toaster } from "@/components/ui/toaster"
@@ -13,6 +14,7 @@ import { MobileFAB } from "@/components/mobile/mobile-fab"
 import { AppSidebar } from "@/components/layout/app-sidebar"
 import { getUser } from '@/lib/auth/utils'
 import Script from "next/script"
+import { Skeleton } from "@/components/ui/skeleton"
 
 // Load font with swap to ensure text visibility immediately
 const inter = Inter({ 
@@ -27,14 +29,8 @@ export const metadata: Metadata = {
   robots: "noindex, nofollow",
 }
 
-export const dynamic = 'force-dynamic'
-
-export default async function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  // Fetch user server-side once for the entire layout
+// Create a separate async component for the sidebar that fetches user data
+async function UserAwareSidebar() {
   const user = await getUser()
 
   const sidebarUser = user ? {
@@ -46,6 +42,31 @@ export default async function DashboardLayout({
     avatar: user.avatar
   } : undefined
 
+  return <AppSidebar user={sidebarUser} />
+}
+
+// Sidebar loading skeleton
+function SidebarSkeleton() {
+  return (
+    <div className="w-64 border-r border-sidebar-border bg-sidebar h-screen">
+      <div className="h-16 border-b border-sidebar-border p-4 flex items-center gap-3">
+        <Skeleton className="h-7 w-7 rounded" />
+        <Skeleton className="h-5 w-24" />
+      </div>
+      <div className="p-4 space-y-3">
+        {[1,2,3,4,5,6].map(i => (
+          <Skeleton key={i} className="h-9 w-full rounded-lg" />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html lang="en" className={inter.variable}>
       <head>
@@ -62,8 +83,10 @@ export default async function DashboardLayout({
             <PopupMessageProvider>
               {/* Sidebar Provider manages state via cookies for instant render */}
               <SidebarProvider defaultOpen={true}>
-                {/* The Sidebar lives here now - it will never unmount */}
-                <AppSidebar user={sidebarUser} />
+                {/* Sidebar streams in with Suspense - shell renders instantly */}
+                <Suspense fallback={<SidebarSkeleton />}>
+                  <UserAwareSidebar />
+                </Suspense>
 
                 {/* Main Content Area - All pages render inside this */}
                 <SidebarInset className="flex flex-col flex-1 h-screen overflow-hidden">
