@@ -68,53 +68,44 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={inter.variable}>
-      <head>
-        <meta name="format-detection" content="telephone=no" />
-        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
-        <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#0F172A" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-      </head>
-      <body className={`${inter.className} bg-gray-50/50`} suppressHydrationWarning={true}>
-        <ErrorBoundary>
-          <RBACProvider>
-            <PopupMessageProvider>
-              {/* Sidebar Provider manages state via cookies for instant render */}
-              <SidebarProvider defaultOpen={true}>
-                {/* Sidebar streams in with Suspense - shell renders instantly */}
-                <Suspense fallback={<SidebarSkeleton />}>
-                  <UserAwareSidebar />
-                </Suspense>
+    <>
+      <CSRFTokenMeta />
+      <ErrorBoundary>
+        <RBACProvider>
+          <PopupMessageProvider>
+            {/* Sidebar Provider manages state via cookies for instant render */}
+            <SidebarProvider defaultOpen={true}>
+              {/* Sidebar streams in with Suspense - shell renders instantly */}
+              <Suspense fallback={<SidebarSkeleton />}>
+                <UserAwareSidebar />
+              </Suspense>
 
-                {/* Main Content Area - All pages render inside this */}
-                <SidebarInset className="flex flex-col flex-1 h-screen overflow-hidden">
-                  {children}
-                </SidebarInset>
+              {/* Main Content Area - All pages render inside this */}
+              <SidebarInset className="flex flex-col flex-1 h-screen overflow-hidden">
+                {children}
+              </SidebarInset>
 
-                <Toaster />
-                <EnhancedFloatingChat />
-                <MobileFAB />
-              </SidebarProvider>
-            </PopupMessageProvider>
-          </RBACProvider>
-        </ErrorBoundary>
+              <Toaster />
+              <EnhancedFloatingChat />
+              <MobileFAB />
+            </SidebarProvider>
+          </PopupMessageProvider>
+        </RBACProvider>
+      </ErrorBoundary>
 
-        <Script
-          id="sw-registration"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
-                window.addEventListener('load', function() {
-                  navigator.serviceWorker.register('/sw.js').catch(console.error);
-                });
-              }
-            `,
-          }}
-        />
-      </body>
-    </html>
+      <Script
+        id="sw-registration"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `
+            if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
+              window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js').catch(console.error);
+              });
+            }
+          `,
+        }}
+      />
+    </>
   )
 }

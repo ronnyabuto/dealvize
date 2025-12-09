@@ -35,35 +35,16 @@ export default function MarketingLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={inter.variable}>
-      <head>
-        <StructuredData type="organization" />
-        <StructuredData type="website" />
-        
-        {/* Additional SEO and performance meta tags */}
-        <meta name="format-detection" content="telephone=no, email=no, address=no" />
-        <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
-        <meta name="referrer" content="origin-when-cross-origin" />
-        <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="Dealvize CRM" />
-        
-        {/* Favicon and app icons */}
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        <link rel="manifest" href="/manifest.webmanifest" />
-      </head>
-      <body className={inter.className} suppressHydrationWarning={true}>
-        <ErrorBoundary>
-          <PopupMessageProvider>
-            {children}
-            <SiteFooter />
-            <Toaster />
-          </PopupMessageProvider>
-        </ErrorBoundary>
-      </body>
-    </html>
+    <>
+      <StructuredData type="organization" />
+      <StructuredData type="website" />
+      <ErrorBoundary>
+        <PopupMessageProvider>
+          {children}
+          <SiteFooter />
+          <Toaster />
+        </PopupMessageProvider>
+      </ErrorBoundary>
+    </>
   )
 }
