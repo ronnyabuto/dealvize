@@ -213,7 +213,6 @@ export async function PUT(request: NextRequest) {
         )
       }
 
-      // Check if new name conflicts (if name is being changed)
       if (roleData.name && roleData.name !== existingRole.name) {
         const { data: nameConflict } = await supabase
           .from('tenant_roles')

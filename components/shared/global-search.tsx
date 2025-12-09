@@ -284,7 +284,7 @@ export function GlobalSearch() {
 
             {/* Show search suggestions when typing */}
             {query && suggestions.length > 0 && (
-              <CommandGroup heading="💡 Suggestions">
+              <CommandGroup heading="Suggestions">
                 {suggestions.map((suggestion, index) => (
                   <CommandItem
                     key={`suggestion-${index}`}

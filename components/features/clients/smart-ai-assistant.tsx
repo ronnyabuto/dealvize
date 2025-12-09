@@ -43,11 +43,9 @@ const getContextualSuggestions = (pathname: string): SmartSuggestion[] => {
         actionLabel: 'Setup Automation',
         icon: Users,
         onAction: async () => {
-          // Show confirmation dialog
           const confirmed = confirm('Set up automated follow-up tasks for new clients? This will create welcome calls and follow-up emails automatically.')
           if (confirmed) {
-            alert('✅ Client follow-up automation enabled! New clients will automatically get follow-up tasks.')
-            // In production, this would save the automation rule to the database
+            alert('Client follow-up automation enabled! New clients will automatically get follow-up tasks.')
           }
         }
       },
@@ -80,7 +78,7 @@ const getContextualSuggestions = (pathname: string): SmartSuggestion[] => {
         onAction: async () => {
           const confirmed = confirm('Create automation rule for "Under Contract" stage? This will automatically create inspection and appraisal tasks.')
           if (confirmed) {
-            alert('✅ Deal stage automation enabled! Tasks will be created automatically when deals reach "Under Contract".')
+            alert('Deal stage automation enabled! Tasks will be created automatically when deals reach "Under Contract".')
           }
         }
       },
@@ -279,7 +277,7 @@ export function SmartAIAssistant() {
                                 variant="outline"
                                 className={cn("text-xs mt-1", getPriorityColor(suggestion.priority))}
                               >
-                                {suggestion.type === 'automation' ? '⚡ Automation' : '💡 Insight'}
+                                {suggestion.type === 'automation' ? 'Automation' : 'Insight'}
                               </Badge>
                             </div>
                           </div>

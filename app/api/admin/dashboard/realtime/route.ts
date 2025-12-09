@@ -191,7 +191,6 @@ async function getBusinessMetrics(supabase: any, startDate: Date) {
     supabase.from('tenant_activity_logs').select('*').like('action', '%sequence%').gte('created_at', startDate.toISOString())
   ])
 
-  // Calculate revenue metrics (simplified)
   const planRevenue = {
     starter: 29,
     professional: 79,

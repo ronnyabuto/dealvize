@@ -174,7 +174,7 @@ export function EnhancedFloatingChat() {
         onAction: () => {
           const confirmed = confirm('Set up automated follow-up for Sarah Johnson?')
           if (confirmed) {
-            alert('✅ Follow-up automation enabled for Sarah!')
+            alert('Follow-up automation enabled for Sarah!')
           }
         }
       },

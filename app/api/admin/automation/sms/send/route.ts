@@ -342,7 +342,6 @@ function normalizePhoneNumber(phone: string): string {
   // Remove all non-digit characters
   const digits = phone.replace(/\D/g, '')
   
-  // Add country code if missing (assuming US +1)
   if (digits.length === 10) {
     return `+1${digits}`
   } else if (digits.length === 11 && digits.startsWith('1')) {

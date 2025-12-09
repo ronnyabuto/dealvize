@@ -123,7 +123,6 @@ export async function GET(request: NextRequest) {
       ) / activeChannels.length
     }
 
-    // Find best performing channel (by ROI)
     summary.best_performing_channel = channelAnalytics.reduce((best, current) => {
       if (!best || current.current_period.roi_percentage > best.current_period.roi_percentage) {
         return current

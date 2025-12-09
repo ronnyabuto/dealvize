@@ -73,7 +73,6 @@ export function SmsHistory({ clientId, showClientName = true }: SmsHistoryProps)
     // Remove +1 country code for display
     const cleaned = phone.replace(/^\+1/, '')
     
-    // Format as (XXX) XXX-XXXX
     if (cleaned.length === 10) {
       return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`
     }

@@ -93,7 +93,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: inviteError.message }, { status: 400 })
     }
 
-    // Send invitation email (in a real app, you'd use a proper email service)
     // For now, we'll just log the invitation details
     console.log('Team invitation sent:', {
       to: email,
@@ -104,11 +103,9 @@ export async function POST(request: NextRequest) {
     })
 
     // In a real implementation, you'd send an email here:
-    // await sendInvitationEmail({
     //   to: email,
     //   inviterName: user.email,
     //   role,
-    //   inviteUrl: `${process.env.NEXT_PUBLIC_APP_URL}/invite/${inviteToken}`,
     //   customMessage: message
     // })
 

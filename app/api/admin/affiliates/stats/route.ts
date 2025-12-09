@@ -28,14 +28,12 @@ export async function GET(request: NextRequest) {
         { data: recentClicks, error: clicksError },
         { data: pendingPayouts, error: payoutsError }
       ] = await Promise.all([
-        // Recent referrals (last 30 days)
         supabase
           .from('affiliate_referrals')
           .select('id, commission_amount, created_at, status')
           .gte('created_at', thirtyDaysAgo.toISOString())
           .order('created_at', { ascending: false }),
 
-        // Recent clicks (last 30 days)
         supabase
           .from('affiliate_clicks')
           .select('id, created_at, converted')

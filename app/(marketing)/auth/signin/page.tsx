@@ -269,21 +269,7 @@ export default function SignInPage() {
           </form>
 
           {/* Development bypass */}
-          {process.env.NODE_ENV === 'development' && (
-            <div className="text-center">
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full bg-yellow-50 border-yellow-200 text-yellow-800 hover:bg-yellow-100"
-                onClick={handleDevBypass}
-                disabled={loading}
-              >
-                🚧 Dev Bypass (test@example.com)
-              </Button>
-              <p className="text-xs text-yellow-600 mt-1">Development mode only</p>
-            </div>
-          )}
-
+          
           <div className="text-center text-sm text-muted-foreground">
             Don't have an account?{' '}
             <a href="/auth/signup" className="font-medium text-primary hover:underline">

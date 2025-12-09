@@ -67,7 +67,6 @@ export async function GET(request: NextRequest) {
           .eq('affiliate_id', affiliate.id)
           .order('created_at', { ascending: false }),
 
-        // Recent clicks (last 30 days)
         supabase
           .from('affiliate_clicks')
           .select('id, created_at, converted, ip_address, country')

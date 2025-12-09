@@ -54,7 +54,6 @@ export async function GET(request: NextRequest) {
     const answerRate = totalCalls > 0 ? Math.round((answeredCalls / totalCalls) * 100) : 0
     const totalCost = callLogs.reduce((sum, call) => sum + (call.cost || 0), 0)
 
-    // Call volume by day (last 7 days)
     const callVolumeByDay = []
     for (let i = 6; i >= 0; i--) {
       const date = new Date()
@@ -106,7 +105,6 @@ export async function GET(request: NextRequest) {
       .sort((a, b) => b.calls - a.calls)
       .slice(0, 5)
 
-    // Top contacts (clients with most calls)
     const clientGroups = callLogs
       .filter(call => call.client_id)
       .reduce((acc, call) => {

@@ -160,13 +160,13 @@ export default function InvitePage() {
 
   const getRoleBadge = (role: string) => {
     const roleConfig: Record<string, { name: string; color: string; icon: string }> = {
-      admin: { name: 'Administrator', color: '#3b82f6', icon: '⚡' },
-      manager: { name: 'Manager', color: '#8b5cf6', icon: '👥' },
-      agent: { name: 'Agent', color: '#f59e0b', icon: '🏠' },
-      viewer: { name: 'Viewer', color: '#6b7280', icon: '👁️' }
+      admin: { name: 'Administrator', color: '#3b82f6', icon: 'Admin' },
+      manager: { name: 'Manager', color: '#8b5cf6', icon: 'Manager' },
+      agent: { name: 'Agent', color: '#f59e0b', icon: 'Agent' },
+      viewer: { name: 'Viewer', color: '#6b7280', icon: 'Viewer' }
     }
-    
-    return roleConfig[role] || { name: role, color: '#6b7280', icon: '👤' }
+
+    return roleConfig[role] || { name: role, color: '#6b7280', icon: 'User' }
   }
 
   if (loading) {

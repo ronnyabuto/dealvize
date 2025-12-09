@@ -36,7 +36,6 @@ export async function POST(request: NextRequest) {
     // Initialize Twilio client
     const client = twilio(accountSid, authToken)
 
-    // Format phone number (ensure it starts with +)
     const formattedPhone = to.startsWith('+') ? to : `+${to.replace(/[\s-()]/g, '')}`
 
     try {

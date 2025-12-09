@@ -241,7 +241,6 @@ async function sendInvitationEmail(params: {
   // TODO: Integrate with actual email service
   console.log('Email would be sent:', emailContent)
   
-  // Example integration with Resend (uncomment when ready):
   /*
   try {
     const { Resend } = await import('resend')

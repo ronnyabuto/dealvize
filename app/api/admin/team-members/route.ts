@@ -102,7 +102,6 @@ export async function GET(request: NextRequest) {
   })
 }
 
-// PUT - Update team member (role, status)
 export async function PUT(request: NextRequest) {
   return withRBAC(request, async (req, context) => {
     const supabase = await createClient()

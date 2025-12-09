@@ -119,7 +119,6 @@ export async function POST(request: NextRequest) {
         created_at: new Date().toISOString()
       })
 
-    // Return the API key only once (never stored in plain text)
     return NextResponse.json({
       api_key: apiKey,
       key_details: keyRecord,
@@ -236,7 +235,6 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'API key not found' }, { status: 404 })
     }
 
-    // Soft delete (deactivate) the key
     const { error } = await supabase
       .from('api_keys')
       .update({

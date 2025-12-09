@@ -55,7 +55,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 400 })
     }
 
-    // Process transcription (this would be async in production)
     if (transcriptionResult.success) {
       // Update with results
       await supabase
@@ -241,7 +240,6 @@ async function mockTranscriptionResponse(audio_file_url: string) {
   }
 }
 
-// Production transcription service integrations (placeholders)
 async function processOpenAITranscription(audio_file_url: string, language: string) {
   // Integration with OpenAI Whisper API
   console.log('Processing with OpenAI Whisper:', { audio_file_url, language })
@@ -337,7 +335,6 @@ function generateCallSummary(text: string, keywords?: string[], sentiment?: any)
   const words = text.split(' ')
   const sentences = text.split(/[.!?]+/)
   
-  // Extract key sentences (first, last, and any with important keywords)
   const importantSentences = []
   
   // Always include first sentence

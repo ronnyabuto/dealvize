@@ -6,7 +6,6 @@ export const POST = withCSRFProtection(async (request: NextRequest) => {
   try {
     const supabase = await createClient()
     
-    // Sign out from Supabase (this clears the session server-side)
     const { error } = await supabase.auth.signOut()
     
     if (error) {

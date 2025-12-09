@@ -40,7 +40,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/integrations?error=${encodeURIComponent(tokenResponse.error)}`)
     }
 
-    // Get user profile from the provider (optional, for metadata)
     const userProfile = await getUserProfile(provider, tokenResponse.tokens.access_token)
 
     // Store the integration
@@ -169,10 +168,8 @@ async function getUserProfile(provider: any, accessToken: string): Promise<any> 
   }
 }
 
-// Simple encryption function (in production, use proper encryption)
 function encrypt(text: string): string {
   // In production, use proper encryption like crypto.createCipher
-  // For now, just base64 encode (NOT SECURE - replace with real encryption)
   return Buffer.from(text).toString('base64')
 }
 

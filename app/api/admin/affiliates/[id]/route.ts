@@ -259,7 +259,6 @@ export async function DELETE(request: NextRequest, { params }: { params: Params 
         )
       }
 
-      // Suspend instead of delete (preserve referral data)
       const { error: updateError } = await serviceClient
         .from('affiliate_programs')
         .update({

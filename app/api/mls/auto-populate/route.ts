@@ -142,7 +142,6 @@ function formatPropertyForDealForm(property: any) {
     taxAmount: property.taxes?.amount,
     taxYear: property.taxes?.year,
     
-    // School Information (Columbus specific)
     schools: property.schools,
     
     // Description

@@ -96,7 +96,6 @@ export function PWAInstallPrompt({
     setDismissed(true)
     localStorage.setItem('pwa-install-dismissed', 'true')
     
-    // Set expiry for dismissal (e.g., 7 days)
     const expiryDate = new Date()
     expiryDate.setDate(expiryDate.getDate() + 7)
     localStorage.setItem('pwa-install-dismissed-expiry', expiryDate.toISOString())

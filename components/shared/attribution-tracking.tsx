@@ -148,12 +148,12 @@ export function AttributionTracking() {
     const iconMap: { [key: string]: any } = {
       email: '📧',
       sms: '💬',
-      call: '📞',
+      call: 'Call',
       website: '🌐',
       social: '📱',
       ad: '📢',
-      referral: '👥',
-      direct: '🎯'
+      referral: 'Group',
+      direct: 'Target'
     }
     return iconMap[touchpointType] || '📍'
   }

@@ -17,7 +17,6 @@ export async function GET(request: NextRequest) {
 
     if (metricsError) {
       console.error('RPC Error:', metricsError)
-      // Fallback to empty data structure if RPC missing (during migration)
       throw new Error(metricsError.message)
     }
 
@@ -28,7 +27,6 @@ export async function GET(request: NextRequest) {
     const recentClients = metrics.recentClientsCount || 0
     const recentDeals = metrics.recentDealsCount || 0
     
-    // Calculate simple percentages in JS (cheap operation)
     const conversionRate = totalClients > 0 ? Math.round((metrics.wonDeals / totalClients) * 100) : 0
     const clientsChange = totalClients > recentClients 
       ? Math.round(((recentClients / (totalClients - recentClients)) * 100)) 

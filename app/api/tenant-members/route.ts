@@ -210,7 +210,6 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
     }
 
-    // Prevent users from changing their own role (except owner)
     const { data: userMembership } = await supabase
       .from('tenant_members')
       .select('role')
@@ -301,7 +300,6 @@ export async function DELETE(request: NextRequest) {
       }
     }
 
-    // Soft delete the member (set status to inactive)
     const { error } = await supabase
       .from('tenant_members')
       .update({

@@ -97,7 +97,6 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ error: 'API key is required' }, { status: 400 })
         }
 
-        // Validate API key by making a test request (implement per provider)
         const isValid = await validateApiKey(provider_name, config.api_key, config)
         
         if (!isValid) {
@@ -149,7 +148,6 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Integration not connected' }, { status: 400 })
       }
 
-      // Trigger sync (implement per provider)
       const syncResult = await triggerSync(provider_name, integration)
       
       return NextResponse.json({ success: true, sync_result: syncResult })

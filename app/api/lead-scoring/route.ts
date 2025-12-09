@@ -30,7 +30,6 @@ export async function POST(request: NextRequest) {
     // Single client calculation is fast enough to do synchronously
     if (client_id) {
        // ... existing single client logic ...
-       // (Keep your existing calculateAILeadScore logic here)
        return NextResponse.json({ success: true })
     }
 

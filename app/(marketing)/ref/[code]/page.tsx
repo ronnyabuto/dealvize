@@ -181,7 +181,7 @@ export default function ReferralPage() {
                 <p className="text-sm text-green-700">Get 30 days free instead of 14 days</p>
               </div>
               <div className="p-4 bg-blue-50 rounded-lg">
-                <h4 className="font-bold text-blue-800 mb-2">🎯 Priority Support</h4>
+                <h4 className="font-bold text-blue-800 mb-2">Target Priority Support</h4>
                 <p className="text-sm text-blue-700">Fast-track onboarding and setup</p>
               </div>
             </div>

@@ -55,7 +55,6 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Validate message length (SMS limit is typically 160 characters)
     if (message_content.length > 320) {
       return NextResponse.json({ 
         error: 'Message content is too long. Maximum 320 characters for SMS.' 

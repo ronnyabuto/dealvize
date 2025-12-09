@@ -701,7 +701,6 @@ function calculateStatisticalSignificance(variants: any[], metrics: any[]) {
     }
   })
   
-  // Basic significance test (would use proper statistical testing in production)
   const minSampleSize = 100
   const hasSignificance = variantStats.every(v => v.samples >= minSampleSize)
   

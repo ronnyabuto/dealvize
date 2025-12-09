@@ -67,7 +67,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ]
 
-  // Dashboard pages (lower priority since they require authentication)
   const dashboardPages = [
     {
       url: `${baseUrl}/dashboard`,
@@ -107,7 +106,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ]
 
-  // Blog posts (would be dynamic in a real application)
   const blogPosts = [
     {
       url: `${baseUrl}/blog/getting-started-with-dealvize`,

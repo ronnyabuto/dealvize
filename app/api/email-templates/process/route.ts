@@ -123,7 +123,6 @@ export async function POST(request: NextRequest) {
 function processTemplate(template: string, variables: Record<string, any>): string {
   let processed = template
 
-  // Process {{variable}} patterns
   Object.entries(variables).forEach(([key, value]) => {
     const regex = new RegExp(`{{\\s*${key}\\s*}}`, 'g')
     processed = processed.replace(regex, String(value || ''))

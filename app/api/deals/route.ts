@@ -88,7 +88,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const validatedData = createDealSchema.parse(body)
 
-    // Check Client existence (Security check)
     const { data: client, error: clientError } = await supabase
       .from('clients')
       .select('id, status')

@@ -54,7 +54,6 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       console.error('Database error fetching tasks:', error)
-      // Fallback: If relation join fails (missing FKs), fetch just tasks to prevent 500 crash
       if (error.code === 'PGRST200') {
          const { data: simpleTasks } = await supabase.from('tasks').select('*').eq('user_id', user.id).limit(limit);
          return NextResponse.json({ tasks: simpleTasks || [] })

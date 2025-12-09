@@ -61,7 +61,6 @@ export async function GET(request: NextRequest) {
     if (is_starred !== null) query = query.eq('is_starred', is_starred === 'true')
     if (is_archived !== null) query = query.eq('is_archived', is_archived === 'true')
     
-    // Filter by conversation access (through RLS or manual filter)
     if (client_id) {
       query = query.eq('conversation.customer_id', client_id)
     }

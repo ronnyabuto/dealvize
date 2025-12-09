@@ -145,7 +145,6 @@ export async function POST(request: NextRequest, { params }: { params: Params })
   })
 }
 
-// Email sending function (reused from invite-user)
 async function sendInvitationEmail(params: {
   to: string
   token: string

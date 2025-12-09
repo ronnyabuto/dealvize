@@ -65,7 +65,6 @@ export async function GET(request: NextRequest) {
 
     const averageDuration = completedMeetings > 0 ? Math.round(totalDurationMinutes / completedMeetings) : 0
 
-    // Calculate attendance rate (attendees who joined vs invited)
     const totalInvited = meetings.reduce((sum, meeting) => sum + (meeting.attendees?.length || 0), 0)
     const totalJoined = meetings.reduce((sum, meeting) => {
       return sum + (meeting.attendees?.filter(a => a.joined_at).length || 0)
@@ -74,7 +73,6 @@ export async function GET(request: NextRequest) {
 
     const completionRate = totalMeetings > 0 ? Math.round((completedMeetings / totalMeetings) * 100) : 0
 
-    // Meeting volume by day (last 7 days)
     const meetingVolumeByDay = []
     for (let i = 6; i >= 0; i--) {
       const date = new Date()
@@ -133,7 +131,6 @@ export async function GET(request: NextRequest) {
       .sort((a, b) => b.meeting_count - a.meeting_count)
       .slice(0, 5)
 
-    // Attendance trends (by day of week)
     const attendanceTrends = []
     const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
     

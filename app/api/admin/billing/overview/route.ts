@@ -57,7 +57,6 @@ export async function GET(request: NextRequest) {
           `)
           .gte('created_at', startDate.toISOString()),
 
-        // Revenue calculations (simplified - would need Stripe integration for real data)
         supabase
           .from('tenant_subscriptions')
           .select(`
@@ -106,7 +105,6 @@ export async function GET(request: NextRequest) {
       const cancelledSubscriptions = churnAnalysis?.length || 0
       const churnRate = totalNewSubscriptions > 0 ? (cancelledSubscriptions / totalNewSubscriptions) * 100 : 0
 
-      // Calculate MRR (Monthly Recurring Revenue) - simplified pricing
       const planPricing = {
         starter: 29,
         professional: 79,

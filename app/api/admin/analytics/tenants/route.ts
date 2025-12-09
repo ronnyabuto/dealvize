@@ -284,19 +284,15 @@ function calculateTenantHealthScore(metrics: any): number {
 
   let score = 0
 
-  // User engagement (40% of score)
   const userEngagement = userCount > 0 ? (activeUserCount / userCount) * 100 : 0
   score += userEngagement * 0.4
 
-  // Business activity (30% of score)
   const businessActivity = Math.min(100, (dealCount + clientCount + messageCount) / Math.max(1, userCount) * 10)
   score += businessActivity * 0.3
 
-  // System usage (20% of score)
   const systemUsage = Math.min(100, activities.length / Math.max(1, userCount) * 5)
   score += systemUsage * 0.2
 
-  // Subscription health (10% of score)
   const subscriptionScore = subscriptionStatus === 'active' ? 100 : 
                            subscriptionStatus === 'trialing' ? 80 :
                            subscriptionStatus === 'past_due' ? 40 : 20

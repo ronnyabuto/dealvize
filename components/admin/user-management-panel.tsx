@@ -270,7 +270,7 @@ export function UserManagementPanel({ onStatsChange }: UserManagementPanelProps)
       name: roleConfig.name, 
       color: roleConfig.color,
       icon: roleConfig.icon 
-    } : { name: role, color: '#6b7280', icon: '👤' }
+    } : { name: role, color: '#6b7280', icon: 'User' }
   }
 
   if (loading) {

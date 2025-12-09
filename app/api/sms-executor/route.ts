@@ -91,7 +91,6 @@ async function findEligibleClients(supabase: any, automation: any, currentTime: 
 }
 
 async function findAppointmentReminderClients(supabase: any, automation: any, currentTime: Date) {
-  // Calculate reminder time based on schedule_value (e.g., "24h" = 24 hours before)
   const scheduleHours = parseInt(automation.schedule_value) || 24
   const reminderTime = new Date()
   reminderTime.setHours(reminderTime.getHours() + scheduleHours)
@@ -264,7 +263,6 @@ async function processSMSAutomation(supabase: any, automation: any, client: any)
     automation
   )
 
-  // Send the SMS (integrate with your SMS service here)
   const smsResult = await sendSMS({
     to: client.phone,
     message: processedMessage.content,
@@ -379,7 +377,6 @@ async function sendSMS(smsData: any) {
   // - Twilio
   // - AWS SNS
   // - TextMagic
-  // - Vonage (formerly Nexmo)
   
   console.log('Sending SMS:', {
     to: smsData.to,

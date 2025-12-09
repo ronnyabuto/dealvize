@@ -22,7 +22,6 @@ export async function GET(request: NextRequest) {
         throw usersError
       }
 
-      // Get active users (last 30 days)
       const thirtyDaysAgo = new Date()
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
@@ -70,7 +69,6 @@ export async function GET(request: NextRequest) {
       const currentPlan = tenant?.plan_type || 'starter'
       const maxUsers = planLimits[currentPlan as keyof typeof planLimits]?.maxUsers || 5
 
-      // Get billing status (mock for now - integrate with Stripe later)
       const billingStatus = 'active' // This would come from Stripe
       const monthlyRevenue = currentPlan === 'starter' ? 29 : 
                             currentPlan === 'professional' ? 99 : 299

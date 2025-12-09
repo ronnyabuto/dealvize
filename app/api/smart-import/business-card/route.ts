@@ -28,7 +28,6 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Validate file size (max 10MB)
     if (image.size > 10 * 1024 * 1024) {
       return NextResponse.json({
         error: 'Image file too large (max 10MB)'

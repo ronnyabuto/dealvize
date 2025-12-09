@@ -93,7 +93,6 @@ export async function GET(request: NextRequest) {
       if (start_date) query = query.gte('created_at', start_date)
       if (end_date) query = query.lte('created_at', end_date)
 
-      // User agent filter (partial match)
       if (user_agent) query = query.ilike('user_agent', `%${user_agent}%`)
 
       // Full-text search across multiple fields
@@ -197,7 +196,6 @@ export async function GET(request: NextRequest) {
   })
 }
 
-// POST - Create audit log entry (for manual entries or system events)
 export async function POST(request: NextRequest) {
   return withRBAC(request, async (req, context) => {
     const serviceClient = createServiceClient()

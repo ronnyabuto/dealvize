@@ -33,7 +33,6 @@ export async function POST(request: NextRequest) {
     // Parse CSV header
     const header = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''))
     
-    // Expected headers (case insensitive)
     const expectedHeaders = ['name', 'email', 'phone', 'address', 'company', 'status']
     const headerMap: { [key: string]: number } = {}
     

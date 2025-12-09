@@ -269,7 +269,6 @@ export async function POST(request: NextRequest) {
   })
 }
 
-// PUT - Update sequence status (enable/disable across tenants)
 export async function PUT(request: NextRequest) {
   return withRBAC(request, async (req, context) => {
     const serviceClient = createServiceClient()

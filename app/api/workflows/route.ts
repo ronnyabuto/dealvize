@@ -504,7 +504,6 @@ async function sendEmailStep(config: any, entityType: string, entityId: string, 
     return { success: false, message: 'Recipient email not found', data: null }
   }
 
-  // Send email (implement actual email sending)
   // This would integrate with your email service
   return { 
     success: true, 
@@ -526,7 +525,6 @@ async function sendSMSStep(config: any, entityType: string, entityId: string, us
     return { success: false, message: 'Recipient phone not found', data: null }
   }
 
-  // Send SMS (implement actual SMS sending)
   return { 
     success: true, 
     message: `SMS sent to ${recipientPhone}`, 
@@ -798,7 +796,6 @@ function processTemplate(template: string, variables: any) {
   
   let processed = template
   
-  // Replace variables like {{variable}}
   const variableRegex = /\{\{([^}]+)\}\}/g
   processed = processed.replace(variableRegex, (match, varName) => {
     const trimmedVarName = varName.trim()

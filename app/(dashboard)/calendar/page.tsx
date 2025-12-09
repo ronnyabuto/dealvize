@@ -123,11 +123,11 @@ export default function CalendarPage() {
 
   const getEventTypeIcon = (type: string) => {
     switch (type) {
-      case 'meeting': return '👥'
-      case 'call': return '📞'
-      case 'showing': return '🏠'
-      case 'appointment': return '📅'
-      default: return '📋'
+      case 'meeting': return 'Meeting'
+      case 'call': return 'Call'
+      case 'showing': return 'Showing'
+      case 'appointment': return 'Appointment'
+      default: return 'Event'
     }
   }
 

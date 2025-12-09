@@ -25,7 +25,6 @@ const clientSchema = z.object({
   address: z.string().max(500, 'Address too long').optional().or(z.literal('')),
   company: z.string().max(100, 'Company name too long').optional().or(z.literal('')),
   status: z.enum(['Buyer', 'Seller', 'In Contract']).default('Buyer'),
-  // Deal fields (optional)
   createDeal: z.boolean().default(false),
   dealTitle: z.string().optional(),
   dealValue: z.string().optional(),

@@ -208,7 +208,6 @@ export function ClientsList({ search = '', status = '', page = 1, limit = 10, so
     )
   }
 
-  // Use virtualization for large lists (>20 items)
   if (clients.length > 20) {
     return (
       <VirtualList

@@ -71,42 +71,7 @@ const stats = [
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Navigation */}
-      <nav className="border-b border-gray-200 bg-white/95 backdrop-blur-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <Link href="/" className="text-2xl font-bold text-slate-900">
-                Deal<span className="text-dealvize-teal">vize</span>
-              </Link>
-            </div>
-            
-            <div className="flex items-center space-x-8">
-              <Link href="/#features" className="text-gray-600 hover:text-gray-900 transition-colors">
-                Features
-              </Link>
-              <Link href="/pricing" className="text-gray-600 hover:text-gray-900 transition-colors">
-                Pricing
-              </Link>
-              <Link href="/about" className="text-dealvize-teal font-semibold">
-                About
-              </Link>
-              <Link href="/contact" className="text-gray-600 hover:text-gray-900 transition-colors">
-                Contact
-              </Link>
-              <Link href="/auth/signin" className="text-gray-600 hover:text-gray-900 transition-colors">
-                Sign In
-              </Link>
-              <Link href="/auth/signup">
-                <Button className="bg-dealvize-teal hover:bg-dealvize-teal-dark text-white">
-                  Get Started
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
-
+      
       {/* Hero Section */}
       <section className="py-20 bg-gradient-to-br from-white to-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -273,49 +238,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-slate-900 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <Link href="/" className="text-2xl font-bold">
-                Deal<span className="text-dealvize-teal">vize</span>
-              </Link>
-              <p className="text-gray-400 mt-4">
-                The modern CRM for real estate professionals.
-              </p>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-4">Product</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li><Link href="/#features" className="hover:text-white transition-colors">Features</Link></li>
-                <li><Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link></li>
-                <li><Link href="/blog" className="hover:text-white transition-colors">Blog</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-4">Company</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li><Link href="/about" className="hover:text-white transition-colors">About</Link></li>
-                <li><Link href="/contact" className="hover:text-white transition-colors">Contact</Link></li>
-                <li><Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link></li>
-                <li><Link href="/terms" className="hover:text-white transition-colors">Terms</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-4">Support</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li><Link href="/help" className="hover:text-white transition-colors">Help Center</Link></li>
-                <li><Link href="/contact" className="hover:text-white transition-colors">Contact Support</Link></li>
-                <li><Link href="/auth/signin" className="hover:text-white transition-colors">Sign In</Link></li>
-              </ul>
-            </div>
           </div>
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 Dealvize. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
-    </div>
   )
 }

@@ -67,7 +67,6 @@ export async function PUT(request: NextRequest, { params }: { params: Params }) 
         }
       }
 
-      // Prevent downgrading the last owner (for other admins trying to do this)
       if (existingMember.role === 'owner' && validatedData.role !== 'owner') {
         const { count: ownerCount } = await supabase
           .from('tenant_members')

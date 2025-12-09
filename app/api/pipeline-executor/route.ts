@@ -193,7 +193,6 @@ async function evaluateConditions(
     return true // No conditions means always execute
   }
 
-  // All conditions must be true (AND logic)
   for (const condition of conditions) {
     if (!evaluateCondition(condition, entityData, triggerData)) {
       return false

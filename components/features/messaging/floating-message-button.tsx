@@ -64,7 +64,7 @@ export function FloatingMessageButton() {
     const mockMessages: FloatingMessage[] = [
       {
         id: '1',
-        title: 'Welcome to Dealvize! 🎉',
+        title: 'Welcome to Dealvize! ',
         message: 'Get started by exploring our AI-powered lead scoring and automation features.',
         type: 'announcement',
         priority: 'medium',
@@ -413,7 +413,7 @@ export function FloatingMessageButton() {
                     </Button>
                   </div>
                   <p className="text-xs text-gray-500 text-center">
-                    💡 Click quick replies above or type your own message
+                    Click quick replies above or type your own message
                   </p>
                 </div>
               </>
@@ -464,9 +464,9 @@ export function FloatingMessageButton() {
                   
                   <div className="space-y-2">
                     {[
-                      { label: 'Getting Started Guide', icon: '🚀' },
+                      { label: 'Getting Started Guide', icon: '' },
                       { label: 'AI Lead Scoring Help', icon: '🤖' },
-                      { label: 'Pipeline Automation', icon: '⚡' },
+                      { label: 'Pipeline Automation', icon: '' },
                       { label: 'Contact Support', icon: '💬' },
                       { label: 'Video Tutorials', icon: '🎥' },
                       { label: 'Keyboard Shortcuts', icon: '⌨️' }

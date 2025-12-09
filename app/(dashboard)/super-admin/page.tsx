@@ -46,7 +46,6 @@ export default async function SuperAdminPage() {
   if (!user) redirect('/auth/signin')
   if (!isSuperAdmin) redirect('/unauthorized')
   
-  // Fetch platform data (server-side)
   const stats = await getPlatformStats()
 
   // Mock system health data - replace with real monitoring

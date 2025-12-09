@@ -133,9 +133,7 @@ export async function PUT(request: NextRequest) {
         console.log(`Email update required for user ${userId}: ${updates.email}`)
         
         // You would need to use the service role client here:
-        // const { error: authUpdateError } = await supabaseAdmin.auth.admin.updateUserById(
         //   userId,
-        //   { email: updates.email }
         // )
       } catch (authError) {
         console.error('Auth email update failed:', authError)
@@ -172,9 +170,7 @@ export async function POST(request: NextRequest) {
       console.log(`Password reset requested for user ${userId}`)
       
       // You would need to use the service role client here:
-      // const { error: passwordError } = await supabaseAdmin.auth.admin.updateUserById(
       //   userId,
-      //   { password: newPassword }
       // )
 
       return NextResponse.json({

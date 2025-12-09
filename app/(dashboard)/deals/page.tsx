@@ -51,7 +51,7 @@ export default function DealsPage() {
       onAction: () => {
         const confirmed = confirm('Create automation for "Under Contract" stage? This will automatically create inspection and appraisal tasks.')
         if (confirmed) {
-          alert('✅ Deal stage automation enabled! Tasks will be created automatically.')
+          alert('Deal stage automation enabled! Tasks will be created automatically.')
         }
       }
     },
@@ -63,7 +63,7 @@ export default function DealsPage() {
       variant: 'secondary' as const,
       icon: DollarSign,
       onAction: () => {
-        alert('✅ High-value deal alerts enabled! You\'ll be notified for deals over $500K.')
+        alert('High-value deal alerts enabled! You\'ll be notified for deals over $500K.')
       }
     },
     {
@@ -74,7 +74,7 @@ export default function DealsPage() {
       variant: 'success' as const,
       icon: Calendar,
       onAction: () => {
-        alert('✅ Closing reminders enabled! You\'ll get preparation tasks 7 days before each closing.')
+        alert('Closing reminders enabled! You\'ll get preparation tasks 7 days before each closing.')
       }
     }
   ]

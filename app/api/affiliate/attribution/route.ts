@@ -27,7 +27,6 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Find the affiliate by referral code (updated table name)
     const { data: affiliate, error: affiliateError } = await supabase
       .from('affiliate_programs')
       .select('id, tier, user_id, commission_rate')
@@ -70,7 +69,6 @@ export async function POST(request: NextRequest) {
       })
       .eq('id', affiliate.id)
 
-    // Update the referral click to mark as converted (updated table name)
     await supabase
       .from('affiliate_clicks')
       .update({ 

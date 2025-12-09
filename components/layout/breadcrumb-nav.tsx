@@ -26,7 +26,6 @@ export function BreadcrumbNav({ items }: BreadcrumbNavProps) {
     segments.forEach((segment, index) => {
       currentPath += `/${segment}`
       
-      // Skip dynamic route segments (they start with brackets or are UUIDs)
       if (segment.startsWith('[') || /^[0-9a-fA-F-]{36}$/.test(segment)) {
         return
       }

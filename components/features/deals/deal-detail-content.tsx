@@ -56,7 +56,6 @@ export function DealDetailContent({ deal }: DealDetailContentProps) {
         setLoading(true)
         setError(null)
 
-        // Fetch client for this deal (only if clientId exists)
         let clientData = null
         if (deal.clientId) {
           const { data, error: clientError } = await supabase

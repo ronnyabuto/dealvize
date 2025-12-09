@@ -60,7 +60,6 @@ export function MobileLayout({ children }: MobileLayoutProps) {
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
-  // Mock notification count (would be real data in production)
   useEffect(() => {
     const interval = setInterval(() => {
       setNotifications(Math.floor(Math.random() * 5))

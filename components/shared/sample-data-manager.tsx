@@ -209,7 +209,7 @@ export function SampleDataManager() {
 
         {/* Info Box */}
         <div className="text-xs text-gray-500 p-3 bg-gray-50 rounded-lg">
-          <p><strong>💡 Tip:</strong> Use sample data to test features, then delete it when you're ready to add real clients and deals.</p>
+          <p><strong>Tip:</strong> Use sample data to test features, then delete it when you're ready to add real clients and deals.</p>
           <p className="mt-1"><strong>🔒 Security:</strong> All data is tied to your user account and completely private.</p>
         </div>
       </CardContent>

@@ -14,7 +14,6 @@ export async function POST(request: NextRequest) {
       }, { status: 401 })
     }
 
-    // Check if user has backup permissions (admin only)
     const userRole = sessionValidation.sessionInfo?.role
     if (userRole !== 'admin') {
       return NextResponse.json({

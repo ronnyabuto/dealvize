@@ -99,7 +99,6 @@ const SidebarProvider = React.forwardRef<
         : undefined // No-op on desktop
     }, [isMobile, setOpenMobile])
 
-    // We add a state so that we can do data-state="expanded" or "collapsed".
     // This makes it easier to style the sidebar with Tailwind classes.
     const state = open ? "expanded" : "collapsed"
 

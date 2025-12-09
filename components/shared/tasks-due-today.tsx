@@ -137,7 +137,6 @@ export function TasksDueToday() {
       )
     })
     .sort((a, b) => {
-      // Sort by due date (earliest first), with overdue tasks at the top
       if (!a.due_date && !b.due_date) return 0
       if (!a.due_date) return 1
       if (!b.due_date) return -1

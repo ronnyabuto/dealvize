@@ -288,7 +288,6 @@ async function getSystemHealthMetrics(serviceClient: any, timeRange: string) {
   const userActivityRate = totalUsers > 0 ? Math.round((activeUsers / totalUsers) * 100) : 0
   const tenantHealthScore = totalTenants > 0 ? Math.round((activeTenants / totalTenants) * 100) : 0
 
-  // Simulated performance metrics (in production, these would come from actual monitoring)
   const performanceMetrics = {
     response_time: Math.round(Math.random() * 200 + 50), // 50-250ms
     cpu_usage: Math.round(Math.random() * 40 + 20), // 20-60%

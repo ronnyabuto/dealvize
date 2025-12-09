@@ -52,7 +52,6 @@ export function SmsDialog({ trigger, clientId, clientName, clientPhone }: SmsDia
     // Remove all non-digit characters
     const cleaned = value.replace(/\D/g, '')
     
-    // Format as (XXX) XXX-XXXX for US numbers
     if (cleaned.length <= 3) return cleaned
     if (cleaned.length <= 6) return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3)}`
     return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6, 10)}`

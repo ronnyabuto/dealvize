@@ -60,7 +60,6 @@ function SignUpForm() {
 
       if (authError) throw authError
 
-      // 2. Handle Referral (Async - don't block flow)
       if (data.user?.id && localStorage.getItem('dealvize_referral_code')) {
         fetch('/api/affiliate/attribution', {
           method: 'POST',

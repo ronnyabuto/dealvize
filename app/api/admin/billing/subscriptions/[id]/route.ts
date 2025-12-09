@@ -82,7 +82,6 @@ export async function GET(request: NextRequest, { params }: { params: Params }) 
           .order('created_at', { ascending: false })
           .limit(20),
 
-        // Get payment history (would be from Stripe in real implementation)
         supabase
           .from('tenant_activity_logs')
           .select('id, action, created_at, metadata')
@@ -101,7 +100,6 @@ export async function GET(request: NextRequest, { params }: { params: Params }) 
         (new Date(subscription.current_period_end).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
       )
 
-      // Plan pricing (would come from Stripe in real implementation)
       const planPricing = {
         starter: 29,
         professional: 79,
@@ -288,7 +286,6 @@ export async function DELETE(request: NextRequest, { params }: { params: Params 
         )
       }
 
-      // Cancel subscription (set to cancel at period end)
       const { error: updateError } = await serviceClient
         .from('tenant_subscriptions')
         .update({

@@ -122,7 +122,6 @@ export async function GET(request: NextRequest) {
   })
 }
 
-// POST - Create new subscription (for manual setup)
 export async function POST(request: NextRequest) {
   return withRBAC(request, async (req, context) => {
     const serviceClient = createServiceClient()

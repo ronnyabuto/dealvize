@@ -142,7 +142,6 @@ export function FloatingChat({
       }
     })
 
-    // Mark messages as read (simple implementation)
     setTimeout(async () => {
       const unreadMessages = messages[conversationId]?.filter(msg => !msg.is_read) || []
       for (const message of unreadMessages) {
@@ -178,7 +177,6 @@ export function FloatingChat({
       if (response.ok) {
         const { message } = await response.json()
         
-        // Optimistically add the message (real-time will also add it, so we need to handle duplicates)
         setMessages(prev => {
           const existing = prev[activeConversationId] || []
           const messageExists = existing.some(m => m.id === message.id)

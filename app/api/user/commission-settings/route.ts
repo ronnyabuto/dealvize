@@ -20,7 +20,6 @@ export async function GET(request: NextRequest) {
     const url = new URL(req.url)
     const targetUserId = url.searchParams.get('userId') || context.userId
 
-    // Check if requesting another user's settings (admin only)
     if (targetUserId !== context.userId) {
       const hasAdminAccess = context.userPermissions.includes('MEMBERS_VIEW') ||
                             ['admin', 'owner'].includes(context.userRole)
@@ -293,7 +292,6 @@ export async function PUT(request: NextRequest) {
   })
 }
 
-// DELETE - Delete commission settings (reset to defaults)
 export async function DELETE(request: NextRequest) {
   return withRBAC(request, async (req, context) => {
     const supabase = await createClient()

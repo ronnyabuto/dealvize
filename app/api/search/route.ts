@@ -9,9 +9,7 @@ function createFuzzySearchPattern(query: string): string {
   const normalizedQuery = query.toLowerCase().trim().replace(/\s+/g, ' ')
   
   // Create a flexible pattern that handles:
-  // 1. Case insensitivity (already lowercase)
   // 2. Partial matches
-  // 3. Word order variations (split and match each word separately)
   const words = normalizedQuery.split(' ').filter(word => word.length > 0)
   
   // For each word, create a flexible pattern that allows for small typos
@@ -34,7 +32,6 @@ function getSearchVariations(query: string): string[] {
     words.join(' '), // cleaned spaces
   ]
   
-  // Add reversed word order for names (e.g., "Johnson Sarah" -> "Sarah Johnson")
   if (words.length === 2) {
     variations.push(words.reverse().join(' '))
   }
@@ -115,7 +112,6 @@ export async function GET(request: NextRequest) {
       // Build multiple OR conditions for better matching
       const searchConditions: string[] = []
       
-      // Add exact match conditions first (highest priority)
       searchConditions.push(`first_name.ilike.%${query}%`, `last_name.ilike.%${query}%`) // Fixed: use 'name' field not 'first_name/last_name'
       searchConditions.push(`email.ilike.${query}`)
       
@@ -124,7 +120,6 @@ export async function GET(request: NextRequest) {
         const words = variation.split(' ')
         
         if (words.length >= 2) {
-          // Handle full name searches (single name field)
           const fullNameQuery = words.join(' ')
           searchConditions.push(`first_name.ilike.%${words[0]}%`, `last_name.ilike.%${words[1]}%`)
           // Also try reversed order
@@ -145,7 +140,6 @@ export async function GET(request: NextRequest) {
         })
       }
       
-      // Remove duplicates and create OR query (limit to prevent performance issues)
       const uniqueConditions = [...new Set(searchConditions)].slice(0, 20)
       const orQuery = uniqueConditions.join(',')
       
@@ -175,7 +169,6 @@ export async function GET(request: NextRequest) {
           
           let score = 0
           
-          // Exact full name match (highest score)
           if (fullName.includes(queryLower) || reverseName.includes(queryLower)) {
             score += 100
           }
@@ -389,7 +382,6 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Sort all results by score (highest first), then by type priority
     const sortedResults = results.sort((a, b) => {
       // First sort by score if available
       if (a.score !== undefined && b.score !== undefined) {

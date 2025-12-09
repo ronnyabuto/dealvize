@@ -14,7 +14,6 @@ function calculateReadTime(content: string): string {
   return `${minutes} min read`
 }
 
-// Fetch blog post from database (server-side)
 async function getBlogPost(slug: string) {
   try {
     const supabase = await createClient()

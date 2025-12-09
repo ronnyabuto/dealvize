@@ -19,7 +19,6 @@ export default async function SuperAdminUsersPage() {
   if (!user) redirect('/auth/signin')
   if (!isSuper) redirect('/unauthorized')
   
-  // Fetch all users (server-side)
   const allUsers = await getAllUsers()
 
   const getRoleColor = (role: string) => {

@@ -79,7 +79,6 @@ async function processSequenceStep(supabase: any, enrollment: any) {
     sequence
   )
 
-  // Send the email (integrate with your email service here)
   const emailResult = await sendEmail({
     to: client.email,
     subject: processedTemplate.subject,

@@ -116,7 +116,6 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Process clients in batches (enterprise best practice)
     const batches = []
     for (let i = 0; i < clientsNeedingScores.length; i += options.batch_size) {
       batches.push(clientsNeedingScores.slice(i, i + options.batch_size))

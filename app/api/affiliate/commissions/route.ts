@@ -79,7 +79,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// Process commission payment (internal use - could be called by payment webhooks)
 export async function POST(request: NextRequest) {
   try {
     // This should be called by payment processing webhooks or admin processes
@@ -172,7 +171,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Approve commissions for payout (admin function)
 export async function PUT(request: NextRequest) {
   try {
     const user = await requireAuth()
