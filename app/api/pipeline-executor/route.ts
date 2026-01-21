@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
               entity_id,
               trigger_type,
               trigger_data,
-              action_results,
+              action_results: actionResults,
               executed_at: new Date().toISOString(),
               success: actionResults.every(r => r.success)
             })
@@ -364,10 +364,10 @@ async function createTask(supabase: any, parameters: any, entityData: any, autom
 
   // Add entity relationships
   if (entityData.client_id || entityData.id && entityData.first_name) {
-    taskData.client_id = entityData.client_id || entityData.id
+    (taskData as any).client_id = entityData.client_id || entityData.id
   }
   if (entityData.deal_id || entityData.id && entityData.title) {
-    taskData.deal_id = entityData.deal_id || entityData.id
+    (taskData as any).deal_id = entityData.deal_id || entityData.id
   }
 
   const { data, error } = await supabase
@@ -447,10 +447,10 @@ async function createNote(supabase: any, parameters: any, entityData: any, autom
 
   // Add entity relationships
   if (entityData.client_id || (entityData.first_name && entityData.id)) {
-    noteData.client_id = entityData.client_id || entityData.id
+    (noteData as any).client_id = entityData.client_id || entityData.id
   }
   if (entityData.deal_id || (entityData.title && entityData.value)) {
-    noteData.deal_id = entityData.deal_id || entityData.id
+    (noteData as any).deal_id = entityData.deal_id || entityData.id
   }
 
   const { data, error } = await supabase

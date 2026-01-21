@@ -259,7 +259,7 @@ export default function CalendarPage() {
                                   <div className="flex items-center justify-between">
                                     <h4 className="font-medium">{task.title}</h4>
                                     <div className="flex items-center gap-2">
-                                      <Badge variant={getPriorityColor(task.priority)} size="sm">
+                                      <Badge variant={getPriorityColor(task.priority)}>
                                         {task.priority}
                                       </Badge>
                                       <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(task.status)}`}>

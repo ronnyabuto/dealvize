@@ -93,7 +93,7 @@ async function getAllTenantsAnalytics(serviceClient: any, startDate: Date, timeR
 
   // Get metrics for each tenant
   const tenantsWithAnalytics = await Promise.all(
-    (tenants || []).map(async (tenant) => {
+    (tenants || []).map(async (tenant: any) => {
       const [
         { count: userCount },
         { count: activeUserCount },
@@ -238,7 +238,7 @@ async function getTenantDetails(serviceClient: any, tenantId: string, startDate:
     metrics: {
       users: {
         total: users?.length || 0,
-        active: users?.filter(u => new Date(u.last_sign_in_at) >= startDate).length || 0,
+        active: users?.filter((u: any) => new Date(u.last_sign_in_at) >= startDate).length || 0,
         breakdown: userAnalytics
       },
       business: {
@@ -395,7 +395,7 @@ function calculateFeatureUsage(activities: any[]) {
   }, {})
 
   return Object.entries(usage)
-    .sort(([,a], [,b]) => b - a)
+    .sort(([,a], [,b]) => (b as number) - (a as number))
     .slice(0, 10)
     .map(([feature, count]) => ({ feature, usage_count: count }))
 }

@@ -25,8 +25,8 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error('Error executing sequences:', error)
-    return NextResponse.json({ 
-      error: error.message || 'Failed to execute sequences' 
+    return NextResponse.json({
+      error: (error as any).message || 'Failed to execute sequences'
     }, { status: 500 })
   }
 }

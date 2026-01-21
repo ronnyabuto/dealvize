@@ -244,10 +244,10 @@ async function processAssignment(supabase: any, rule: any, client: any, userId: 
 }
 
 async function processRoundRobin(supabase: any, rule: any, userId: string): Promise<any> {
-  // Get team members from the rule or use fallback
-  const teamMembers = rule.assigned_to ? [rule.assigned_to] : [userId]
-  
-  // Get last assigned user from assignment history
+  const teamMembers = Array.isArray(rule.team_members) && rule.team_members.length > 0
+    ? rule.team_members
+    : [userId]
+
   const { data: lastAssignment } = await supabase
     .from('lead_assignment_history')
     .select('assigned_to')
@@ -259,7 +259,7 @@ async function processRoundRobin(supabase: any, rule: any, userId: string): Prom
   let nextIndex = 0
   if (lastAssignment) {
     const lastIndex = teamMembers.indexOf(lastAssignment.assigned_to)
-    nextIndex = (lastIndex + 1) % teamMembers.length
+    nextIndex = lastIndex === -1 ? 0 : (lastIndex + 1) % teamMembers.length
   }
 
   return {
@@ -270,23 +270,24 @@ async function processRoundRobin(supabase: any, rule: any, userId: string): Prom
 }
 
 async function processLoadBalanced(supabase: any, rule: any, userId: string): Promise<any> {
-  const teamMembers = rule.assigned_to ? [rule.assigned_to] : [userId]
-  
-  // Count current assignments for each team member
+  const teamMembers = Array.isArray(rule.team_members) && rule.team_members.length > 0
+    ? rule.team_members
+    : [userId]
+
   const assignmentCounts = await Promise.all(
     teamMembers.map(async (memberId: string) => {
       const { count } = await supabase
         .from('clients')
         .select('id', { count: 'exact', head: true })
         .eq('assigned_to', memberId)
-        .eq('lead_status', 'new') // Only count active leads
+        // Count all active clients (not just 'new' - valid statuses are: Buyer, Seller, In Contract)
+        .in('status', ['Buyer', 'Seller', 'In Contract'])
 
       return { memberId, count: count || 0 }
     })
   )
 
-  // Find member with least assignments
-  const leastLoaded = assignmentCounts.reduce((min, current) => 
+  const leastLoaded = assignmentCounts.reduce((min, current) =>
     current.count < min.count ? current : min
   )
 

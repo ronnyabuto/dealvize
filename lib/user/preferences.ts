@@ -172,7 +172,7 @@ export class UserPreferencesManager {
 
   // Reset specific section
   async resetPreferenceSection(section: keyof UserPreferences): Promise<void> {
-    this.preferences[section] = defaultUserPreferences[section] as any
+    (this.preferences as any)[section] = defaultUserPreferences[section]
     await this.savePreferences()
   }
 

@@ -417,7 +417,7 @@ export function AttributionTracking() {
                             </TableCell>
                             <TableCell className="text-right">{channel.conversions}</TableCell>
                             <TableCell className="text-right">
-                              <Badge variant={channel.conversion_rate > 10 ? 'success' : channel.conversion_rate > 5 ? 'secondary' : 'outline'}>
+                              <Badge variant={channel.conversion_rate > 10 ? 'default' : channel.conversion_rate > 5 ? 'secondary' : 'outline'}>
                                 {formatPercentage(channel.conversion_rate)}
                               </Badge>
                             </TableCell>
@@ -457,7 +457,7 @@ export function AttributionTracking() {
                                 <Target className="h-3 w-3" />
                                 {path.conversions} conversions
                               </span>
-                              <Badge variant={path.conversion_rate > 20 ? 'success' : path.conversion_rate > 10 ? 'secondary' : 'outline'}>
+                              <Badge variant={path.conversion_rate > 20 ? 'default' : path.conversion_rate > 10 ? 'secondary' : 'outline'}>
                                 {formatPercentage(path.conversion_rate)}
                               </Badge>
                             </div>

@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
 
     const { data: affiliate, error: affiliateError } = await supabase
       .from('affiliate_programs')
-      .select('id, tier, user_id, commission_rate')
+      .select('id, tier, user_id, commission_rate, total_referrals')
       .eq('referral_code', referralCode.toUpperCase())
       .eq('status', 'active')
       .single()

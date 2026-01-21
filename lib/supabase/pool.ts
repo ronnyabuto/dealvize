@@ -282,11 +282,11 @@ class SupabaseConnectionPool {
 
   public getMetrics() {
     return {
+      ...this.metrics,
       totalConnections: this.connections.size,
       activeConnections: Array.from(this.connections.values()).filter(c => c.inUse).length,
       idleConnections: Array.from(this.connections.values()).filter(c => !c.inUse).length,
-      waitingRequests: this.waitingQueue.length,
-      ...this.metrics
+      waitingRequests: this.waitingQueue.length
     }
   }
 

@@ -373,16 +373,16 @@ async function getFeatureFlags(serviceClient: any, filters: any) {
   if (error) throw error
 
   // Add analytics to each flag
-  const flagsWithAnalytics = (flags || []).map(flag => {
+  const flagsWithAnalytics = (flags || []).map((flag: any) => {
     const events = flag.usage_stats || []
-    const evaluations = events.filter(e => e.event_type === 'evaluated')
-    const toggles = events.filter(e => e.event_type === 'toggled')
+    const evaluations = events.filter((e: any) => e.event_type === 'evaluated')
+    const toggles = events.filter((e: any) => e.event_type === 'toggled')
 
     return {
       ...flag,
       analytics: {
         total_evaluations: evaluations.length,
-        recent_evaluations: evaluations.filter(e => 
+        recent_evaluations: evaluations.filter((e: any) =>
           new Date(e.created_at) > new Date(Date.now() - 24 * 60 * 60 * 1000)
         ).length,
         toggle_history: toggles.length,
@@ -395,11 +395,11 @@ async function getFeatureFlags(serviceClient: any, filters: any) {
     flags: flagsWithAnalytics,
     summary: {
       total: flags?.length || 0,
-      active: flags?.filter(f => f.is_active).length || 0,
+      active: flags?.filter((f: any) => f.is_active).length || 0,
       environments: {
-        development: flags?.filter(f => f.environment === 'development').length || 0,
-        staging: flags?.filter(f => f.environment === 'staging').length || 0,
-        production: flags?.filter(f => f.environment === 'production').length || 0
+        development: flags?.filter((f: any) => f.environment === 'development').length || 0,
+        staging: flags?.filter((f: any) => f.environment === 'staging').length || 0,
+        production: flags?.filter((f: any) => f.environment === 'production').length || 0
       }
     }
   })
@@ -433,9 +433,9 @@ async function getABTests(serviceClient: any, filters: any) {
   if (error) throw error
 
   // Calculate test analytics
-  const testsWithAnalytics = (tests || []).map(test => {
+  const testsWithAnalytics = (tests || []).map((test: any) => {
     const metrics = test.metrics || []
-    const participants = [...new Set(metrics.map(m => m.user_id))].length
+    const participants = [...new Set(metrics.map((m: any) => m.user_id))].length
 
     return {
       ...test,
@@ -451,8 +451,8 @@ async function getABTests(serviceClient: any, filters: any) {
     tests: testsWithAnalytics,
     summary: {
       total: tests?.length || 0,
-      running: tests?.filter(t => t.status === 'running').length || 0,
-      completed: tests?.filter(t => t.status === 'completed').length || 0
+      running: tests?.filter((t: any) => t.status === 'running').length || 0,
+      completed: tests?.filter((t: any) => t.status === 'completed').length || 0
     }
   })
 }
@@ -472,7 +472,7 @@ async function getFeatureFlagAnalytics(serviceClient: any, flagKey: string | nul
   if (error) throw error
 
   // Generate analytics
-  const evaluations = events?.filter(e => e.event_type === 'evaluated') || []
+  const evaluations = events?.filter((e: any) => e.event_type === 'evaluated') || []
   const hourlyStats = generateHourlyStats(evaluations)
   const userSegmentation = analyzeUserSegmentation(evaluations)
 
@@ -480,7 +480,7 @@ async function getFeatureFlagAnalytics(serviceClient: any, flagKey: string | nul
     flag_key: flagKey,
     analytics: {
       total_evaluations: evaluations.length,
-      unique_users: [...new Set(evaluations.map(e => e.user_id))].length,
+      unique_users: [...new Set(evaluations.map((e: any) => e.user_id))].length,
       hourly_stats: hourlyStats,
       user_segmentation: userSegmentation,
       recent_activity: events?.slice(0, 50) || []

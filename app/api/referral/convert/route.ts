@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     // Find the affiliate program
     const { data: affiliate, error: affiliateError } = await serviceClient
       .from('affiliate_programs')
-      .select('id, user_id, commission_rate')
+      .select('id, user_id, commission_rate, total_referrals, total_earnings')
       .eq('referral_code', validatedData.referralCode.toUpperCase())
       .eq('status', 'active')
       .single()

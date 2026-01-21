@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
     const tokenResponse = await exchangeCodeForTokens(provider, code)
     
     if (!tokenResponse.success) {
-      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/integrations?error=${encodeURIComponent(tokenResponse.error)}`)
+      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/integrations?error=${encodeURIComponent(tokenResponse.error || 'Authentication failed')}`)
     }
 
     const userProfile = await getUserProfile(provider, tokenResponse.tokens.access_token)

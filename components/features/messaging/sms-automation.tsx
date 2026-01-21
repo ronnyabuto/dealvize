@@ -470,11 +470,11 @@ export function SMSAutomation() {
                       className="w-20"
                     />
                     <span className="text-sm text-gray-600">
-                      {newAutomation.automation_type === 'appointment_reminder' && 'hours before appointment'}
-                      {newAutomation.automation_type === 'follow_up' && 'days after last contact'}
-                      {newAutomation.automation_type === 'welcome' && 'hours after signup'}
-                      {newAutomation.automation_type === 'nurturing' && 'days between messages'}
-                      {newAutomation.automation_type === 'birthday' && '(sent on birthday)'}
+                      {(newAutomation.automation_type as string) === 'appointment_reminder' && 'hours before appointment'}
+                      {(newAutomation.automation_type as string) === 'follow_up' && 'days after last contact'}
+                      {(newAutomation.automation_type as string) === 'welcome' && 'hours after signup'}
+                      {(newAutomation.automation_type as string) === 'nurturing' && 'days between messages'}
+                      {(newAutomation.automation_type as string) === 'birthday' && '(sent on birthday)'}
                     </span>
                   </div>
                 </div>

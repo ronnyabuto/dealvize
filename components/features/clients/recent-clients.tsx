@@ -22,7 +22,6 @@ interface Client {
 export function RecentClients() {
   const [clients, setClients] = useState<Client[]>([])
   const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState<string>("")
 
   useEffect(() => {
     async function fetchClients() {
@@ -43,10 +42,6 @@ export function RecentClients() {
     fetchClients()
   }, [])
 
-  const filteredClients = clients.filter(client =>
-    `${client.first_name} ${client.last_name}`.toLowerCase().includes(searchTerm.toLowerCase())
-  )
-
   if (loading) {
     return (
       <Card>
@@ -57,10 +52,6 @@ export function RecentClients() {
               <Plus className="h-4 w-4 mr-2" />
               New Client
             </Button>
-          </div>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input placeholder="Search clients" className="pl-10" value="" readOnly />
           </div>
         </CardHeader>
         <CardContent>
@@ -97,15 +88,7 @@ export function RecentClients() {
             </Link>
           </Button>
         </div>
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-          <Input 
-            placeholder="Search clients" 
-            className="pl-10"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
+
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
@@ -115,14 +98,14 @@ export function RecentClients() {
             <div>Deal Value</div>
             <div>Last Contact</div>
           </div>
-          {filteredClients.length === 0 ? (
+          {clients.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
-              {searchTerm ? "No clients found matching your search" : "No clients added yet"}
+              No clients added yet
             </div>
           ) : (
-            filteredClients.map((client) => (
-              <Link 
-                key={client.id} 
+            clients.map((client) => (
+              <Link
+                key={client.id}
                 href={`/client/${client.id}`}
                 className="grid grid-cols-4 gap-4 items-center py-2 hover:bg-gray-50 rounded-lg px-2 transition-colors"
               >

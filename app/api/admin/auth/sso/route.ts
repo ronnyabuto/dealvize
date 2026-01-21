@@ -79,10 +79,10 @@ export async function GET(request: NextRequest) {
       // Calculate usage statistics
       const providersWithStats = (providers || []).map(provider => {
         const loginAttempts = provider.usage_stats || []
-        const last30Days = loginAttempts.filter(attempt => 
+        const last30Days = loginAttempts.filter((attempt: any) =>
           new Date(attempt.created_at) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
         )
-        const successfulLogins = last30Days.filter(attempt => attempt.success)
+        const successfulLogins = last30Days.filter((attempt: any) => attempt.success)
 
         return {
           ...provider,
@@ -359,7 +359,12 @@ async function testSSOProvider(serviceClient: any, providerId: string) {
 
     if (error) throw error
 
-    const testResults = {
+    const testResults: {
+      provider_id: string
+      provider_name: string
+      type: string
+      tests: any[]
+    } = {
       provider_id: providerId,
       provider_name: provider.name,
       type: provider.type,
@@ -401,7 +406,7 @@ async function testSSOProvider(serviceClient: any, providerId: string) {
     return {
       success: false,
       message: 'Test failed with error',
-      error: error.message
+      error: error instanceof Error ? error.message : 'Unknown error'
     }
   }
 }
@@ -413,7 +418,7 @@ async function testSAMLProvider(provider: any) {
   // Test SSO URL reachability
   if (config.sso_url) {
     try {
-      const response = await fetch(config.sso_url, { method: 'GET', timeout: 10000 })
+      const response = await fetch(config.sso_url, { method: 'GET' })
       tests.push({
         name: 'SSO URL Reachability',
         passed: response.ok,
@@ -423,7 +428,7 @@ async function testSAMLProvider(provider: any) {
       tests.push({
         name: 'SSO URL Reachability',
         passed: false,
-        details: error.message
+        details: error instanceof Error ? error.message : 'Unknown error'
       })
     }
   }
@@ -443,7 +448,7 @@ async function testSAMLProvider(provider: any) {
       tests.push({
         name: 'Certificate Format',
         passed: false,
-        details: error.message
+        details: error instanceof Error ? error.message : 'Unknown error'
       })
     }
   }
@@ -483,11 +488,10 @@ async function testOAuthProvider(provider: any) {
   // Test token endpoint
   if (config.token_url) {
     try {
-      const response = await fetch(config.token_url, { 
+      const response = await fetch(config.token_url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: 'grant_type=client_credentials',
-        timeout: 10000
+        body: 'grant_type=client_credentials'
       })
       tests.push({
         name: 'Token Endpoint Reachability',
@@ -498,7 +502,7 @@ async function testOAuthProvider(provider: any) {
       tests.push({
         name: 'Token Endpoint Reachability',
         passed: false,
-        details: error.message
+        details: error instanceof Error ? error.message : 'Unknown error'
       })
     }
   }
@@ -520,7 +524,7 @@ async function testOIDCProvider(provider: any) {
   // Test discovery endpoint
   if (config.discovery_url) {
     try {
-      const response = await fetch(config.discovery_url, { timeout: 10000 })
+      const response = await fetch(config.discovery_url)
       const data = await response.json()
       
       tests.push({
@@ -543,7 +547,7 @@ async function testOIDCProvider(provider: any) {
       tests.push({
         name: 'Discovery Endpoint',
         passed: false,
-        details: error.message
+        details: error instanceof Error ? error.message : 'Unknown error'
       })
     }
   }

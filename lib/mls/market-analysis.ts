@@ -133,8 +133,12 @@ export class MLSMarketAnalysisService {
     }
 
     const searchResult = await this.client.searchProperties(searchCriteria)
-    
-    return searchResult.properties.map(property => ({
+
+    if (!searchResult.success || !searchResult.data) {
+      return []
+    }
+
+    return searchResult.data.properties.map(property => ({
       ...property,
       distance: this.calculateDistance(
         criteria.coordinates,
@@ -358,7 +362,20 @@ export class MLSMarketAnalysisService {
       }
 
       const result = await this.client.searchProperties(searchCriteria)
-      const sales = result.properties.filter(p => p.closeDate)
+
+      if (!result.success || !result.data) {
+        return {
+          timeframe,
+          totalSales: 0,
+          priceAppreciation: 0,
+          averagePrice: 0,
+          medianDaysOnMarket: 0,
+          inventoryLevel: 'Low' as const,
+          trend: 'Stable' as const
+        }
+      }
+
+      const sales = result.data.properties.filter(p => p.closeDate)
 
       // Calculate trends
       const priceHistory = sales.map(p => ({

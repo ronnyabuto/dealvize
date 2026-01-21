@@ -18,10 +18,11 @@ interface Params {
 }
 
 // PUT - Update specific team member
-export async function PUT(request: NextRequest, { params }: { params: Params }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<Params> }) {
   return withRBAC(request, async (req, context) => {
     const supabase = await createClient()
-    const memberId = params.id
+    const { id } = await params
+    const memberId = id
 
     try {
       const body = await req.json()
@@ -120,8 +121,8 @@ export async function PUT(request: NextRequest, { params }: { params: Params }) 
             old_role: existingMember.role,
             new_role: validatedData.role,
             target_user_id: existingMember.user_id,
-            target_user_name: existingMember.users?.name,
-            target_user_email: existingMember.users?.email,
+            target_user_name: (existingMember.users as any)?.name,
+            target_user_email: (existingMember.users as any)?.email,
             status_changed: validatedData.status ? true : false
           }
         })
@@ -159,10 +160,11 @@ export async function PUT(request: NextRequest, { params }: { params: Params }) 
 }
 
 // DELETE - Remove specific team member
-export async function DELETE(request: NextRequest, { params }: { params: Params }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<Params> }) {
   return withRBAC(request, async (req, context) => {
     const supabase = await createClient()
-    const memberId = params.id
+    const { id } = await params
+    const memberId = id
 
     try {
       // Verify the member belongs to this tenant and get their info
@@ -227,8 +229,8 @@ export async function DELETE(request: NextRequest, { params }: { params: Params 
           entity_id: memberId,
           metadata: {
             removed_user_id: existingMember.user_id,
-            removed_user_name: existingMember.users?.name,
-            removed_user_email: existingMember.users?.email,
+            removed_user_name: (existingMember.users as any)?.name,
+            removed_user_email: (existingMember.users as any)?.email,
             role: existingMember.role
           }
         })

@@ -268,7 +268,7 @@ async function testSegmentConditions(supabase: any, conditions: any[], logic: st
   } catch (error) {
     return {
       valid: false,
-      errors: [error.message || 'Unknown validation error'],
+      errors: [error instanceof Error ? error.message : 'Unknown validation error'],
       memberCount: 0
     }
   }

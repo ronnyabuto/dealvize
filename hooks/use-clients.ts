@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { refreshDashboardMetrics } from '@/components/features/analytics/dashboard-metrics'
+import { getCache, setCache, clearCache, generateCacheKey } from '@/lib/cache-utils'
 
 export interface Client {
   id: string;
@@ -37,7 +38,7 @@ interface UseClientsReturn {
   currentPage: number
   refetch: () => Promise<void>
   refreshClients: () => Promise<void>
-    createClient: (clientData: Omit<Client, 'id' | 'name' | 'initials' | 'statusColor' | 'lastContact' | 'dealValue'>) => Promise<Client | null>
+  createClient: (clientData: Omit<Client, 'id' | 'name' | 'initials' | 'statusColor' | 'lastContact' | 'dealValue'>) => Promise<Client | null>
   updateClient: (id: string, clientData: Partial<Client>) => Promise<Client | null>
   deleteClient: (id: string) => Promise<boolean>
   exportClients: () => Promise<void>
@@ -54,9 +55,23 @@ export function useClients(params: UseClientsParams = {}): UseClientsReturn {
 
   const fetchClients = useCallback(async () => {
     try {
-      setLoading(true)
+      const cacheKey = generateCacheKey('clients', params)
+
+      // Try cache first
+      const cachedData = getCache<{ clients: Client[], totalCount: number, totalPages: number, page: number }>(cacheKey)
+      if (cachedData) {
+        setClients(cachedData.clients)
+        setTotalCount(cachedData.totalCount)
+        setTotalPages(cachedData.totalPages)
+        setCurrentPage(cachedData.page)
+        setLoading(false)
+        // Background revalidation logic could be added here
+      } else {
+        setLoading(true)
+      }
+
       setError(null)
-      
+
       // Build query parameters
       const searchParams = new URLSearchParams()
       if (params.search) searchParams.set('search', params.search)
@@ -65,7 +80,7 @@ export function useClients(params: UseClientsParams = {}): UseClientsReturn {
       if (params.limit) searchParams.set('limit', params.limit.toString())
       if (params.sortBy) searchParams.set('sortBy', params.sortBy)
       if (params.sortOrder) searchParams.set('sortOrder', params.sortOrder)
-      
+
       const response = await fetch(`/api/clients?${searchParams.toString()}`, {
         credentials: 'include'
       })
@@ -79,6 +94,15 @@ export function useClients(params: UseClientsParams = {}): UseClientsReturn {
       setTotalCount(data.totalCount || 0)
       setTotalPages(data.totalPages || 0)
       setCurrentPage(data.page || 1)
+
+      // Update cache
+      setCache(cacheKey, {
+        clients: data.clients || [],
+        totalCount: data.totalCount || 0,
+        totalPages: data.totalPages || 0,
+        page: data.page || 1
+      })
+
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
@@ -86,14 +110,21 @@ export function useClients(params: UseClientsParams = {}): UseClientsReturn {
     }
   }, [params.search, params.status, params.page, params.limit, params.sortBy, params.sortOrder])
 
-    const createClient = async (clientData: Omit<Client, 'id' | 'name' | 'initials' | 'statusColor' | 'lastContact' | 'dealValue'>): Promise<Client | null> => {
+  const createClient = async (clientData: Omit<Client, 'id' | 'name' | 'initials' | 'statusColor' | 'lastContact' | 'dealValue'>): Promise<Client | null> => {
     try {
       setError(null)
-      
+
+      // Get CSRF token from cookie
+      const csrfToken = document.cookie
+        .split(';')
+        .find(c => c.trim().startsWith('csrf-token-client='))
+        ?.split('=')[1]
+
       const response = await fetch('/api/clients', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          ...(csrfToken && { 'x-csrf-token': decodeURIComponent(csrfToken) })
         },
         credentials: 'include',
         body: JSON.stringify(clientData)
@@ -103,7 +134,7 @@ export function useClients(params: UseClientsParams = {}): UseClientsReturn {
         const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
         console.error('Client creation error:', errorData)
         console.error('Response status:', response.status)
-        
+
         let errorMessage = 'Failed to create client'
         if (response.status === 403) {
           errorMessage = 'Access denied. Please refresh the page and try again.'
@@ -112,18 +143,21 @@ export function useClients(params: UseClientsParams = {}): UseClientsReturn {
         } else if (errorData.error) {
           errorMessage = errorData.error
         }
-        
+
         throw new Error(`${errorMessage} (Status: ${response.status})`)
       }
 
       const newClient = await response.json()
-      
+
+      // Invalidate clients cache
+      clearCache('clients')
+
       // Refresh the clients list
       await fetchClients()
-      
+
       // Refresh dashboard metrics
       refreshDashboardMetrics()
-      
+
       return newClient
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to create client'
@@ -135,11 +169,18 @@ export function useClients(params: UseClientsParams = {}): UseClientsReturn {
   const updateClient = async (id: string, clientData: Partial<Client>): Promise<Client | null> => {
     try {
       setError(null)
-      
+
+      // Get CSRF token from cookie
+      const csrfToken = document.cookie
+        .split(';')
+        .find(c => c.trim().startsWith('csrf-token-client='))
+        ?.split('=')[1]
+
       const response = await fetch(`/api/clients/${id}`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          ...(csrfToken && { 'x-csrf-token': decodeURIComponent(csrfToken) })
         },
         credentials: 'include',
         body: JSON.stringify(clientData)
@@ -150,12 +191,15 @@ export function useClients(params: UseClientsParams = {}): UseClientsReturn {
       }
 
       const updatedClient = await response.json()
-      
+
       // Update the local state
-      setClients(prev => prev.map(client => 
+      setClients(prev => prev.map(client =>
         client.id === id ? { ...client, ...updatedClient } : client
       ))
-      
+
+      // Invalidate clients cache
+      clearCache('clients')
+
       return updatedClient
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update client')
@@ -166,9 +210,18 @@ export function useClients(params: UseClientsParams = {}): UseClientsReturn {
   const deleteClient = async (id: string): Promise<boolean> => {
     try {
       setError(null)
-      
+
+      // Get CSRF token from cookie
+      const csrfToken = document.cookie
+        .split(';')
+        .find(c => c.trim().startsWith('csrf-token-client='))
+        ?.split('=')[1]
+
       const response = await fetch(`/api/clients/${id}`, {
         method: 'DELETE',
+        headers: {
+          ...(csrfToken && { 'x-csrf-token': decodeURIComponent(csrfToken) })
+        },
         credentials: 'include'
       })
 
@@ -178,7 +231,10 @@ export function useClients(params: UseClientsParams = {}): UseClientsReturn {
 
       // Remove from local state
       setClients(prev => prev.filter(client => client.id !== id))
-      
+
+      // Invalidate clients cache
+      clearCache('clients')
+
       return true
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete client')
@@ -189,7 +245,7 @@ export function useClients(params: UseClientsParams = {}): UseClientsReturn {
   const exportClients = async (): Promise<void> => {
     try {
       setError(null)
-      
+
       // Build query parameters with current filters but without pagination
       const searchParams = new URLSearchParams()
       if (params.search) searchParams.set('search', params.search)
@@ -197,7 +253,7 @@ export function useClients(params: UseClientsParams = {}): UseClientsReturn {
       if (params.sortBy) searchParams.set('sortBy', params.sortBy)
       if (params.sortOrder) searchParams.set('sortOrder', params.sortOrder)
       searchParams.set('export', 'csv')
-      
+
       const response = await fetch(`/api/clients?${searchParams.toString()}`, {
         credentials: 'include'
       })
@@ -224,10 +280,10 @@ export function useClients(params: UseClientsParams = {}): UseClientsReturn {
   const importClients = async (file: File): Promise<boolean> => {
     try {
       setError(null)
-      
+
       const formData = new FormData()
       formData.append('file', file)
-      
+
       const response = await fetch('/api/clients/import', {
         method: 'POST',
         credentials: 'include',
@@ -239,13 +295,16 @@ export function useClients(params: UseClientsParams = {}): UseClientsReturn {
       }
 
       const result = await response.json()
-      
+
+      // Invalidate clients cache
+      clearCache('clients')
+
       // Refresh clients list after successful import
       await fetchClients()
-      
+
       // Refresh dashboard metrics
       refreshDashboardMetrics()
-      
+
       return result.success
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to import clients')

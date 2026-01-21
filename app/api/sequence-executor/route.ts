@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
         results.push({
           enrollment_id: enrollment.id,
           success: false,
-          error: error.message || 'Unknown error'
+          error: (error as any).message || 'Unknown error'
         })
       }
     }

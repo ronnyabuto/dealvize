@@ -87,12 +87,12 @@ export async function GET(request: NextRequest) {
       const webhooksWithStats = await Promise.all(
         (webhooks || []).map(async (webhook) => {
           const deliveryStats = webhook.delivery_stats || []
-          const last24h = deliveryStats.filter(d => 
+          const last24h = deliveryStats.filter((d: any) =>
             new Date(d.created_at) > new Date(Date.now() - 24 * 60 * 60 * 1000)
           )
 
-          const successCount = deliveryStats.filter(d => d.status === 'success').length
-          const failureCount = deliveryStats.filter(d => d.status === 'failed').length
+          const successCount = deliveryStats.filter((d: any) => d.status === 'success').length
+          const failureCount = deliveryStats.filter((d: any) => d.status === 'failed').length
           const totalDeliveries = deliveryStats.length
 
           return {
@@ -399,10 +399,10 @@ async function triggerWebhookEvent(
 
   // Deliver to all matching webhooks
   const deliveries = await Promise.all(
-    webhooks.map(webhook => deliverWebhook(serviceClient, webhook, webhookPayload))
+    webhooks.map((webhook: any) => deliverWebhook(serviceClient, webhook, webhookPayload))
   )
 
-  const successfulDeliveries = deliveries.filter(d => d.success).length
+  const successfulDeliveries = deliveries.filter((d: any) => d.success).length
 
   return {
     deliveries,
@@ -491,7 +491,7 @@ async function deliverWebhook(serviceClient: any, webhook: any, payload: any) {
       url: webhook.url,
       status: 'failed',
       status_code: 0,
-      response_body: error.message,
+      response_body: error instanceof Error ? error.message : 'Unknown error',
       response_time: responseTime,
       attempt: 1,
       created_at: new Date().toISOString()
@@ -510,7 +510,7 @@ async function deliverWebhook(serviceClient: any, webhook: any, payload: any) {
       success: false,
       webhook_id: webhook.id,
       delivery_id: deliveryId,
-      error: error.message,
+      error: error instanceof Error ? error.message : 'Unknown error',
       response_time: responseTime
     }
   }

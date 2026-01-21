@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo, useCallback } from "react"
+import { useState, useMemo, useCallback, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -26,15 +26,29 @@ interface ClientsListProps {
 export function ClientsList({ search = '', status = '', page = 1, limit = 10, sortBy = 'name', sortOrder = 'asc' }: ClientsListProps) {
   const router = useRouter()
   const [deletingId, setDeletingId] = useState<string | null>(null)
-  
-  const { clients, loading, error, deleteClient } = useClients({ 
-    search, 
-    status, 
-    page, 
+  const [containerHeight, setContainerHeight] = useState(800) // Default height for SSR
+
+  const { clients, loading, error, deleteClient } = useClients({
+    search,
+    status,
+    page,
     limit: Math.max(limit, 50), // Increase batch size for virtualization
     sortBy,
     sortOrder
   })
+
+  // Measure container height after mount (client-side only)
+  useEffect(() => {
+    const updateHeight = () => {
+      if (typeof window !== 'undefined') {
+        setContainerHeight(Math.min(800, window.innerHeight - 300))
+      }
+    }
+
+    updateHeight()
+    window.addEventListener('resize', updateHeight)
+    return () => window.removeEventListener('resize', updateHeight)
+  }, [])
 
   // Memoized handlers for better performance
   const handleViewDetails = useCallback((clientId: string) => {
@@ -213,7 +227,7 @@ export function ClientsList({ search = '', status = '', page = 1, limit = 10, so
       <VirtualList
         items={clients}
         itemHeight={180} // Approximate height of each client card
-        containerHeight={Math.min(800, window.innerHeight - 300)} // Max height with fallback
+        containerHeight={containerHeight} // Dynamically calculated, SSR-safe
         renderItem={renderClientItem}
         className="rounded-lg border"
         overscan={3}

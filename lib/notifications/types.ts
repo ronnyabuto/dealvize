@@ -227,7 +227,7 @@ export const defaultNotificationPreferences: NotificationPreferences = {
     },
     push: {
       enabled: false,
-      types: ['urgent', 'system_alert'],
+      types: ['system_alert', 'error'],
       requireInteraction: false,
       sound: true,
       vibrate: true,

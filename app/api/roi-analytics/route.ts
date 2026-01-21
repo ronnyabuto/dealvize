@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     const currentPeriodEnd = endDate.toISOString()
 
     // Get comparison period if requested
-    let previousPeriodStart, previousPeriodEnd
+    let previousPeriodStart: Date | undefined, previousPeriodEnd: Date | undefined
     if (compare_periods) {
       previousPeriodEnd = new Date(startDate)
       previousPeriodStart = new Date(startDate)
@@ -167,7 +167,7 @@ async function calculatePeriodROI(
     .lte('created_at', endDate)
 
   const leadCount = leads?.length || 0
-  const leadIds = leads?.map(l => l.id) || []
+  const leadIds = leads?.map((l: any) => l.id) || []
 
   // Get closed deals from these leads
   let closedDeals = 0
@@ -185,7 +185,7 @@ async function calculatePeriodROI(
 
     if (deals) {
       closedDeals = deals.length
-      totalRevenue = deals.reduce((sum, deal) => {
+      totalRevenue = deals.reduce((sum: number, deal: any) => {
         const commission = (deal.value || 0) * ((deal.commission_percentage || 0) / 100)
         return sum + commission
       }, 0)

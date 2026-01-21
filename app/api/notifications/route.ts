@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check permissions - users can only send notifications to themselves unless they're admin
-    if (userId !== currentUserId && sessionValidation.sessionInfo?.role !== 'admin') {
+    if (userId !== currentUserId && (sessionValidation.sessionInfo as any)?.role !== 'admin') {
       return NextResponse.json({
         success: false,
         error: 'Unauthorized to send notifications to other users'

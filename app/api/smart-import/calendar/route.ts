@@ -66,9 +66,9 @@ export async function POST(request: NextRequest) {
 
       // Create tasks if auto-create is enabled
       let createdTasks: any[] = []
-      if (result.success && options.autoCreateTasks && result.data) {
+      if (result.success && (options as any).autoCreateTasks && result.data) {
         for (const event of result.data) {
-          const taskData = CalendarIntegration.convertEventToTask(event, options.defaultPriority || 'Medium')
+          const taskData = CalendarIntegration.convertEventToTask(event, (options as any).defaultPriority || 'Medium')
           
           if (taskData) {
             try {

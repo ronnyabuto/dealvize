@@ -77,11 +77,14 @@ export async function GET(request: NextRequest) {
       return acc
     }, {} as Record<string, number>)
 
-    const outcomeBreakdown = Object.entries(outcomeGroups).map(([outcome, count]) => ({
-      outcome,
-      count,
-      percentage: Math.round((count / totalCalls) * 100)
-    }))
+    const outcomeBreakdown = Object.entries(outcomeGroups).map(([outcome, count]) => {
+      const callCount = count as number
+      return {
+        outcome,
+        count: callCount,
+        percentage: Math.round((callCount / totalCalls) * 100)
+      }
+    })
 
     // Call type breakdown
     const callTypeBreakdown = {
@@ -97,11 +100,14 @@ export async function GET(request: NextRequest) {
     }, {} as Record<number, number>)
 
     const peakHours = Object.entries(hourGroups)
-      .map(([hour, count]) => ({
-        hour: parseInt(hour),
-        hour_display: formatHour(parseInt(hour)),
-        calls: count
-      }))
+      .map(([hour, count]) => {
+        const callCount = count as number
+        return {
+          hour: parseInt(hour),
+          hour_display: formatHour(parseInt(hour)),
+          calls: callCount
+        }
+      })
       .sort((a, b) => b.calls - a.calls)
       .slice(0, 5)
 
@@ -119,7 +125,7 @@ export async function GET(request: NextRequest) {
 
     // Get client names for top contacts
     const topClientIds = Object.entries(clientGroups)
-      .sort(([,a], [,b]) => b.count - a.count)
+      .sort(([,a], [,b]) => (b as any).count - (a as any).count)
       .slice(0, 10)
       .map(([clientId]) => clientId)
 

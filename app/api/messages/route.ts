@@ -181,13 +181,18 @@ export async function POST(request: NextRequest) {
     }
 
     // Create the message
+    const { data: userData } = await supabase.auth.getUser()
+    if (!userData.user) {
+      return createErrorResponse('User not authenticated', 401)
+    }
+
     const { data: message, error } = await supabase
       .from('conversation_messages')
       .insert({
         conversation_id,
-        sender_id: user.id,
-        sender_name: user.name || user.email,
-        sender_email: user.email,
+        sender_id: userData.user.id,
+        sender_name: userData.user.user_metadata?.name || userData.user.email,
+        sender_email: userData.user.email,
         content,
         subject,
         message_type,

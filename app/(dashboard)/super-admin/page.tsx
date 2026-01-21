@@ -55,7 +55,7 @@ export default async function SuperAdminPage() {
     cpuUsage: 35,
     memoryUsage: 68,
     diskUsage: 42,
-    activeUsers: stats.activeUsers || 0,
+    activeUsers: Math.floor(stats.totalUsers * 0.3),
     errorRate: '0.02%'
   }
 

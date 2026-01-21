@@ -36,12 +36,12 @@ export async function updateSession(request: NextRequest) {
         getAll() {
           return request.cookies.getAll()
         },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
+        setAll(cookiesToSet: any) {
+          cookiesToSet.forEach(({ name, value }: any) => request.cookies.set(name, value))
           supabaseResponse = NextResponse.next({
             request,
           })
-          cookiesToSet.forEach(({ name, value, options }) =>
+          cookiesToSet.forEach(({ name, value, options }: any) =>
             supabaseResponse.cookies.set(name, value, options)
           )
         },
@@ -69,7 +69,10 @@ export async function updateSession(request: NextRequest) {
     '/contact',
     '/privacy',
     '/terms',
-    '/help'
+    '/help',
+    '/manifest.webmanifest',
+    '/robots.txt',
+    '/sitemap.xml'
   ]
 
   // Public API endpoints that don't require authentication
@@ -92,9 +95,9 @@ export async function updateSession(request: NextRequest) {
   ]
 
   // Check if current path is public (marketing pages)
-  const isPublicRoute = publicRoutes.some(route => 
+  const isPublicRoute = publicRoutes.some(route =>
     pathname === route || pathname === route + '/' || pathname.startsWith('/blog/')
-  )
+  ) || pathname.startsWith('/_next/') || pathname.startsWith('/favicon') || pathname.match(/\.(png|jpg|jpeg|svg|ico|webp|gif)$/)
 
   // Check if current path is a public API endpoint
   const isPublicApiRoute = publicApiRoutes.some(route => 

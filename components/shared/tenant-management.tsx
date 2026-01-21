@@ -506,7 +506,7 @@ export function TenantManagement() {
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="text-sm font-medium text-muted-foreground">Status</p>
-                          <Badge variant={selectedTenant.status === 'active' ? 'success' : 'destructive'}>
+                          <Badge variant={selectedTenant.status === 'active' ? 'default' : 'destructive'}>
                             {selectedTenant.status}
                           </Badge>
                         </div>
@@ -728,7 +728,7 @@ export function TenantManagement() {
                               </span>
                             </TableCell>
                             <TableCell>
-                              <Badge variant={member.status === 'active' ? 'success' : 'secondary'}>
+                              <Badge variant={member.status === 'active' ? 'default' : 'secondary'}>
                                 {member.status}
                               </Badge>
                             </TableCell>
@@ -1003,7 +1003,7 @@ export function TenantManagement() {
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div className="text-center p-4 border rounded-lg">
-                        <Badge className={getPlanColor(selectedTenant.plan_type)} size="lg">
+                        <Badge className={getPlanColor(selectedTenant.plan_type)}>
                           {selectedTenant.plan_type} Plan
                         </Badge>
                         <p className="text-sm text-muted-foreground mt-2">

@@ -92,7 +92,7 @@ class ChatRealtimeManager {
         const users = Object.keys(state).map(userId => ({
           user_id: userId,
           ...state[userId][0]
-        })) as PresenceState[]
+        })) as unknown as PresenceState[]
         
         this.notifyPresenceListeners(users)
       })
@@ -100,15 +100,15 @@ class ChatRealtimeManager {
         const users = newPresences.map(presence => ({
           user_id: key,
           ...presence
-        })) as PresenceState[]
-        
+        })) as unknown as PresenceState[]
+
         this.notifyPresenceListeners(users)
       })
       .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
         const users = leftPresences.map(presence => ({
           user_id: key,
           ...presence
-        })) as PresenceState[]
+        })) as unknown as PresenceState[]
         
         this.notifyPresenceListeners(users)
       })
@@ -163,7 +163,7 @@ class ChatRealtimeManager {
       },
       (payload: RealtimePostgresChangesPayload<ConversationMessage>) => {
         if (callbacks.onMessage && payload.new) {
-          callbacks.onMessage(payload.new)
+          callbacks.onMessage(payload.new as ConversationMessage)
         }
       }
     )
@@ -179,7 +179,7 @@ class ChatRealtimeManager {
       },
       (payload: RealtimePostgresChangesPayload<ConversationMessage>) => {
         if (callbacks.onMessageUpdate && payload.new) {
-          callbacks.onMessageUpdate(payload.new)
+          callbacks.onMessageUpdate(payload.new as ConversationMessage)
         }
       }
     )
@@ -195,7 +195,7 @@ class ChatRealtimeManager {
       },
       (payload: RealtimePostgresChangesPayload<Conversation>) => {
         if (callbacks.onConversationUpdate && payload.new) {
-          callbacks.onConversationUpdate(payload.new)
+          callbacks.onConversationUpdate(payload.new as Conversation)
         }
       }
     )
@@ -402,7 +402,7 @@ class ChatRealtimeManager {
     return Object.keys(state).map(userId => ({
       user_id: userId,
       ...state[userId][0]
-    })) as PresenceState[]
+    })) as unknown as PresenceState[]
   }
 }
 

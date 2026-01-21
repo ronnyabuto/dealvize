@@ -92,7 +92,7 @@ export function EnhancedFloatingChat({
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messageInputRef = useRef<HTMLTextAreaElement>(null)
   const chatContainerRef = useRef<HTMLDivElement>(null)
-  const typingTimeoutRef = useRef<NodeJS.Timeout>()
+  const typingTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined)
   
   // Accessibility hooks
   const { storePreviousFocus, restorePreviousFocus, focusFirstInteractive, trapFocus } = useFocusManagement()
@@ -235,7 +235,7 @@ export function EnhancedFloatingChat({
 
   // Message input navigation
   useMessageInputNavigation({
-    onSend: sendMessage,
+    onSend: () => sendMessage(),
     onEscape: () => setActiveConversationId(null),
     enabled: isOpen && !!activeConversationId
   })

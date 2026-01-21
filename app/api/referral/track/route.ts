@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
 
     // Get client IP and user agent for tracking
     const forwarded = request.headers.get('x-forwarded-for')
-    const ip = forwarded ? forwarded.split(',')[0] : request.ip || '127.0.0.1'
+    const ip = forwarded ? forwarded.split(',')[0] : '127.0.0.1'
     const userAgent = request.headers.get('user-agent') || ''
     const referrer = request.headers.get('referer') || ''
 

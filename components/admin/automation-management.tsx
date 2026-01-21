@@ -113,6 +113,7 @@ interface Analytics {
     completion_rate: number
     delivery_rate: number
     enrollments: number
+    is_active: boolean
   }>
 }
 

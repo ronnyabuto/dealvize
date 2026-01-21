@@ -62,9 +62,9 @@ export async function GET() {
       last_active: member.last_active || new Date().toISOString(),
       invited_date: member.invited_date,
       activity_summary: {
-        deals_created: member.user_profiles?.deals_count || 0,
-        clients_added: member.user_profiles?.clients_count || 0,
-        tasks_completed: member.user_profiles?.tasks_completed || 0,
+        deals_created: (member.user_profiles as any)?.deals_count || 0,
+        clients_added: (member.user_profiles as any)?.clients_count || 0,
+        tasks_completed: (member.user_profiles as any)?.tasks_completed || 0,
         last_login: member.last_active || new Date().toISOString()
       }
     }))
@@ -86,7 +86,7 @@ export async function GET() {
     }
 
     const allMembers = [adminMember, ...formattedMembers]
-    plan.current_users = allMembers.length
+    ;(plan as any).current_users = allMembers.length
 
     // Get recent activity
     const { data: activities, error: activitiesError } = await supabase

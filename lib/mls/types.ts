@@ -400,16 +400,4 @@ export interface MLSSavedSearch {
   lastRun?: Date
 }
 
-// Export all types for easier imports
-export type {
-  MLSProperty,
-  MLSSearchCriteria,
-  MLSSearchResult,
-  MLSMarketAnalysis,
-  MLSPropertyHistory,
-  MLSConfig,
-  MLSApiResponse,
-  MLSIntegrationStatus,
-  ColumbusMLSExtensions,
-  MLSUserSettings
-}
+// All types are already exported with their declarations above

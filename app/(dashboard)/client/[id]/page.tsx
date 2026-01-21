@@ -52,6 +52,8 @@ export default function ClientDetailPage() {
     const fullName = `${clientData.first_name || ''} ${clientData.last_name || ''}`.trim()
     return {
       id: clientData.id,
+      first_name: clientData.first_name || '',
+      last_name: clientData.last_name || '',
       name: fullName || 'Unknown Client',
       email: clientData.email || '',
       phone: clientData.phone || '',

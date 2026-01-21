@@ -30,9 +30,9 @@ export async function POST(request: NextRequest) {
     let contextData = { ...variables }
 
     // Add user data
-    contextData.agent_name = `${user.user_metadata?.first_name || ''} ${user.user_metadata?.last_name || ''}`.trim() || 'Agent'
+    contextData.agent_name = `${(user as any).user_metadata?.first_name || ''} ${(user as any).user_metadata?.last_name || ''}`.trim() || 'Agent'
     contextData.agent_email = user.email || ''
-    contextData.agent_phone = user.user_metadata?.phone || ''
+    contextData.agent_phone = (user as any).user_metadata?.phone || ''
 
     // Get client data if client_id provided
     if (client_id) {

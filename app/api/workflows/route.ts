@@ -9,8 +9,8 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     
     const workflow_id = searchParams.get('workflow_id')
-    const category = searchParams.get('category') // 'lead_nurturing', 'deal_management', 'client_onboarding', 'follow_up'
-    const status = searchParams.get('status') // 'active', 'paused', 'draft'
+    const category = searchParams.get('category') ?? undefined // 'lead_nurturing', 'deal_management', 'client_onboarding', 'follow_up'
+    const status = searchParams.get('status') ?? undefined // 'active', 'paused', 'draft'
 
     if (workflow_id) {
       const workflow = await getWorkflow(supabase, user.id, workflow_id)
@@ -307,14 +307,14 @@ async function getWorkflowStats(supabase: any, workflowId: string) {
   }
 
   const totalExecutions = executions.length
-  const successfulExecutions = executions.filter(e => e.status === 'completed').length
-  const failedExecutions = executions.filter(e => e.status === 'failed').length
+  const successfulExecutions = executions.filter((e: any) => e.status === 'completed').length
+  const failedExecutions = executions.filter((e: any) => e.status === 'failed').length
   const successRate = totalExecutions > 0 ? (successfulExecutions / totalExecutions) * 100 : 0
 
   // Calculate average execution time
-  const completedExecutions = executions.filter(e => e.status === 'completed' && e.completed_at)
-  const avgExecutionTime = completedExecutions.length > 0 
-    ? completedExecutions.reduce((sum, e) => {
+  const completedExecutions = executions.filter((e: any) => e.status === 'completed' && e.completed_at)
+  const avgExecutionTime = completedExecutions.length > 0
+    ? completedExecutions.reduce((sum: number, e: any) => {
         const duration = new Date(e.completed_at).getTime() - new Date(e.started_at).getTime()
         return sum + duration
       }, 0) / completedExecutions.length / 1000 // Convert to seconds
@@ -402,9 +402,9 @@ export async function executeWorkflow(workflowId: string, entityType: string, en
   }
 }
 
-async function processWorkflowSteps(steps: any[], entityType: string, entityId: string, userId: string, executionId: string, supabase: any) {
+async function processWorkflowSteps(steps: any[], entityType: string, entityId: string, userId: string, executionId: string, supabase: any): Promise<any> {
   const log = []
-  const results = {}
+  const results: any = {}
 
   for (const step of steps) {
     const stepResult = await executeWorkflowStep(step, entityType, entityId, userId, results, supabase)
@@ -560,7 +560,7 @@ async function createTaskStep(config: any, entityType: string, entityId: string,
 async function updateFieldStep(config: any, entityType: string, entityId: string, userId: string, previousResults: any, supabase: any) {
   const { field_updates } = config
 
-  const updateData = {}
+  const updateData: any = {}
   for (const [field, value] of Object.entries(field_updates)) {
     updateData[field] = processTemplate(value as string, { entityType, entityId, ...previousResults })
   }

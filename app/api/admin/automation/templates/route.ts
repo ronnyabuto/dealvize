@@ -92,11 +92,11 @@ export async function GET(request: NextRequest) {
       if (error) throw error
 
       // Calculate usage statistics for each template
-      const templatesWithStats = (templates || []).map(template => {
+      const templatesWithStats = (templates || []).map((template: any) => {
         const usageStats = template.usage_stats || []
         const totalUses = usageStats.length
-        const successfulUses = usageStats.filter(u => u.status === 'sent').length
-        const recentUses = usageStats.filter(u => {
+        const successfulUses = usageStats.filter((u: any) => u.status === 'sent').length
+        const recentUses = usageStats.filter((u: any) => {
           const useDate = new Date(u.created_at)
           const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
           return useDate > sevenDaysAgo

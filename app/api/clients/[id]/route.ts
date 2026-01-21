@@ -1,8 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { z } from 'zod'
 
 // UUID validation regex
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+// Update client schema - all fields optional for partial updates
+const updateClientSchema = z.object({
+  first_name: z.string().min(1, 'First name is required').max(50, 'First name too long').optional(),
+  last_name: z.string().min(1, 'Last name is required').max(50, 'Last name too long').optional(),
+  email: z.string().email('Invalid email').optional().or(z.literal('')),
+  phone: z.string().max(20, 'Phone too long').optional(),
+  address: z.string().max(500, 'Address too long').optional().or(z.literal('')),
+  company: z.string().max(100, 'Company name too long').optional().or(z.literal('')),
+  status: z.enum(['Buyer', 'Seller', 'In Contract']).optional()
+})
 
 export async function GET(
   request: NextRequest,
@@ -61,7 +73,17 @@ export async function PUT(
     }
     
     const body = await request.json()
-    const { first_name, last_name, email, phone, address, company, status } = body
+
+    // Validate request body with Zod
+    const validation = updateClientSchema.safeParse(body)
+    if (!validation.success) {
+      return NextResponse.json({
+        error: 'Validation failed',
+        details: validation.error.errors.map(e => ({ field: e.path.join('.'), message: e.message }))
+      }, { status: 400 })
+    }
+
+    const { first_name, last_name, email, phone, address, company, status } = validation.data
 
     const { data: client, error } = await supabase
       .from('clients')

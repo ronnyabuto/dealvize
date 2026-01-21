@@ -13,10 +13,11 @@ interface Params {
 }
 
 // POST - Resend invitation
-export async function POST(request: NextRequest, { params }: { params: Params }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<Params> }) {
   return withRBAC(request, async (req, context) => {
     const supabase = await createClient()
-    const invitationId = params.id
+    const { id } = await params
+    const invitationId = id
 
     try {
       // Get invitation details

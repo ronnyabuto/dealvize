@@ -334,9 +334,12 @@ export function DealsHeader({ onSearchChange, onStatusChange, onFiltersChange }:
             {(filters.minValue || filters.maxValue) && (
               <Badge variant="secondary" className="flex items-center gap-1">
                 Value: ${filters.minValue || '0'} - ${filters.maxValue || '∞'}
-                <X 
-                  className="h-3 w-3 cursor-pointer" 
-                  onClick={() => handleFilterChange('minValue', '') || handleFilterChange('maxValue', '')}
+                <X
+                  className="h-3 w-3 cursor-pointer"
+                  onClick={() => {
+                    handleFilterChange('minValue', '')
+                    handleFilterChange('maxValue', '')
+                  }}
                 />
               </Badge>
             )}

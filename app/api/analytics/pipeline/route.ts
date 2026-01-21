@@ -41,10 +41,10 @@ export async function GET(request: NextRequest) {
     if (deals && deals.length > 0) {
       deals.forEach(deal => {
         const status = deal.status || 'Lead'
-        
-        if (stageData[status]) {
-          stageData[status].count++
-          stageData[status].value += deal.value || 0
+
+        if ((stageData as any)[status]) {
+          (stageData as any)[status].count++
+          (stageData as any)[status].value += deal.value || 0
         }
       })
     }

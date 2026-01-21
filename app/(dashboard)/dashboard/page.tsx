@@ -78,7 +78,7 @@ export default async function DashboardPage() {
   return (
     <SmartDashboard>
       <div className="min-h-screen bg-gray-50/50 overflow-auto">
-        <DashboardHeader user={user} />
+        <DashboardHeader user={user ?? undefined} />
         <main className="p-4 sm:p-6">
           <DashboardMetrics />
 

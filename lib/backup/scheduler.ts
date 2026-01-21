@@ -56,12 +56,12 @@ export class BackupScheduler {
         await backup.createFullBackup()
         logger.info('Scheduled daily backup completed')
       } catch (error) {
-        logger.error('Scheduled daily backup failed', error)
+        logger.error('Scheduled daily backup failed', error as any)
       }
     }, {
       scheduled: false,
       timezone: 'UTC'
-    })
+    } as any)
 
     this.scheduledJobs.set('daily', job)
     job.start()
@@ -77,12 +77,12 @@ export class BackupScheduler {
         await backup.createFullBackup()
         logger.info('Scheduled weekly backup completed')
       } catch (error) {
-        logger.error('Scheduled weekly backup failed', error)
+        logger.error('Scheduled weekly backup failed', error as any)
       }
     }, {
       scheduled: false,
       timezone: 'UTC'
-    })
+    } as any)
 
     this.scheduledJobs.set('weekly', job)
     job.start()
@@ -98,12 +98,12 @@ export class BackupScheduler {
         await backup.createFullBackup()
         logger.info('Scheduled monthly backup completed')
       } catch (error) {
-        logger.error('Scheduled monthly backup failed', error)
+        logger.error('Scheduled monthly backup failed', error as any)
       }
     }, {
       scheduled: false,
       timezone: 'UTC'
-    })
+    } as any)
 
     this.scheduledJobs.set('monthly', job)
     job.start()
@@ -119,18 +119,18 @@ export class BackupScheduler {
           await backup.createFullBackup()
           logger.info('Scheduled custom backup completed')
         } catch (error) {
-          logger.error('Scheduled custom backup failed', error)
+          logger.error('Scheduled custom backup failed', error as any)
         }
       }, {
         scheduled: false,
         timezone: 'UTC'
-      })
+      } as any)
 
       this.scheduledJobs.set('custom', job)
       job.start()
       logger.info(`Custom backup scheduled with cron: ${cronExpression}`)
     } catch (error) {
-      logger.error(`Invalid cron expression: ${cronExpression}`, error)
+      logger.error(`Invalid cron expression: ${cronExpression}`, error as any)
     }
   }
 
@@ -143,12 +143,12 @@ export class BackupScheduler {
         await backup.cleanupOldBackups()
         logger.info('Scheduled backup cleanup completed')
       } catch (error) {
-        logger.error('Scheduled backup cleanup failed', error)
+        logger.error('Scheduled backup cleanup failed', error as any)
       }
     }, {
       scheduled: false,
       timezone: 'UTC'
-    })
+    } as any)
 
     this.scheduledJobs.set('cleanup', job)
     job.start()
@@ -174,7 +174,7 @@ export class BackupScheduler {
       
       logger.info(`Manual ${type} backup completed`)
     } catch (error) {
-      logger.error(`Manual ${type} backup failed`, error)
+      logger.error(`Manual ${type} backup failed`, error as any)
       throw error
     }
   }

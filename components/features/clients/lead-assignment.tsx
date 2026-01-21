@@ -36,6 +36,7 @@ import {
 
 interface LeadAssignmentProps {
   onRuleUpdate?: () => void
+  teamMembers?: any[]
 }
 
 interface AssignmentRule {

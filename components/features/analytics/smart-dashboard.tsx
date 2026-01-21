@@ -20,7 +20,7 @@ export function SmartDashboard({ children }: SmartDashboardProps) {
         
         // Log performance metrics after everything loads
         requestIdleCallback(() => {
-          const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming
+          const navigation = performance.getEntriesByType('navigation')[0] as any
           if (navigation) {
             console.log('Dashboard Performance:', {
               loadComplete: `${navigation.loadEventEnd - navigation.navigationStart}ms`,

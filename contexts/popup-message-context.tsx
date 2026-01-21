@@ -220,12 +220,12 @@ export function usePopupNotifications() {
   }
 
   return {
+    ...popup,
     notifySuccess,
     notifyError,
     notifyInfo,
     notifyWarning,
     announceFeature,
-    showPromotion,
-    ...popup
+    showPromotion
   }
 }

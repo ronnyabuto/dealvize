@@ -486,7 +486,7 @@ async function getBlogCategories(serviceClient: any) {
 
   if (error) throw error
 
-  const categoriesWithCounts = categories.map(cat => ({
+  const categoriesWithCounts = categories.map((cat: any) => ({
     ...cat,
     post_count: cat.post_count?.[0]?.count || 0
   }))

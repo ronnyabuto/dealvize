@@ -336,9 +336,9 @@ async function getSystemHealthMetrics(serviceClient: any, timeRange: string) {
       performance: performanceMetrics,
       database: databaseMetrics,
       subscriptions: {
-        active: subscriptions?.filter(s => s.status === 'active').length || 0,
-        trial: subscriptions?.filter(s => s.status === 'trialing').length || 0,
-        cancelled: subscriptions?.filter(s => s.status === 'cancelled').length || 0
+        active: subscriptions?.filter((s: any) => s.status === 'active').length || 0,
+        trial: subscriptions?.filter((s: any) => s.status === 'trialing').length || 0,
+        cancelled: subscriptions?.filter((s: any) => s.status === 'cancelled').length || 0
       }
     },
     timestamp: now.toISOString(),
@@ -364,7 +364,7 @@ async function getActiveAlerts(serviceClient: any) {
 
   if (error) throw error
 
-  const severityCounts = (alerts || []).reduce((acc, alert) => {
+  const severityCounts = (alerts || []).reduce((acc: any, alert: any) => {
     acc[alert.severity] = (acc[alert.severity] || 0) + 1
     return acc
   }, {})
@@ -428,8 +428,8 @@ async function getAlertHistory(serviceClient: any, timeRange: string) {
   if (error) throw error
 
   // Group by day for trend analysis
-  const dailyStats = {}
-  history?.forEach(alert => {
+  const dailyStats: any = {}
+  history?.forEach((alert: any) => {
     const date = new Date(alert.first_occurred).toISOString().split('T')[0]
     if (!dailyStats[date]) {
       dailyStats[date] = { total: 0, critical: 0, high: 0, medium: 0, low: 0 }
@@ -443,7 +443,7 @@ async function getAlertHistory(serviceClient: any, timeRange: string) {
     daily_stats: dailyStats,
     summary: {
       total_alerts: history?.length || 0,
-      resolved_alerts: history?.filter(a => a.status === 'resolved').length || 0,
+      resolved_alerts: history?.filter((a: any) => a.status === 'resolved').length || 0,
       avg_resolution_time: calculateAverageResolutionTime(history || [])
     }
   })

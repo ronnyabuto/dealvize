@@ -18,13 +18,13 @@ export default function manifest(): MetadataRoute.Manifest {
         src: '/icon-192.png',
         sizes: '192x192',
         type: 'image/png',
-        purpose: 'maskable any',
+        purpose: 'any',
       },
       {
         src: '/icon-512.png',
         sizes: '512x512',
         type: 'image/png',
-        purpose: 'maskable any',
+        purpose: 'any',
       },
       {
         src: '/icon-maskable-192.png',
@@ -111,12 +111,5 @@ export default function manifest(): MetadataRoute.Manifest {
     ],
     related_applications: [],
     prefer_related_applications: false,
-    edge_side_panel: {
-      preferred_width: 400,
-    },
-    handle_links: 'preferred',
-    launch_handler: {
-      client_mode: ['navigate-existing', 'auto'],
-    },
-  }
+  } as any
 }

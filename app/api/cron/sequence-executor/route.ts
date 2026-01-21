@@ -10,13 +10,54 @@ export async function GET(request: NextRequest) {
   const authHeader = request.headers.get('authorization')
   const cronSecret = process.env.CRON_SECRET
 
-  // Verify cron secret for security
   if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
   try {
     const serviceClient = createServiceClient()
+
+    const now = new Date()
+    const executionInterval = 5 * 60 * 1000
+    const roundedTime = Math.floor(now.getTime() / executionInterval) * executionInterval
+    const executionId = `sequence-executor-${roundedTime}`
+
+    const { data: existingExecution } = await serviceClient
+      .from('cron_execution_log')
+      .select('id, status')
+      .eq('execution_id', executionId)
+      .single()
+
+    if (existingExecution) {
+      if (existingExecution.status === 'running') {
+        return NextResponse.json({
+          skipped: true,
+          reason: 'Execution already in progress',
+          execution_id: executionId
+        })
+      }
+      if (existingExecution.status === 'completed') {
+        return NextResponse.json({
+          skipped: true,
+          reason: 'Already executed',
+          execution_id: executionId
+        })
+      }
+    }
+
+    const { data: executionLog } = await serviceClient
+      .from('cron_execution_log')
+      .insert({
+        job_name: 'sequence-executor',
+        execution_id: executionId,
+        status: 'running'
+      })
+      .select()
+      .single()
+
+    if (!executionLog) {
+      return NextResponse.json({ error: 'Failed to create execution log' }, { status: 500 })
+    }
 
     // Get all pending enrollments that are due for execution
     const { data: pendingEnrollments, error: fetchError } = await serviceClient
@@ -65,7 +106,7 @@ export async function GET(request: NextRequest) {
           return {
             enrollment_id: enrollment.id,
             success: false,
-            error: error.message || 'Unknown error'
+            error: (error as any).message || 'Unknown error'
           }
         }
       })
@@ -99,16 +140,39 @@ export async function GET(request: NextRequest) {
 
     console.log(`Cron execution complete: ${successCount} successful, ${errorCount} errors`)
 
+    await serviceClient
+      .from('cron_execution_log')
+      .update({
+        status: 'completed',
+        completed_at: new Date().toISOString(),
+        records_processed: results.length,
+        errors: results.filter(r => !r.success).map(r => ({ enrollment_id: r.enrollment_id, error: (r as any).error }))
+      })
+      .eq('id', executionLog.id)
+
     return NextResponse.json({
       processed: results.length,
       successful: successCount,
       errors: errorCount,
+      execution_id: executionId,
       timestamp: new Date().toISOString(),
-      sample_results: results.slice(0, 5) // Return sample for monitoring
+      sample_results: results.slice(0, 5)
     })
 
   } catch (error) {
     console.error('Error in cron sequence executor:', error)
+
+    const executionId = `sequence-executor-${Math.floor(Date.now() / (5 * 60 * 1000)) * (5 * 60 * 1000)}`
+    await createServiceClient()
+      .from('cron_execution_log')
+      .update({
+        status: 'failed',
+        completed_at: new Date().toISOString(),
+        errors: [{ error: error instanceof Error ? error.message : 'Unknown error' }]
+      })
+      .eq('execution_id', executionId)
+      .eq('status', 'running')
+
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

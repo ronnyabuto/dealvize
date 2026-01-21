@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
     const priority = searchParams.get('priority')
     const limit = parseInt(searchParams.get('limit') || '50')
     const dueSoon = searchParams.get('due_soon') === 'true'
-    
+
     // Attempt fetch with relationships
     let query = supabase
       .from('tasks')
@@ -47,7 +47,8 @@ export async function GET(request: NextRequest) {
     if (dueSoon) {
       const weekFromNow = new Date()
       weekFromNow.setDate(weekFromNow.getDate() + 7)
-      query = query.lte('due_date', weekFromNow.toISOString()).neq('status', 'Completed')
+      // Include tasks due within a week OR tasks with no due date (pending backlog)
+      query = query.or(`due_date.lte.${weekFromNow.toISOString()},due_date.is.null`).neq('status', 'Completed')
     }
 
     const { data: tasks, error } = await query
@@ -55,8 +56,8 @@ export async function GET(request: NextRequest) {
     if (error) {
       console.error('Database error fetching tasks:', error)
       if (error.code === 'PGRST200') {
-         const { data: simpleTasks } = await supabase.from('tasks').select('*').eq('user_id', user.id).limit(limit);
-         return NextResponse.json({ tasks: simpleTasks || [] })
+        const { data: simpleTasks } = await supabase.from('tasks').select('*').eq('user_id', user.id).limit(limit);
+        return NextResponse.json({ tasks: simpleTasks || [] })
       }
       return NextResponse.json({ tasks: [] })
     }
@@ -79,8 +80,8 @@ export async function POST(request: NextRequest) {
 
     // Check references existence to prevent FK violations
     if (validatedData.client_id) {
-       const { count } = await supabase.from('clients').select('id', { count: 'exact', head: true }).eq('id', validatedData.client_id);
-       if (!count) return NextResponse.json({ error: 'Client not found' }, { status: 404 })
+      const { count } = await supabase.from('clients').select('id', { count: 'exact', head: true }).eq('id', validatedData.client_id);
+      if (!count) return NextResponse.json({ error: 'Client not found' }, { status: 404 })
     }
 
     const { data: task, error } = await supabase

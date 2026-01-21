@@ -507,7 +507,7 @@ export function PipelineAutomation({ onUpdate }: PipelineAutomationProps) {
                             <ActionParametersForm
                               actionType={action.type}
                               parameters={action.parameters}
-                              onChange={(params) => updateAction(index, { parameters: params })}
+                              onChange={(params: any) => updateAction(index, { parameters: params })}
                             />
                           </div>
                         </CardContent>

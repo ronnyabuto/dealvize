@@ -10,8 +10,8 @@ export async function GET(request: NextRequest) {
     
     const tenant_id = searchParams.get('tenant_id')
     const member_id = searchParams.get('member_id')
-    const role = searchParams.get('role')
-    const status = searchParams.get('status')
+    const role = searchParams.get('role') ?? undefined
+    const status = searchParams.get('status') ?? undefined
 
     if (!tenant_id) {
       return NextResponse.json({ error: 'Tenant ID is required' }, { status: 400 })

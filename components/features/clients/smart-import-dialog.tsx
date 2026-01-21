@@ -508,8 +508,8 @@ export function SmartImportDialog({
               )}
               <span className="text-sm font-medium">{processing.message}</span>
             </div>
-            
-            {processing.step !== 'idle' && (
+
+            {processing.step !== 'complete' && (
               <Progress value={processing.progress} className="w-full" />
             )}
 

@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
-import { AppSidebar } from '@/components/app-sidebar'
-import { PWAInstallPrompt, PWAStatus } from '@/components/pwa-install-prompt'
+import { AppSidebar } from '@/components/layout/app-sidebar'
+import { PWAInstallPrompt, PWAStatus } from '@/components/shared/pwa-install-prompt'
 import { Badge } from '@/components/ui/badge'
 import { 
   Menu, 

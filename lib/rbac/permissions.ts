@@ -8,12 +8,14 @@ export type PermissionAction =
   | 'manage' | 'view' | 'assign' | 'export'
   | 'approve' | 'configure' | 'invite'
 
-export type PermissionResource = 
+export type PermissionResource =
   | 'clients' | 'deals' | 'tasks' | 'notes' | 'conversations'
   | 'reports' | 'analytics' | 'settings' | 'members' | 'billing'
   | 'integrations' | 'automation' | 'api_keys' | 'templates'
   | 'lead_scoring' | 'workflows' | 'notifications' | 'audit_logs'
-  | 'mls' | 'documents' | 'calendar' | 'communication'
+  | 'mls' | 'documents' | 'calendar' | 'communication' | 'affiliates'
+  | 'tenant_analytics' | 'sso' | 'blog' | 'admin_dashboard' | 'webhooks'
+  | 'system_monitoring' | 'feature_flags'
 
 export type PermissionScope = 'own' | 'team' | 'tenant' | 'all'
 

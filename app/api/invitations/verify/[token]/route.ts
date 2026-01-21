@@ -11,8 +11,8 @@ interface Params {
 }
 
 // GET - Verify invitation token and return details
-export async function GET(request: NextRequest, { params }: { params: Params }) {
-  const { token } = params
+export async function GET(request: NextRequest, { params }: { params: Promise<Params> }) {
+  const { token } = await params
   
   if (!token) {
     return NextResponse.json(
@@ -98,7 +98,7 @@ export async function GET(request: NextRequest, { params }: { params: Params }) 
     const { data: existingMember } = await supabase
       .from('tenant_members')
       .select('id')
-      .eq('tenant_id', invitation.tenant.id)
+      .eq('tenant_id', (invitation.tenant as any).id)
       .eq('email', invitation.email.toLowerCase())
       .single()
 
@@ -118,13 +118,13 @@ export async function GET(request: NextRequest, { params }: { params: Params }) 
       expires_at: invitation.expires_at,
       custom_message: invitation.custom_message,
       tenant: {
-        id: invitation.tenant.id,
-        name: invitation.tenant.name,
-        industry: invitation.tenant.industry
+        id: (invitation.tenant as any).id,
+        name: (invitation.tenant as any).name,
+        industry: (invitation.tenant as any).industry
       },
       invited_by: {
-        name: invitation.invited_by_user?.name || 'Unknown',
-        email: invitation.invited_by_user?.email || ''
+        name: (invitation.invited_by_user as any)?.name || 'Unknown',
+        email: (invitation.invited_by_user as any)?.email || ''
       }
     }
 

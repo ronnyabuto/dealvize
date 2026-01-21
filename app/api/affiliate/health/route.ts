@@ -12,7 +12,11 @@ export async function GET() {
       affiliate_payouts: false
     }
     
-    const errors = {
+    const errors: {
+      affiliate_programs: string | null,
+      affiliate_referrals: string | null,
+      affiliate_payouts: string | null
+    } = {
       affiliate_programs: null,
       affiliate_referrals: null,
       affiliate_payouts: null

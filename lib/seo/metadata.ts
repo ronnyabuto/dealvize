@@ -2,7 +2,7 @@
 import { Metadata } from 'next'
 
 // Base metadata configuration
-export const baseMetadata = {
+export const baseMetadata: Metadata = {
   title: {
     template: '%s | Dealvize CRM',
     default: 'Dealvize CRM - Real Estate Customer Relationship Management'
@@ -73,7 +73,7 @@ export const baseMetadata = {
     yandex: process.env.YANDEX_VERIFICATION,
     yahoo: process.env.YAHOO_SITE_VERIFICATION,
   },
-} as const
+}
 
 // Generate page-specific metadata
 export function generatePageMetadata({
@@ -95,14 +95,14 @@ export function generatePageMetadata({
   
   return {
     title: fullTitle,
-    description: fullDescription,
+    description: fullDescription ?? undefined,
     alternates: {
       canonical: path || '/',
     },
     openGraph: {
       ...baseMetadata.openGraph,
       title: fullTitle,
-      description: fullDescription,
+      description: fullDescription ?? undefined,
       url: fullUrl,
       images: image ? [
         {
@@ -111,13 +111,13 @@ export function generatePageMetadata({
           height: 630,
           alt: fullTitle,
         }
-      ] : baseMetadata.openGraph.images,
+      ] : baseMetadata.openGraph?.images,
     },
     twitter: {
       ...baseMetadata.twitter,
       title: fullTitle,
-      description: fullDescription,
-      images: image ? [image] : baseMetadata.twitter.images,
+      description: fullDescription ?? undefined,
+      images: image ? [image] : baseMetadata.twitter?.images,
     },
     robots: noIndex ? {
       index: false,

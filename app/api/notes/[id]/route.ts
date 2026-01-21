@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { requireAuth } from '@/lib/auth/utils'
+import { z } from 'zod'
+
+const updateNoteSchema = z.object({
+  content: z.string().min(1, 'Content is required').max(2000, 'Note too long'),
+  type: z.enum(['note', 'call', 'meeting', 'email']).optional()
+})
 
 export async function GET(
   request: NextRequest,
@@ -53,11 +59,16 @@ export async function PUT(
     const resolvedParams = await params
     
     const body = await request.json()
-    const { content, type } = body
 
-    if (!content) {
-      return NextResponse.json({ error: 'Content is required' }, { status: 400 })
+    const validation = updateNoteSchema.safeParse(body)
+    if (!validation.success) {
+      return NextResponse.json({
+        error: 'Validation failed',
+        details: validation.error.errors.map(e => ({ field: e.path.join('.'), message: e.message }))
+      }, { status: 400 })
     }
+
+    const { content, type } = validation.data
 
     const updateData: any = { content }
     if (type) {

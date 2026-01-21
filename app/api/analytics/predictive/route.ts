@@ -170,12 +170,15 @@ async function predictLeadQualityTrends(leads: any[], activities: any[]) {
   const avgScore = recentLeads.reduce((sum, l) => sum + (l.ai_lead_score || l.lead_score || 50), 0) / Math.max(1, recentLeads.length)
   
   const leadsBySource = groupBy(leads, 'source')
-  const sourceQuality = Object.entries(leadsBySource).map(([source, sourceLeads]: [string, any[]]) => ({
-    source: source || 'unknown',
-    avg_score: sourceLeads.reduce((sum, l) => sum + (l.ai_lead_score || l.lead_score || 50), 0) / sourceLeads.length,
-    count: sourceLeads.length,
-    conversion_rate: (sourceLeads.filter(l => l.conversion_date).length / sourceLeads.length) * 100
-  })).sort((a, b) => b.avg_score - a.avg_score)
+  const sourceQuality = Object.entries(leadsBySource).map(([source, sourceLeads]) => {
+    const leads = sourceLeads as any[]
+    return {
+      source: source || 'unknown',
+      avg_score: leads.reduce((sum, l) => sum + (l.ai_lead_score || l.lead_score || 50), 0) / leads.length,
+      count: leads.length,
+      conversion_rate: (leads.filter(l => l.conversion_date).length / leads.length) * 100
+    }
+  }).sort((a, b) => b.avg_score - a.avg_score)
 
   const highQualityLeads = recentLeads.filter(l => (l.ai_lead_score || l.lead_score || 0) >= 70).length
   const qualityTrend = calculateQualityTrend(leads)
@@ -233,11 +236,14 @@ async function identifySeasonalPatterns(revenue: any[], deals: any[], timeframeD
   const seasonalPatterns = []
 
   // Identify peak months
-  const monthlyRevenue = Object.entries(monthlyData).map(([month, monthDeals]: [string, any[]]) => ({
-    month,
-    revenue: monthDeals.reduce((sum, d) => sum + (d.value || 0), 0),
-    deal_count: monthDeals.length
-  }))
+  const monthlyRevenue = Object.entries(monthlyData).map(([month, monthDeals]) => {
+    const deals = monthDeals as any[]
+    return {
+      month,
+      revenue: deals.reduce((sum, d) => sum + (d.value || 0), 0),
+      deal_count: deals.length
+    }
+  })
 
   const avgMonthlyRevenue = monthlyRevenue.reduce((sum, m) => sum + m.revenue, 0) / monthlyRevenue.length
   const peakMonths = monthlyRevenue.filter(m => m.revenue > avgMonthlyRevenue * 1.2)

@@ -116,7 +116,7 @@ async function getClientAttribution(supabase: any, userId: string, clientId: str
     }
   }
 
-  const journey = touchpoints.map(tp => ({
+  const journey = touchpoints.map((tp: any) => ({
     timestamp: tp.timestamp,
     touchpoint_type: tp.touchpoint_type,
     channel: tp.channel,

@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
 
     try {
       // Process email content
-      const result = EmailParser.parsePropertyEmail(emailContent, emailMetadata)
+      const result = EmailParser.parsePropertyEmail(emailContent, emailMetadata as any)
 
       // Log the import attempt
       const { error: logError } = await supabase

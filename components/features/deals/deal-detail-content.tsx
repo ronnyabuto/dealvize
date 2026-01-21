@@ -84,18 +84,18 @@ export function DealDetailContent({ deal }: DealDetailContentProps) {
         if (tasksError) throw tasksError
 
         // Fetch notes for this deal
-        const { data: notesData, error: notesError } = await supabase
-          .from('notes')
-          .select('*')
-          .eq('deal_id', deal.id)
-          .order('created_at', { ascending: false })
-          .limit(5)
-
-        if (notesError) throw notesError
+        // Note: notes table doesn't exist in current schema
+        // const { data: notesData, error: notesError } = await supabase
+        //   .from('notes')
+        //   .select('*')
+        //   .eq('deal_id', deal.id)
+        //   .order('created_at', { ascending: false })
+        //   .limit(5)
+        // if (notesError) throw notesError
 
         setClient(clientData)
         setTasks(tasksData || [])
-        setNotes(notesData || [])
+        setNotes([]) // Notes disabled - table doesn't exist
       } catch (err: any) {
         setError(err.message)
       } finally {
@@ -181,7 +181,7 @@ export function DealDetailContent({ deal }: DealDetailContentProps) {
                   <span className="ml-2 text-lg font-bold text-green-600">{deal.value}</span>
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-3">
                 <DollarSign className="h-5 w-5 text-gray-400" />
                 <div>
@@ -231,7 +231,7 @@ export function DealDetailContent({ deal }: DealDetailContentProps) {
                     </Badge>
                   </div>
                 </div>
-                
+
                 <div className="space-y-2">
                   {client.email && (
                     <div className="text-sm">
@@ -280,7 +280,7 @@ export function DealDetailContent({ deal }: DealDetailContentProps) {
                 </div>
               </div>
             )}
-            
+
             {deal.property.type && (
               <div className="flex items-center gap-3">
                 <Building2 className="h-5 w-5 text-gray-400" />
@@ -362,9 +362,9 @@ export function DealDetailContent({ deal }: DealDetailContentProps) {
                     )}
                   </div>
                 ))}
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
+                <Button
+                  variant="ghost"
+                  size="sm"
                   className="w-full mt-2"
                   onClick={() => router.push(`/tasks?deal=${deal.id}`)}
                 >
@@ -407,9 +407,9 @@ export function DealDetailContent({ deal }: DealDetailContentProps) {
                   </div>
                 ))}
                 {notes.length >= 5 && (
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     className="w-full mt-2"
                     onClick={() => router.push(`/notes?deal=${deal.id}`)}
                   >

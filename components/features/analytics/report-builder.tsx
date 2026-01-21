@@ -177,30 +177,30 @@ export function ReportBuilder({ onSave, onPreview, initialReport }: ReportBuilde
       limit: 100
     }
     
-    setReport(prev => ({
+    setReport((prev: any) => ({
       ...prev,
       data_sources: [...prev.data_sources, newSource]
     }))
   }
 
   const updateDataSource = (index: number, updates: any) => {
-    setReport(prev => ({
+    setReport((prev: any) => ({
       ...prev,
-      data_sources: prev.data_sources.map((source, i) => 
+      data_sources: prev.data_sources.map((source: any, i: number) =>
         i === index ? { ...source, ...updates } : source
       )
     }))
   }
 
   const removeDataSource = (index: number) => {
-    setReport(prev => ({
+    setReport((prev: any) => ({
       ...prev,
-      data_sources: prev.data_sources.filter((_, i) => i !== index)
+      data_sources: prev.data_sources.filter((_: any, i: number) => i !== index)
     }))
   }
 
   const addFilter = (table: string) => {
-    setReport(prev => ({
+    setReport((prev: any) => ({
       ...prev,
       filters: {
         ...prev.filters,
@@ -213,7 +213,7 @@ export function ReportBuilder({ onSave, onPreview, initialReport }: ReportBuilde
   }
 
   const updateFilter = (table: string, field: string, updates: any) => {
-    setReport(prev => ({
+    setReport((prev: any) => ({
       ...prev,
       filters: {
         ...prev.filters,
@@ -226,7 +226,7 @@ export function ReportBuilder({ onSave, onPreview, initialReport }: ReportBuilde
   }
 
   const removeFilter = (table: string, field: string) => {
-    setReport(prev => {
+    setReport((prev: any) => {
       const newFilters = { ...prev.filters }
       if (newFilters[table]) {
         delete newFilters[table][field]
@@ -341,7 +341,7 @@ export function ReportBuilder({ onSave, onPreview, initialReport }: ReportBuilde
                   <Input
                     id="report-name"
                     value={report.name}
-                    onChange={(e) => setReport(prev => ({ ...prev, name: e.target.value }))}
+                    onChange={(e) => setReport((prev: any) => ({ ...prev, name: e.target.value }))}
                     placeholder="Enter report name"
                   />
                 </div>
@@ -349,7 +349,7 @@ export function ReportBuilder({ onSave, onPreview, initialReport }: ReportBuilde
                   <Label htmlFor="report-type">Report Type</Label>
                   <Select
                     value={report.report_type}
-                    onValueChange={(value) => setReport(prev => ({ ...prev, report_type: value }))}
+                    onValueChange={(value) => setReport((prev: any) => ({ ...prev, report_type: value }))}
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -372,7 +372,7 @@ export function ReportBuilder({ onSave, onPreview, initialReport }: ReportBuilde
                 <Textarea
                   id="report-description"
                   value={report.description}
-                  onChange={(e) => setReport(prev => ({ ...prev, description: e.target.value }))}
+                  onChange={(e) => setReport((prev: any) => ({ ...prev, description: e.target.value }))}
                   placeholder="Describe what this report shows"
                   rows={3}
                 />
@@ -438,12 +438,12 @@ export function ReportBuilder({ onSave, onPreview, initialReport }: ReportBuilde
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {report.data_sources.map((source, index) => (
+                  {report.data_sources.map((source: any, index: number) => (
                     <DataSourceConfig
                       key={index}
                       source={source}
-                      sourceInfo={DATA_SOURCES.find(s => s.table === source.table)}
-                      onUpdate={(updates) => updateDataSource(index, updates)}
+                      sourceInfo={DATA_SOURCES.find((s: any) => s.table === source.table)}
+                      onUpdate={(updates: any) => updateDataSource(index, updates)}
                       onRemove={() => removeDataSource(index)}
                     />
                   ))}
@@ -462,8 +462,8 @@ export function ReportBuilder({ onSave, onPreview, initialReport }: ReportBuilde
               <CardContent>
                 <Tabs defaultValue={report.data_sources[0]?.table || ''}>
                   <TabsList className="grid w-full" style={{ gridTemplateColumns: `repeat(${report.data_sources.length}, minmax(0, 1fr))` }}>
-                    {report.data_sources.map((source) => {
-                      const sourceInfo = DATA_SOURCES.find(s => s.table === source.table)
+                    {report.data_sources.map((source: any) => {
+                      const sourceInfo = DATA_SOURCES.find((s: any) => s.table === source.table)
                       return (
                         <TabsTrigger key={source.table} value={source.table} className="flex items-center">
                           {sourceInfo && <sourceInfo.icon className="h-4 w-4 mr-1" />}
@@ -472,11 +472,11 @@ export function ReportBuilder({ onSave, onPreview, initialReport }: ReportBuilde
                       )
                     })}
                   </TabsList>
-                  
-                  {report.data_sources.map((source) => (
+
+                  {report.data_sources.map((source: any) => (
                     <TabsContent key={source.table} value={source.table} className="space-y-4">
                       <div className="flex justify-between items-center">
-                        <h4 className="font-medium">Filters for {DATA_SOURCES.find(s => s.table === source.table)?.name}</h4>
+                        <h4 className="font-medium">Filters for {DATA_SOURCES.find((s: any) => s.table === source.table)?.name}</h4>
                         <Button
                           size="sm"
                           variant="outline"
@@ -486,15 +486,15 @@ export function ReportBuilder({ onSave, onPreview, initialReport }: ReportBuilde
                           Add Filter
                         </Button>
                       </div>
-                      
+
                       {report.filters[source.table] && Object.entries(report.filters[source.table]).map(([field, filter]: [string, any]) => (
                         <FilterConfig
                           key={field}
                           table={source.table}
                           field={field}
                           filter={filter}
-                          availableFields={DATA_SOURCES.find(s => s.table === source.table)?.fields || []}
-                          onUpdate={(updates) => updateFilter(source.table, field, updates)}
+                          availableFields={DATA_SOURCES.find((s: any) => s.table === source.table)?.fields || []}
+                          onUpdate={(updates: any) => updateFilter(source.table, field, updates)}
                           onRemove={() => removeFilter(source.table, field)}
                         />
                       ))}
@@ -527,9 +527,9 @@ export function ReportBuilder({ onSave, onPreview, initialReport }: ReportBuilde
                 <div>
                   <Label className="text-sm font-medium">Data Sources</Label>
                   <div className="space-y-1">
-                    {report.data_sources.map((source, index) => (
+                    {report.data_sources.map((source: any, index: number) => (
                       <Badge key={index} variant="secondary" className="text-xs">
-                        {DATA_SOURCES.find(s => s.table === source.table)?.name}
+                        {DATA_SOURCES.find((s: any) => s.table === source.table)?.name}
                       </Badge>
                     ))}
                   </div>
@@ -538,7 +538,7 @@ export function ReportBuilder({ onSave, onPreview, initialReport }: ReportBuilde
                   <div>
                     <Label className="text-sm font-medium">Filters Applied</Label>
                     <p className="text-sm text-gray-600">
-                      {Object.values(report.filters).reduce((acc, filters) => acc + Object.keys(filters as any).length, 0)} active
+                      {Object.values(report.filters).reduce((acc: number, filters: any) => acc + Object.keys(filters).length, 0)} active
                     </p>
                   </div>
                 )}
@@ -558,7 +558,7 @@ export function ReportBuilder({ onSave, onPreview, initialReport }: ReportBuilde
                   config={report.chart_config}
                   dataSources={report.data_sources}
                   availableFields={DATA_SOURCES}
-                  onChange={(config) => setReport(prev => ({ ...prev, chart_config: config }))}
+                  onChange={(config: any) => setReport((prev: any) => ({ ...prev, chart_config: config }))}
                 />
               </CardContent>
             </Card>
@@ -633,9 +633,9 @@ function DataSourceConfig({ source, sourceInfo, onUpdate, onRemove }: any) {
                     checked={selectedFields.includes(field.name)}
                     onCheckedChange={(checked) => {
                       if (checked) {
-                        setSelectedFields(prev => [...prev, field.name])
+                        setSelectedFields((prev: string[]) => [...prev, field.name])
                       } else {
-                        setSelectedFields(prev => prev.filter(f => f !== field.name))
+                        setSelectedFields((prev: string[]) => prev.filter((f: string) => f !== field.name))
                       }
                     }}
                   />

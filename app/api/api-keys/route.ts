@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { requireAuth } from '@/lib/auth/utils'
 import { randomBytes } from 'crypto'
+import bcrypt from 'bcryptjs'
 
 export async function GET(request: NextRequest) {
   try {
@@ -75,7 +76,7 @@ export async function POST(request: NextRequest) {
 
     // Generate API key
     const apiKey = generateApiKey()
-    const keyHash = hashApiKey(apiKey)
+    const keyHash = await hashApiKey(apiKey)
     const keyPreview = `${apiKey.substring(0, 8)}...${apiKey.substring(apiKey.length - 4)}`
 
     // Calculate expiration date
@@ -277,9 +278,6 @@ function generateApiKey(): string {
   return `${prefix}_${randomPart}`
 }
 
-// Hash API key for storage
-function hashApiKey(apiKey: string): string {
-  // In production, use a proper hashing library like bcrypt
-  const crypto = require('crypto')
-  return crypto.createHash('sha256').update(apiKey).digest('hex')
+async function hashApiKey(apiKey: string): Promise<string> {
+  return await bcrypt.hash(apiKey, 12)
 }

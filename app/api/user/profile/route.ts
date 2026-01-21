@@ -188,9 +188,9 @@ export async function POST(request: NextRequest) {
     }
     
     console.error('Error in POST /api/user/profile:', error)
-    return NextResponse.json({ 
-      error: 'Internal server error', 
-      details: error.message || 'Unknown error occurred' 
+    return NextResponse.json({
+      error: 'Internal server error',
+      details: (error as any).message || 'Unknown error occurred'
     }, { status: 500 })
   }
 }
@@ -282,9 +282,9 @@ export async function PUT(request: NextRequest) {
     }
     
     console.error('Error in PUT /api/user/profile:', error)
-    return NextResponse.json({ 
+    return NextResponse.json({
       error: 'Internal server error',
-      details: error.message || 'Unknown error occurred'
+      details: (error as any).message || 'Unknown error occurred'
     }, { status: 500 })
   }
 }

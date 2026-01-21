@@ -1,5 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { z } from 'zod'
+
+const updateTaskSchema = z.object({
+  title: z.string().min(1, 'Title is required').max(200, 'Title too long').optional(),
+  description: z.string().max(1000, 'Description too long').optional().or(z.literal('')),
+  due_date: z.string().datetime('Invalid date format').optional(),
+  priority: z.enum(['Low', 'Medium', 'High']).optional(),
+  status: z.enum(['Pending', 'In Progress', 'Completed']).optional(),
+  assigned_to: z.string().uuid('Invalid user ID').optional().nullable(),
+  type: z.enum(['Call', 'Email', 'Meeting', 'Document', 'Follow-up', 'Other']).optional()
+})
 
 export async function GET(
   request: NextRequest,
@@ -60,6 +71,15 @@ export async function PUT(
     }
     
     const body = await request.json()
+
+    const validation = updateTaskSchema.safeParse(body)
+    if (!validation.success) {
+      return NextResponse.json({
+        error: 'Validation failed',
+        details: validation.error.errors.map(e => ({ field: e.path.join('.'), message: e.message }))
+      }, { status: 400 })
+    }
+
     const {
       title,
       description,
@@ -68,7 +88,7 @@ export async function PUT(
       status,
       assigned_to,
       type
-    } = body
+    } = validation.data
 
     const { data: task, error } = await supabase
       .from('tasks')

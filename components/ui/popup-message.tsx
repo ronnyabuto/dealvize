@@ -279,13 +279,13 @@ export function PopupMessage({ messages = [], className }: PopupMessageProps) {
 export function usePopupMessages() {
   const [messages, setMessages] = useState<PopupMessage[]>([])
 
-  const addMessage = (message: Omit<PopupMessage, 'id'>) => {
+  const addMessage = (message: Omit<Partial<PopupMessage>, 'id'> & Pick<PopupMessage, 'title' | 'message' | 'type'>) => {
     const newMessage: PopupMessage = {
+      ...message,
+      priority: message.priority ?? 'medium',
       id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      dismissible: true,
-      autoHide: false,
-      priority: 'medium',
-      ...message
+      dismissible: message.dismissible ?? true,
+      autoHide: message.autoHide ?? false
     }
     setMessages(prev => [...prev, newMessage])
   }

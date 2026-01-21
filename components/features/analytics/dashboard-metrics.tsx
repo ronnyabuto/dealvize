@@ -60,8 +60,8 @@ export function DashboardMetrics() {
           '/api/dashboard/metrics',
           cacheKeys.dashboardMetrics(),
           2 // 2-minute cache
-        )
-        
+        ) as any
+
         const metrics = data.metrics
         
         // Start background refresh for next time
@@ -108,7 +108,7 @@ export function DashboardMetrics() {
         ]
         setMetrics(metricsArray)
       } catch (error) {
-        if (error.name === 'AbortError') {
+        if ((error as any).name === 'AbortError') {
           console.warn('Analytics request timed out')
         } else {
           console.error('Failed to fetch metrics:', error)

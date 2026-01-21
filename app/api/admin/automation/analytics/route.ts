@@ -178,7 +178,7 @@ export async function GET(request: NextRequest) {
       )
 
       // User activity breakdown
-      const userActivity = {}
+      const userActivity: any = {}
       enrollments?.forEach(enrollment => {
         if (!userActivity[enrollment.user_id]) {
           userActivity[enrollment.user_id] = {
@@ -223,7 +223,7 @@ export async function GET(request: NextRequest) {
         },
         daily_metrics: dailyMetrics,
         sequence_performance: sequencePerformance.sort((a, b) => b.completion_rate - a.completion_rate),
-        user_activity: Object.entries(userActivity).map(([userId, stats]) => ({
+        user_activity: Object.entries(userActivity).map(([userId, stats]: [string, any]) => ({
           user_id: userId,
           ...stats,
           completion_rate: stats.enrollments > 0 ? Math.round((stats.completions / stats.enrollments) * 100) : 0

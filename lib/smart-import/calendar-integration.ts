@@ -53,7 +53,7 @@ export class CalendarIntegration {
         filteredEvents = events.filter(event => this.isRealEstateEvent(event))
       }
 
-      const tasksCreated: Task[] = []
+      const tasksCreated: Partial<Task>[] = []
       const clientsLinked: string[] = []
 
       if (autoCreateTasks) {

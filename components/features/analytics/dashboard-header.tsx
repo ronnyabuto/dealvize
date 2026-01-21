@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Calendar, User, LogOut, Settings, Bell, ChevronDown } from "lucide-react"
+import { Calendar, User as UserIcon, LogOut, Settings, Bell, ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { GlobalSearch } from "@/components/shared/global-search"
@@ -96,7 +96,7 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleProfileClick}>
-                <User className="mr-2 h-4 w-4" />
+                <UserIcon className="mr-2 h-4 w-4" />
                 <span>Profile</span>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={handleSettingsClick}>

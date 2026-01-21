@@ -251,7 +251,7 @@ LinkedIn: linkedin.com/in/johnsmith`
 
     if (data.title) confidence += 10
 
-    const isValid = confidence >= 50 && (data.name || data.email)
+    const isValid = !!(confidence >= 50 && (data.name || data.email))
 
     return { isValid, confidence, errors }
   }

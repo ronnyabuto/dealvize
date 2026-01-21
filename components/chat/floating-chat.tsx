@@ -45,7 +45,7 @@ export function FloatingChat({
   
   // Refs
   const messagesEndRef = useRef<HTMLDivElement>(null)
-  const typingTimeoutRef = useRef<NodeJS.Timeout>()
+  const typingTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined)
 
   // Initialize realtime when chat opens
   useEffect(() => {

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { getCache, setCache, clearCache, generateCacheKey } from '@/lib/cache-utils'
 import type { ApiError, PaginatedResponse } from '@/lib/types'
 
 // Generic resource hook configuration
@@ -42,10 +43,10 @@ export function useResource<T extends { id: string }>(
   config: ResourceConfig<T>,
   options: ResourceOptions = {}
 ): ResourceHook<T> {
-  const { 
-    search = '', 
-    filters = {}, 
-    page = 1, 
+  const {
+    search = '',
+    filters = {},
+    page = 1,
     limit = 50,
     orderBy = config.defaultOrderBy || { column: 'created_at', ascending: false }
   } = options
@@ -57,9 +58,25 @@ export function useResource<T extends { id: string }>(
 
   const supabase = createClient()
 
+  // ... existing imports
+
   const fetchData = useCallback(async () => {
     try {
-      setLoading(true)
+      const cacheKey = generateCacheKey(config.tableName, {
+        search, filters, page, limit, orderBy
+      })
+
+      // Try cache first
+      const cachedData = getCache<{ data: T[], count: number }>(cacheKey)
+      if (cachedData) {
+        setData(cachedData.data)
+        setTotalCount(cachedData.count)
+        setLoading(false)
+        // Background revalidation could go here if needed, but for now we trust cache until TTL
+      } else {
+        setLoading(true)
+      }
+
       setError(null)
 
       let query = supabase
@@ -69,7 +86,6 @@ export function useResource<T extends { id: string }>(
 
       // Apply search filter if provided
       if (search) {
-        // This is a simplified search - each hook can customize this
         query = query.textSearch('fts', search)
       }
 
@@ -96,8 +112,11 @@ export function useResource<T extends { id: string }>(
       }
 
       const transformedData = fetchedData?.map(config.transformData) || []
+
+      // Update state and cache
       setData(transformedData)
       setTotalCount(count || 0)
+      setCache(cacheKey, { data: transformedData, count: count || 0 })
 
     } catch (err) {
       const apiError: ApiError = {
@@ -105,19 +124,20 @@ export function useResource<T extends { id: string }>(
         details: err
       }
       setError(apiError)
-      setData([])
-      setTotalCount(0)
+      // Only clear data if not already set (keep stale data on error?)
+      // setData([]) 
+      // setTotalCount(0)
     } finally {
       setLoading(false)
     }
   }, [
-    config.tableName, 
-    config.selectQuery, 
+    config.tableName,
+    config.selectQuery,
     config.transformData,
-    search, 
-    JSON.stringify(filters), 
-    page, 
-    limit, 
+    search,
+    JSON.stringify(filters),
+    page,
+    limit,
     JSON.stringify(orderBy)
   ])
 
@@ -138,6 +158,9 @@ export function useResource<T extends { id: string }>(
       const newItem = config.transformData(insertedData)
       setData(prev => [newItem, ...prev])
       setTotalCount(prev => prev + 1)
+
+      // Invalidate cache for this resource
+      clearCache(config.tableName)
 
       return newItem
     } catch (err) {
@@ -166,9 +189,12 @@ export function useResource<T extends { id: string }>(
       }
 
       const updatedItem = config.transformData(updatedData)
-      setData(prev => prev.map(item => 
+      setData(prev => prev.map(item =>
         item.id === id ? updatedItem : item
       ))
+
+      // Invalidate cache for this resource
+      clearCache(config.tableName)
 
       return updatedItem
     } catch (err) {
@@ -197,6 +223,9 @@ export function useResource<T extends { id: string }>(
       setData(prev => prev.filter(item => item.id !== id))
       setTotalCount(prev => prev - 1)
 
+      // Invalidate cache for this resource
+      clearCache(config.tableName)
+
       return true
     } catch (err) {
       const apiError: ApiError = {
@@ -209,6 +238,11 @@ export function useResource<T extends { id: string }>(
   }
 
   const refresh = async () => {
+    // Force refresh by ignoring cache? Or just clear and fetch?
+    const cacheKey = generateCacheKey(config.tableName, {
+      search, filters, page, limit, orderBy
+    })
+    sessionStorage.removeItem(cacheKey) // Clear specific key
     await fetchData()
   }
 

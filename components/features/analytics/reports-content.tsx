@@ -52,7 +52,7 @@ export function ReportsContent({ filters }: ReportsContentProps) {
         }
       }
 
-      filteredDeals = filteredDeals.filter(deal => {
+      filteredDeals = filteredDeals.filter((deal: any) => {
         if (!deal.createdAt) return true
         const dealDate = new Date(deal.createdAt)
         return dealDate >= startDate && dealDate <= endDate

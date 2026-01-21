@@ -20,10 +20,10 @@ const UpdateSubscriptionSchema = z.object({
 })
 
 // GET - Get specific subscription with details
-export async function GET(request: NextRequest, { params }: { params: Params }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<Params> }) {
   return withRBAC(request, async (req, context) => {
     const supabase = await createClient()
-    const subscriptionId = params.id
+    const { id: subscriptionId } = await params
 
     try {
       // Get subscription details
@@ -150,10 +150,10 @@ export async function GET(request: NextRequest, { params }: { params: Params }) 
 }
 
 // PUT - Update subscription
-export async function PUT(request: NextRequest, { params }: { params: Params }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<Params> }) {
   return withRBAC(request, async (req, context) => {
     const serviceClient = createServiceClient()
-    const subscriptionId = params.id
+    const { id: subscriptionId } = await params
 
     try {
       const body = await request.json()
@@ -183,7 +183,7 @@ export async function PUT(request: NextRequest, { params }: { params: Params }) 
       if (validatedData.planType && validatedData.planType !== existingSubscription.plan_type) {
         const newPeriodEnd = new Date()
         newPeriodEnd.setMonth(newPeriodEnd.getMonth() + 1)
-        updateData.current_period_end = newPeriodEnd.toISOString()
+        ;(updateData as any).current_period_end = newPeriodEnd.toISOString()
       }
 
       const { data: updatedSubscription, error: updateError } = await serviceClient
@@ -259,10 +259,10 @@ export async function PUT(request: NextRequest, { params }: { params: Params }) 
 }
 
 // DELETE - Cancel subscription
-export async function DELETE(request: NextRequest, { params }: { params: Params }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<Params> }) {
   return withRBAC(request, async (req, context) => {
     const serviceClient = createServiceClient()
-    const subscriptionId = params.id
+    const { id: subscriptionId } = await params
 
     try {
       // Verify subscription exists

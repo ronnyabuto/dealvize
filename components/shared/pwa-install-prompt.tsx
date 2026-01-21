@@ -74,8 +74,8 @@ export function PWAInstallPrompt({
       if (result.success) {
         setShowPrompt(false)
         // Track successful installation
-        if (typeof gtag !== 'undefined') {
-          gtag('event', 'pwa_install', {
+        if (typeof window !== 'undefined' && typeof (window as any).gtag !== 'undefined') {
+          (window as any).gtag('event', 'pwa_install', {
             'event_category': 'PWA',
             'event_label': 'User initiated install'
           })

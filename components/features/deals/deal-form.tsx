@@ -27,23 +27,23 @@ export function DealForm({ deal, mode }: DealFormProps) {
   const searchParams = useSearchParams()
   const { createDeal, updateDeal } = useDeals()
   const { clients: clientOptions } = useClients()
-  
+
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [mlsLoading, setMlsLoading] = useState(false)
   const [mlsSearchInput, setMlsSearchInput] = useState('')
   const [mlsData, setMlsData] = useState<any>(null)
-  
+
   const [formData, setFormData] = useState({
     title: deal?.title || '',
     clientId: deal?.clientId || searchParams.get('client') || '',
     value: deal?.value?.replace(/[$,]/g, '') || '',
     commission: deal?.commission?.replace(/[$,]/g, '') || '',
     commissionPercentage: deal?.commissionPercentage?.toString() || '',
-    status: deal?.status || 'Lead',
+    status: deal?.status || 'Qualified',
     probability: deal?.probability?.toString() || '0',
-    expectedCloseDate: deal?.expectedCloseDate && deal.expectedCloseDate !== 'Not set' 
-      ? new Date(deal.expectedCloseDate).toISOString().split('T')[0] 
+    expectedCloseDate: deal?.expectedCloseDate && deal.expectedCloseDate !== 'Not set'
+      ? new Date(deal.expectedCloseDate).toISOString().split('T')[0]
       : '',
     propertyAddress: deal?.property?.address || '',
     propertyType: deal?.property?.type || '',
@@ -53,7 +53,7 @@ export function DealForm({ deal, mode }: DealFormProps) {
   })
 
   const statusOptions = [
-    { value: 'Lead', label: 'Lead' },
+    { value: 'Qualified', label: 'Qualified' },
     { value: 'In Progress', label: 'In Progress' },
     { value: 'Under Contract', label: 'Under Contract' },
     { value: 'Closed', label: 'Closed' },
@@ -84,17 +84,17 @@ export function DealForm({ deal, mode }: DealFormProps) {
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => {
       const newData = { ...prev, [field]: value }
-      
+
       if (field === 'value' || field === 'commissionPercentage') {
         const dealValue = field === 'value' ? value : newData.value
         const percentage = field === 'commissionPercentage' ? value : newData.commissionPercentage
-        
+
         if (dealValue && percentage) {
           const calculatedCommission = calculateCommission(dealValue, parseFloat(percentage))
           newData.commission = calculatedCommission.toString()
         }
       }
-      
+
       return newData
     })
     if (error) setError(null)
@@ -116,32 +116,32 @@ export function DealForm({ deal, mode }: DealFormProps) {
       setError('Deal title is required')
       return false
     }
-    
+
     if (!formData.clientId) {
       setError('Please select a client')
       return false
     }
-    
+
     if (formData.value && isNaN(parseFloat(formData.value))) {
       setError('Please enter a valid deal value')
       return false
     }
-    
+
     // Commission is auto-calculated, no validation needed
 
     if (formData.probability && (isNaN(parseInt(formData.probability)) || parseInt(formData.probability) < 0 || parseInt(formData.probability) > 100)) {
       setError('Probability must be a number between 0 and 100')
       return false
     }
-    
+
     return true
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!validateForm()) return
-    
+
     setLoading(true)
     setError(null)
 
@@ -196,7 +196,7 @@ export function DealForm({ deal, mode }: DealFormProps) {
     setMlsLoading(true)
     try {
       const isMLSNumber = /^\d+$/.test(mlsSearchInput.trim())
-      
+
       const response = await fetch('/api/mls/auto-populate', {
         method: 'POST',
         headers: {
@@ -212,10 +212,10 @@ export function DealForm({ deal, mode }: DealFormProps) {
       }
 
       const result = await response.json()
-      
+
       if (result.success) {
         const property = result.property
-        
+
         // Auto-populate form fields
         setFormData(prev => ({
           ...prev,
@@ -265,7 +265,7 @@ export function DealForm({ deal, mode }: DealFormProps) {
             {mode === 'create' ? 'Add New Deal' : 'Edit Deal'}
           </CardTitle>
           <CardDescription>
-            {mode === 'create' 
+            {mode === 'create'
               ? 'Enter the deal information below to add it to your pipeline.'
               : 'Update the deal information below.'
             }
@@ -282,7 +282,7 @@ export function DealForm({ deal, mode }: DealFormProps) {
             {/* Basic Deal Information */}
             <div className="space-y-4">
               <h3 className="text-lg font-medium">Deal Information</h3>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="title">Deal Title *</Label>
@@ -294,7 +294,7 @@ export function DealForm({ deal, mode }: DealFormProps) {
                     required
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="client">Client *</Label>
                   <Select value={formData.clientId} onValueChange={(value) => handleInputChange('clientId', value)}>
@@ -326,7 +326,7 @@ export function DealForm({ deal, mode }: DealFormProps) {
                     />
                   </div>
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="commissionPercentage">Commission %</Label>
                   <div className="relative">
@@ -343,7 +343,7 @@ export function DealForm({ deal, mode }: DealFormProps) {
                     <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">%</span>
                   </div>
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="commission">Commission ($)</Label>
                   <div className="relative">
@@ -390,7 +390,7 @@ export function DealForm({ deal, mode }: DealFormProps) {
                     </SelectContent>
                   </Select>
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="expectedCloseDate">Expected Close Date</Label>
                   <Input
@@ -513,7 +513,7 @@ export function DealForm({ deal, mode }: DealFormProps) {
                   </CardContent>
                 </Card>
               )}
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="propertyAddress">Property Address</Label>
@@ -525,7 +525,7 @@ export function DealForm({ deal, mode }: DealFormProps) {
                     rows={3}
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="propertyType">Property Type</Label>
                   <Select value={formData.propertyType} onValueChange={(value) => handleInputChange('propertyType', value)}>
@@ -555,7 +555,7 @@ export function DealForm({ deal, mode }: DealFormProps) {
                     placeholder="0"
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="propertyBathrooms">Bathrooms</Label>
                   <Input
@@ -585,17 +585,17 @@ export function DealForm({ deal, mode }: DealFormProps) {
 
             {/* Actions */}
             <div className="flex items-center justify-end space-x-4 pt-6 border-t">
-              <Button 
-                type="button" 
-                variant="outline" 
+              <Button
+                type="button"
+                variant="outline"
                 onClick={handleCancel}
                 disabled={loading}
               >
                 <X className="h-4 w-4 mr-2" />
                 Cancel
               </Button>
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 disabled={loading}
                 className="bg-blue-600 hover:bg-blue-700"
               >

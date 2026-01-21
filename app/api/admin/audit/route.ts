@@ -235,7 +235,7 @@ export async function POST(request: NextRequest) {
         },
         severity,
         success,
-        ip_address: ip_address || req.ip,
+        ip_address: ip_address || req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || null,
         user_agent: user_agent || req.headers.get('user-agent'),
         created_at: new Date().toISOString()
       }
@@ -286,27 +286,27 @@ async function getAuditSummary(serviceClient: any, queryParams: any) {
 
   if (!summaryLogs) return {}
 
-  const actionCounts = summaryLogs.reduce((acc, log) => {
+  const actionCounts = summaryLogs.reduce((acc: any, log: any) => {
     acc[log.action] = (acc[log.action] || 0) + 1
     return acc
   }, {})
 
-  const entityCounts = summaryLogs.reduce((acc, log) => {
+  const entityCounts = summaryLogs.reduce((acc: any, log: any) => {
     acc[log.entity_type] = (acc[log.entity_type] || 0) + 1
     return acc
   }, {})
 
-  const severityCounts = summaryLogs.reduce((acc, log) => {
+  const severityCounts = summaryLogs.reduce((acc: any, log: any) => {
     acc[log.severity] = (acc[log.severity] || 0) + 1
     return acc
   }, {})
 
-  const successRate = summaryLogs.length > 0 
-    ? Math.round((summaryLogs.filter(log => log.success).length / summaryLogs.length) * 100)
+  const successRate = summaryLogs.length > 0
+    ? Math.round((summaryLogs.filter((log: any) => log.success).length / summaryLogs.length) * 100)
     : 0
 
   // Get top users by activity
-  const userActivity = summaryLogs.reduce((acc, log) => {
+  const userActivity = summaryLogs.reduce((acc: any, log: any) => {
     if (log.user_id) {
       acc[log.user_id] = (acc[log.user_id] || 0) + 1
     }
@@ -314,7 +314,7 @@ async function getAuditSummary(serviceClient: any, queryParams: any) {
   }, {})
 
   const topUsers = Object.entries(userActivity)
-    .sort(([,a], [,b]) => b - a)
+    .sort(([,a], [,b]) => (b as number) - (a as number))
     .slice(0, 5)
     .map(([userId, count]) => ({ user_id: userId, activity_count: count }))
 
@@ -322,11 +322,11 @@ async function getAuditSummary(serviceClient: any, queryParams: any) {
     total_events: summaryLogs.length,
     success_rate: successRate,
     top_actions: Object.entries(actionCounts)
-      .sort(([,a], [,b]) => b - a)
+      .sort(([,a], [,b]) => (b as number) - (a as number))
       .slice(0, 10)
       .map(([action, count]) => ({ action, count })),
     entity_types: Object.entries(entityCounts)
-      .sort(([,a], [,b]) => b - a)
+      .sort(([,a], [,b]) => (b as number) - (a as number))
       .map(([entity_type, count]) => ({ entity_type, count })),
     severity_distribution: severityCounts,
     top_users: topUsers,
@@ -347,7 +347,7 @@ async function getUniqueActions(serviceClient: any) {
 
   if (!data) return []
 
-  const uniqueActions = [...new Set(data.map(item => item.action))]
+  const uniqueActions = [...new Set(data.map((item: any) => item.action))]
   return uniqueActions.sort()
 }
 
@@ -360,7 +360,7 @@ async function getUniqueEntityTypes(serviceClient: any) {
 
   if (!data) return []
 
-  const uniqueTypes = [...new Set(data.map(item => item.entity_type))]
+  const uniqueTypes = [...new Set(data.map((item: any) => item.entity_type))]
   return uniqueTypes.sort()
 }
 
@@ -373,7 +373,7 @@ async function handleAuditExport(data: any[], format: string) {
       const csvContent = generateCSV(data)
       headers.set('Content-Type', 'text/csv')
       headers.set('Content-Disposition', `attachment; filename="audit-logs-${new Date().toISOString().split('T')[0]}.csv"`)
-      return new Response(csvContent, { headers })
+      return new NextResponse(csvContent, { headers })
 
     case 'xlsx':
       // In a real implementation, you'd use a library like 'xlsx' to generate Excel files

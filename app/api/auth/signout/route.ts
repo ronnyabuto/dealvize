@@ -1,19 +1,17 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
-import { withCSRFProtection } from '@/lib/security/csrf'
 
-export const POST = withCSRFProtection(async (request: NextRequest) => {
+// Note: Signout intentionally does NOT use CSRF protection
+// because it should work even when the session is expired or tokens are stale
+export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient()
-    
+
     const { error } = await supabase.auth.signOut()
-    
+
     if (error) {
       console.error('Server-side signout error:', error)
-      return NextResponse.json(
-        { error: 'Failed to sign out' }, 
-        { status: 500 }
-      )
+      // Continue anyway - we still want to clear cookies
     }
 
     // Create response that will clear all auth cookies
@@ -25,10 +23,11 @@ export const POST = withCSRFProtection(async (request: NextRequest) => {
     // Clear all Supabase session cookies manually
     const cookieNames = [
       'sb-access-token',
-      'sb-refresh-token', 
+      'sb-refresh-token',
       'supabase.auth.token',
       'supabase-auth-token',
-      'sb-ndbvounbrbekgqvbposb-auth-token', // Your specific Supabase instance
+      'sb-cpozywyxhknzfhtzykag-auth-token', // Your current Supabase instance
+      'sb-ndbvounbrbekgqvbposb-auth-token', // Previous Supabase instance
       'dealvize-session'
     ]
 
@@ -63,9 +62,10 @@ export const POST = withCSRFProtection(async (request: NextRequest) => {
     return response
   } catch (error) {
     console.error('Signout API error:', error)
+    // Still return success - client will redirect anyway
     return NextResponse.json(
-      { error: 'Internal server error during signout' }, 
-      { status: 500 }
+      { success: true, message: 'Signout processed' },
+      { status: 200 }
     )
   }
-})
+}

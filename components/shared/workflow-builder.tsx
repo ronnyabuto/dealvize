@@ -88,7 +88,7 @@ export function WorkflowBuilder() {
   const [newStep, setNewStep] = useState({
     step_type: 'send_email',
     step_config: {},
-    conditions: [],
+    conditions: [] as any[],
     delay: 0,
     required: true
   })
@@ -468,7 +468,7 @@ export function WorkflowBuilder() {
                         <Badge variant="outline" className="text-xs capitalize">
                           {workflow.category.replace('_', ' ')}
                         </Badge>
-                        <Badge variant={workflow.is_active ? 'success' : 'secondary'} className="text-xs">
+                        <Badge variant={workflow.is_active ? 'default' : 'secondary'} className="text-xs">
                           {workflow.is_active ? 'Active' : 'Paused'}
                         </Badge>
                       </div>

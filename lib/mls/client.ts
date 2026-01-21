@@ -62,7 +62,22 @@ export class MLSClient {
   async searchProperties(criteria: MLSSearchCriteria): Promise<MLSApiResponse<MLSSearchResult>> {
     try {
       // Validate search criteria
-      const validatedCriteria = mlsSearchCriteriaSchema.parse(criteria)
+      const validated = mlsSearchCriteriaSchema.parse(criteria)
+
+      // Transform coordinates format if present
+      const validatedCriteria: MLSSearchCriteria = {
+        ...validated,
+        coordinates: validated.coordinates ? {
+          northEast: {
+            lat: (validated.coordinates.northEast as any).latitude,
+            lng: (validated.coordinates.northEast as any).longitude
+          },
+          southWest: {
+            lat: (validated.coordinates.southWest as any).latitude,
+            lng: (validated.coordinates.southWest as any).longitude
+          }
+        } : undefined
+      } as MLSSearchCriteria
 
       // Check cache first
       const cacheKey = this.generateCacheKey('search', validatedCriteria)
@@ -358,7 +373,7 @@ export class MLSClient {
       }
 
       return {
-        isConnected: isTokenValid && apiStatus !== 'down',
+        isConnected: !!(isTokenValid && apiStatus !== 'down'),
         lastSync: this.cache.getLastUpdate(),
         apiStatus,
         authStatus: isTokenValid ? 'valid' : 'expired',
@@ -467,7 +482,7 @@ export class MLSClient {
       }
 
       // Prepare headers
-      const headers = {
+      const headers: Record<string, string> = {
         'Authorization': `Bearer ${this.accessToken}`,
         'Accept': 'application/json',
         'User-Agent': 'Dealvize-CRM/1.0',

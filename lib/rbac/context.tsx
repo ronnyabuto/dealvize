@@ -24,27 +24,27 @@ interface RBACContextType {
   // User & Authentication
   user: User | null
   isLoading: boolean
-  
+
   // Tenant & Role Information
   currentTenant: string | null
   userRole: Role | null
   userPermissions: string[]
   tenantMembership: TenantMember | null
-  
+
   // Permission Checking Methods
   hasPermission: (permission: string) => boolean
   hasAnyPermission: (permissions: string[]) => boolean
   hasAllPermissions: (permissions: string[]) => boolean
   canAccessResource: (resource: PermissionResource, action: PermissionAction, scope?: PermissionScope) => boolean
   getAccessLevel: (resource: PermissionResource) => PermissionScope
-  
+
   // Role Management
   isOwner: () => boolean
   isAdmin: () => boolean
   isManager: () => boolean
   isAgent: () => boolean
   isViewer: () => boolean
-  
+
   // Utility Methods
   refresh: () => Promise<void>
   switchTenant: (tenantId: string) => Promise<void>
@@ -67,15 +67,21 @@ export function RBACProvider({ children, initialTenantId }: RBACProviderProps) {
 
   const supabase = createClient()
 
+  // Cache key for session storage
+  const CACHE_KEY = 'rbac_cache'
+  const CACHE_TTL = 5 * 60 * 1000 // 5 minutes
+
   // Initialize user session and permissions
   useEffect(() => {
     initializeUser()
-    
+
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        clearCache()
         await initializeUser()
       } else if (event === 'SIGNED_OUT') {
+        clearCache()
         resetState()
       }
     })
@@ -90,11 +96,56 @@ export function RBACProvider({ children, initialTenantId }: RBACProviderProps) {
     }
   }, [user, currentTenant])
 
+  const getCache = () => {
+    if (typeof window === 'undefined') return null
+    try {
+      const cached = sessionStorage.getItem(CACHE_KEY)
+      if (!cached) return null
+      const { data, timestamp } = JSON.parse(cached)
+      if (Date.now() - timestamp > CACHE_TTL) {
+        sessionStorage.removeItem(CACHE_KEY)
+        return null
+      }
+      return data
+    } catch {
+      return null
+    }
+  }
+
+  const setCache = (data: { userId: string; tenantId: string | null; role: Role | null; permissions: string[] }) => {
+    if (typeof window === 'undefined') return
+    try {
+      sessionStorage.setItem(CACHE_KEY, JSON.stringify({ data, timestamp: Date.now() }))
+    } catch {
+      // Ignore storage errors
+    }
+  }
+
+  const clearCache = () => {
+    if (typeof window === 'undefined') return
+    try {
+      sessionStorage.removeItem(CACHE_KEY)
+    } catch {
+      // Ignore storage errors
+    }
+  }
+
   const initializeUser = async () => {
     try {
-      setIsLoading(true)
+      // Try cache first for instant load
+      const cached = getCache()
+      if (cached) {
+        setIsLoading(false)
+        if (cached.role) setUserRole(cached.role)
+        if (cached.permissions) setUserPermissions(cached.permissions)
+        if (cached.tenantId) setCurrentTenant(cached.tenantId)
+        // Continue to validate in background
+      } else {
+        setIsLoading(true)
+      }
+
       const { data: { user }, error } = await supabase.auth.getUser()
-      
+
       if (error || !user) {
         resetState()
         return
@@ -166,10 +217,14 @@ export function RBACProvider({ children, initialTenantId }: RBACProviderProps) {
       // Set role information
       const roleData = membership.tenant_roles
       const systemRole = SYSTEM_ROLES.find(r => r.id === membership.role)
-      
+
       if (systemRole) {
         setUserRole(systemRole)
         setUserPermissions(systemRole.permissions)
+        // Cache the role data for instant loads
+        if (user) {
+          setCache({ userId: user.id, tenantId: currentTenant, role: systemRole, permissions: systemRole.permissions })
+        }
       } else if (roleData) {
         // Custom role
         const customRole: Role = {
@@ -184,6 +239,10 @@ export function RBACProvider({ children, initialTenantId }: RBACProviderProps) {
         }
         setUserRole(customRole)
         setUserPermissions(roleData.permissions || [])
+        // Cache the role data for instant loads
+        if (user) {
+          setCache({ userId: user.id, tenantId: currentTenant, role: customRole, permissions: roleData.permissions || [] })
+        }
       }
 
     } catch (error) {
@@ -214,8 +273,8 @@ export function RBACProvider({ children, initialTenantId }: RBACProviderProps) {
   }
 
   const canAccessResource = (
-    resource: PermissionResource, 
-    action: PermissionAction, 
+    resource: PermissionResource,
+    action: PermissionAction,
     scope?: PermissionScope
   ): boolean => {
     return PermissionChecker.canAccessResource(userPermissions, resource, action, scope)
@@ -260,27 +319,27 @@ export function RBACProvider({ children, initialTenantId }: RBACProviderProps) {
     // User & Authentication
     user,
     isLoading,
-    
+
     // Tenant & Role Information
     currentTenant,
     userRole,
     userPermissions,
     tenantMembership,
-    
+
     // Permission Checking Methods
     hasPermission,
     hasAnyPermission,
     hasAllPermissions,
     canAccessResource,
     getAccessLevel,
-    
+
     // Role Management
     isOwner,
     isAdmin,
     isManager,
     isAgent,
     isViewer,
-    
+
     // Utility Methods
     refresh,
     switchTenant
@@ -308,8 +367,8 @@ export function usePermission(permission: string): boolean {
 }
 
 export function useResourcePermission(
-  resource: PermissionResource, 
-  action: PermissionAction, 
+  resource: PermissionResource,
+  action: PermissionAction,
   scope?: PermissionScope
 ): boolean {
   const { canAccessResource } = useRBAC()

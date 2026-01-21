@@ -106,16 +106,16 @@ async function getSystemHealthMetrics(supabase: any, startDate: Date) {
   ])
 
   const subscriptionHealth = {
-    active: subscriptions?.filter(s => s.status === 'active').length || 0,
-    trial: subscriptions?.filter(s => s.status === 'trialing').length || 0,
-    cancelled: subscriptions?.filter(s => s.status === 'cancelled').length || 0,
-    past_due: subscriptions?.filter(s => s.status === 'past_due').length || 0
+    active: subscriptions?.filter((s: any) => s.status === 'active').length || 0,
+    trial: subscriptions?.filter((s: any) => s.status === 'trialing').length || 0,
+    cancelled: subscriptions?.filter((s: any) => s.status === 'cancelled').length || 0,
+    past_due: subscriptions?.filter((s: any) => s.status === 'past_due').length || 0
   }
 
   const planDistribution = {
-    starter: subscriptions?.filter(s => s.plan_type === 'starter').length || 0,
-    professional: subscriptions?.filter(s => s.plan_type === 'professional').length || 0,
-    enterprise: subscriptions?.filter(s => s.plan_type === 'enterprise').length || 0
+    starter: subscriptions?.filter((s: any) => s.plan_type === 'starter').length || 0,
+    professional: subscriptions?.filter((s: any) => s.plan_type === 'professional').length || 0,
+    enterprise: subscriptions?.filter((s: any) => s.plan_type === 'enterprise').length || 0
   }
 
   return {
@@ -155,7 +155,7 @@ async function getUserActivityMetrics(supabase: any, startDate: Date) {
     const nextHour = new Date(hour)
     nextHour.setHours(nextHour.getHours() + 1)
 
-    const hourActions = actions?.filter(a => {
+    const hourActions = actions?.filter((a: any) => {
       const actionTime = new Date(a.created_at)
       return actionTime >= hour && actionTime < nextHour
     }).length || 0
@@ -202,8 +202,8 @@ async function getBusinessMetrics(supabase: any, startDate: Date) {
     new_clients: newClients?.length || 0,
     messages_sent: messages?.length || 0,
     automation_executions: automationRuns?.length || 0,
-    email_delivery_rate: messages?.length > 0 
-      ? Math.round((messages.filter(m => m.status === 'sent').length / messages.length) * 100)
+    email_delivery_rate: messages?.length > 0
+      ? Math.round((messages.filter((m: any) => m.status === 'sent').length / messages.length) * 100)
       : 0
   }
 }

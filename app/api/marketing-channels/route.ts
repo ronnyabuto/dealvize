@@ -213,7 +213,7 @@ async function calculateChannelROI(supabase: any, userId: string, channelId: str
   }
 
   const leadCount = leads?.length || 0
-  const leadIds = leads?.map(l => l.id) || []
+  const leadIds = leads?.map((l: any) => l.id) || []
 
   // Get closed deals from these leads
   let closedDeals = 0
@@ -230,7 +230,7 @@ async function calculateChannelROI(supabase: any, userId: string, channelId: str
 
     if (deals) {
       closedDeals = deals.length
-      totalRevenue = deals.reduce((sum, deal) => {
+      totalRevenue = deals.reduce((sum: number, deal: any) => {
         const commission = (deal.value || 0) * ((deal.commission_percentage || 0) / 100)
         return sum + commission
       }, 0)

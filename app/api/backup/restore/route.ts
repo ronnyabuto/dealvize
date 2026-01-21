@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
       }, { status: 401 })
     }
 
-    const userRole = sessionValidation.sessionInfo?.role
+    const userRole = (sessionValidation.sessionInfo as any)?.role
     if (userRole !== 'admin') {
       return NextResponse.json({
         success: false,

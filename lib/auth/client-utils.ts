@@ -17,7 +17,7 @@ export const clientAuthUtils = {
   signOut: async () => {
     try {
       const csrfToken = getCSRFToken()
-      
+
       // Call server-side signout API to ensure proper session cleanup
       const response = await fetch('/api/auth/signout', {
         method: 'POST',
@@ -28,29 +28,42 @@ export const clientAuthUtils = {
         }
       })
 
+      // Don't block on API response - continue with client-side cleanup
       if (!response.ok) {
-        console.error('Server signout failed:', await response.text())
+        console.warn('Server signout returned error, continuing with client cleanup')
       }
 
-      // Also clear client-side session as fallback
+      // Clear client-side session
       const supabase = createBrowserClient()
       await supabase.auth.signOut()
 
-      // Force reload to clear any cached state
-      window.location.href = '/auth/signin'
+      // Clear any cached data
+      if (typeof window !== 'undefined') {
+        // Clear localStorage items related to auth
+        Object.keys(localStorage).forEach(key => {
+          if (key.includes('supabase') || key.includes('sb-')) {
+            localStorage.removeItem(key)
+          }
+        })
+
+        // Force hard redirect using replace to prevent back button issues
+        window.location.replace('/auth/signin')
+      }
     } catch (error) {
       console.error('Signout error:', error)
-      // Fallback: still try to redirect user
-      window.location.href = '/auth/signin'
+      // Fallback: force redirect regardless of error
+      if (typeof window !== 'undefined') {
+        window.location.replace('/auth/signin')
+      }
     }
   },
-  
+
   getCurrentUser: async () => {
     const supabase = createBrowserClient()
     const { data: { user }, error } = await supabase.auth.getUser()
     return error ? null : user
   },
-  
+
   onAuthStateChange: (callback: (event: string, session: any) => void) => {
     const supabase = createBrowserClient()
     return supabase.auth.onAuthStateChange(callback)

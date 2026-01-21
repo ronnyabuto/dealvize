@@ -21,8 +21,8 @@ const AcceptInvitationSchema = z.object({
 })
 
 // POST - Accept invitation and create account
-export async function POST(request: NextRequest, { params }: { params: Params }) {
-  const { token } = params
+export async function POST(request: NextRequest, { params }: { params: Promise<Params> }) {
+  const { token } = await params
   
   if (!token) {
     return NextResponse.json(
@@ -124,7 +124,7 @@ export async function POST(request: NextRequest, { params }: { params: Params })
       enterprise: 100
     }
 
-    const maxUsers = planLimits[invitation.tenant.plan_type as keyof typeof planLimits] || 5
+    const maxUsers = planLimits[(invitation.tenant as any).plan_type as keyof typeof planLimits] || 5
     
     if ((currentMemberCount || 0) >= maxUsers) {
       return NextResponse.json(
@@ -280,7 +280,7 @@ export async function POST(request: NextRequest, { params }: { params: Params })
       },
       tenant: {
         id: invitation.tenant_id,
-        name: invitation.tenant.name
+        name: (invitation.tenant as any).name
       }
     })
 

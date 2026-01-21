@@ -9,9 +9,9 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     
     const type = searchParams.get('type') // 'messages', 'activities', 'notifications', 'workspaces'
-    const workspace_id = searchParams.get('workspace_id')
-    const entity_type = searchParams.get('entity_type')
-    const entity_id = searchParams.get('entity_id')
+    const workspace_id = searchParams.get('workspace_id') ?? undefined
+    const entity_type = searchParams.get('entity_type') ?? undefined
+    const entity_id = searchParams.get('entity_id') ?? undefined
 
     switch (type) {
       case 'messages':
@@ -516,7 +516,7 @@ async function getUserWorkspaceIds(supabase: any, userId: string) {
     .select('workspace_id')
     .eq('user_id', userId)
 
-  return memberships?.map(m => m.workspace_id).join(',') || ''
+  return memberships?.map((m: any) => m.workspace_id).join(',') || ''
 }
 
 async function createMentionNotifications(supabase: any, senderId: string, messageId: string, mentions: string[], content: string) {

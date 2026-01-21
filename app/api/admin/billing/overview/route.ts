@@ -179,7 +179,7 @@ export async function GET(request: NextRequest) {
         dailyMetrics,
         recentTransactions: recentTransactions?.map(transaction => ({
           id: transaction.id,
-          tenantName: transaction.tenants?.name || 'Unknown',
+          tenantName: (transaction.tenants as any)?.name || 'Unknown',
           planType: transaction.plan_type,
           status: transaction.status,
           amount: planPricing[transaction.plan_type as keyof typeof planPricing] || 0,

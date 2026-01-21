@@ -134,12 +134,22 @@ export class MLSSyncService {
   /**
    * Get cached property
    */
-  getCachedProperty(listingId: string): MLSProperty | null {
-    return this.getCachedData(
-      `property:${listingId}`,
-      () => this.client.getPropertyDetails(listingId),
-      300000
-    ).catch(() => null)
+  async getCachedProperty(listingId: string): Promise<MLSProperty | null> {
+    try {
+      return await this.getCachedData(
+        `property:${listingId}`,
+        async () => {
+          const result = await this.client.getProperty(listingId)
+          if (!result.success || !result.data) {
+            throw new Error('Property not found')
+          }
+          return result.data
+        },
+        300000
+      )
+    } catch {
+      return null
+    }
   }
 
   /**
@@ -282,14 +292,18 @@ export class MLSSyncService {
       }
 
       const result = await this.client.searchProperties(criteria)
-      
-      for (const property of result.properties) {
+
+      if (!result.success || !result.data) {
+        break
+      }
+
+      for (const property of result.data.properties) {
         await this.processPropertyUpdate(property, job)
       }
 
-      hasMore = result.hasMore
-      offset = result.nextOffset || (offset + batchSize)
-      job.recordsProcessed += result.properties.length
+      hasMore = result.data.hasMore
+      offset = result.data.nextOffset || (offset + batchSize)
+      job.recordsProcessed += result.data.properties.length
 
       // Rate limiting pause
       await this.sleep(1000)
@@ -321,12 +335,16 @@ export class MLSSyncService {
       }
 
       const result = await this.client.searchProperties(criteria)
-      
-      for (const property of result.properties) {
+
+      if (!result.success || !result.data) {
+        return syncJob
+      }
+
+      for (const property of result.data.properties) {
         await this.processPropertyUpdate(property, syncJob)
       }
 
-      syncJob.recordsProcessed = result.properties.length
+      syncJob.recordsProcessed = result.data.properties.length
       
       if (!job) {
         console.log(`Incremental sync completed: ${syncJob.recordsProcessed} properties processed`)
@@ -348,9 +366,9 @@ export class MLSSyncService {
 
     for (const propertyId of job.propertyIds) {
       try {
-        const property = await this.client.getPropertyDetails(propertyId)
-        if (property) {
-          await this.processPropertyUpdate(property, job)
+        const propertyResult = await this.client.getProperty(propertyId)
+        if (propertyResult.success && propertyResult.data) {
+          await this.processPropertyUpdate(propertyResult.data, job)
         }
       } catch (error) {
         console.error(`Failed to sync property ${propertyId}:`, error)
@@ -365,12 +383,16 @@ export class MLSSyncService {
     if (!job.criteria) return
 
     const result = await this.client.searchProperties(job.criteria)
-    
-    for (const property of result.properties) {
+
+    if (!result.success || !result.data) {
+      return
+    }
+
+    for (const property of result.data.properties) {
       await this.processPropertyUpdate(property, job)
     }
 
-    job.recordsProcessed = result.properties.length
+    job.recordsProcessed = result.data.properties.length
   }
 
   /**
@@ -380,13 +402,17 @@ export class MLSSyncService {
     try {
       // Validate property data
       const validatedProperty = validateMLSProperty(property)
-      
+
+      if (!validatedProperty.isValid || !validatedProperty.data) {
+        return
+      }
+
       // Check if property exists in cache
       const existingProperty = this.cache.get(`property:${property.listingId}`)
       const isNewProperty = !existingProperty
 
       // Cache the property
-      await this.cacheProperty(validatedProperty)
+      await this.cacheProperty(validatedProperty.data)
 
       // Update counters
       if (isNewProperty) {
@@ -396,7 +422,7 @@ export class MLSSyncService {
       }
 
       // Store in local database if needed
-      await this.storePropertyInDatabase(validatedProperty, isNewProperty)
+      await this.storePropertyInDatabase(validatedProperty.data, isNewProperty)
 
     } catch (error) {
       console.error(`Failed to process property ${property.listingId}:`, error)
@@ -531,10 +557,10 @@ export class MLSSyncService {
    */
   async refreshProperty(listingId: string): Promise<MLSProperty | null> {
     try {
-      const property = await this.client.getPropertyDetails(listingId)
-      if (property) {
-        await this.cacheProperty(property)
-        return property
+      const propertyResult = await this.client.getProperty(listingId)
+      if (propertyResult.success && propertyResult.data) {
+        await this.cacheProperty(propertyResult.data)
+        return propertyResult.data
       }
       return null
     } catch (error) {

@@ -18,6 +18,79 @@ interface SearchResult {
   url: string
 }
 
+const generateSearchSuggestions = (query: string): string[] => {
+  const suggestions: string[] = []
+  const lowerQuery = query.toLowerCase()
+
+  // Common search patterns and suggestions
+  const patterns = [
+    { keywords: ['client', 'contact', 'person'], suggestions: ['active clients', 'new leads'] },
+    { keywords: ['deal', 'property', 'house'], suggestions: ['pending deals', 'closed deals', 'high value deals'] },
+    { keywords: ['task', 'todo', 'follow'], suggestions: ['follow up calls', 'pending tasks', 'overdue tasks', 'today\'s tasks'] },
+    { keywords: ['note', 'comment'], suggestions: ['client notes', 'deal notes', 'recent notes'] },
+    { keywords: ['email', 'phone', '@'], suggestions: [] }
+  ]
+
+  patterns.forEach(pattern => {
+    if (pattern.keywords.some(keyword => lowerQuery.includes(keyword))) {
+      suggestions.push(...pattern.suggestions.filter(s =>
+        s.toLowerCase().includes(lowerQuery) || lowerQuery.length < 3
+      ))
+    }
+  })
+
+  // Add partial match suggestions
+  if (lowerQuery.length >= 2) {
+    const partialSuggestions = [
+      'Follow up call', 'Send contract', 'Schedule showing'
+    ].filter(suggestion =>
+      suggestion.toLowerCase().includes(lowerQuery) &&
+      suggestion.toLowerCase() !== lowerQuery
+    )
+    suggestions.push(...partialSuggestions)
+  }
+
+  return [...new Set(suggestions)].slice(0, 5)
+}
+
+const generateErrorSuggestion = (query: string): string => {
+  const lowerQuery = query.toLowerCase()
+
+  // Detect common typos and provide corrections
+  const corrections = [
+    { typo: 'jerry', correction: 'Jerry' },
+    { typo: 'sarah', correction: 'Sarah Johnson' },
+    { typo: 'johnsn', correction: 'Johnson' },
+    { typo: 'oak st', correction: 'Oak Street' },
+    { typo: 'followup', correction: 'follow up' },
+    { typo: 'clent', correction: 'client' },
+    { typo: 'dela', correction: 'deal' },
+    { typo: 'taks', correction: 'task' },
+    { typo: 'emial', correction: 'email' }
+  ]
+
+  for (const { typo, correction } of corrections) {
+    if (lowerQuery.includes(typo)) {
+      return `Did you mean "${correction}"? No results found for "${query}".`
+    }
+  }
+
+  // Provide context-based suggestions
+  if (lowerQuery.includes('@') && !lowerQuery.includes('.')) {
+    return 'Try searching with a complete email address (e.g., john@email.com)'
+  }
+
+  if (/^\d+$/.test(lowerQuery) && lowerQuery.length < 10) {
+    return 'Try searching with a complete phone number or add more context'
+  }
+
+  if (lowerQuery.length < 3) {
+    return 'Try typing at least 3 characters for better results'
+  }
+
+  return `No results found for "${query}". Try searching for clients, deals, tasks, or notes.`
+}
+
 export function GlobalSearch() {
   const [mounted, setMounted] = useState(false)
   const [open, setOpen] = useState(false)
@@ -32,28 +105,26 @@ export function GlobalSearch() {
     setMounted(true)
   }, [])
 
-  const searchData = useCallback(async (searchQuery: string) => {
-    if (!searchQuery.trim()) {
-      setResults([])
-      setSuggestions([])
-      setSearchError(null)
-      return
-    }
+  const searchData = useCallback(async (searchQuery: string, signal?: AbortSignal) => {
+    if (!searchQuery.trim()) return
 
     setIsLoading(true)
     setSearchError(null)
-    
-    try {
-      // Generate smart suggestions based on query
-      const smartSuggestions = generateSearchSuggestions(searchQuery)
-      setSuggestions(smartSuggestions)
 
-      const response = await fetch(`/api/search?q=${encodeURIComponent(searchQuery)}&type=all`)
-      
+    // Generate smart suggestions immediately
+    const smartSuggestions = generateSearchSuggestions(searchQuery)
+    setSuggestions(smartSuggestions)
+
+    try {
+      const response = await fetch(`/api/search?q=${encodeURIComponent(searchQuery)}&type=all`, {
+        signal
+      })
+
       const data = await response.json()
-      
+
+      if (signal?.aborted) return
+
       if (!response.ok) {
-        // Handle server errors gracefully
         const errorMsg = data.message || data.error || 'Search failed'
         setSearchError(errorMsg)
         setResults([])
@@ -61,114 +132,53 @@ export function GlobalSearch() {
       }
 
       const searchResults = data.results || []
-      
-      // Use server-provided message or generate fallback
+
       if (searchResults.length === 0) {
         const errorSuggestion = data.message || generateErrorSuggestion(searchQuery)
         setSearchError(errorSuggestion)
       } else {
-        setSearchError(null) // Clear any previous errors
+        setSearchError(null)
       }
-      
+
       setResults(searchResults)
     } catch (error) {
+      if (signal?.aborted) return
+
       console.error('Search error:', error)
       setResults([])
-      
-      // Provide more specific error messages
+
       if (error instanceof TypeError && error.message.includes('fetch')) {
-        setSearchError('Connection error. Please check your internet connection and try again.')
-      } else {
-        setSearchError('Search temporarily unavailable. Please try again in a moment.')
+        setSearchError('Connection error. Please check your internet connection.')
+      } else if (error instanceof Error && error.name !== 'AbortError') {
+        setSearchError('Search temporarily unavailable.')
       }
     } finally {
-      setIsLoading(false)
+      if (!signal?.aborted) {
+        setIsLoading(false)
+      }
     }
   }, [])
 
-  const generateSearchSuggestions = (query: string): string[] => {
-    const suggestions: string[] = []
-    const lowerQuery = query.toLowerCase()
-    
-    // Common search patterns and suggestions
-    const patterns = [
-      { keywords: ['client', 'contact', 'person'], suggestions: ['active clients', 'new leads'] },
-      { keywords: ['deal', 'property', 'house'], suggestions: ['pending deals', 'closed deals', 'high value deals'] },
-      { keywords: ['task', 'todo', 'follow'], suggestions: ['follow up calls', 'pending tasks', 'overdue tasks', 'today\'s tasks'] },
-      { keywords: ['note', 'comment'], suggestions: ['client notes', 'deal notes', 'recent notes'] },
-      { keywords: ['email', 'phone', '@'], suggestions: [] }
-    ]
-    
-    patterns.forEach(pattern => {
-      if (pattern.keywords.some(keyword => lowerQuery.includes(keyword))) {
-        suggestions.push(...pattern.suggestions.filter(s => 
-          s.toLowerCase().includes(lowerQuery) || lowerQuery.length < 3
-        ))
-      }
-    })
-    
-    // Add partial match suggestions
-    if (lowerQuery.length >= 2) {
-      const partialSuggestions = [
-        'Follow up call', 'Send contract', 'Schedule showing'
-      ].filter(suggestion => 
-        suggestion.toLowerCase().includes(lowerQuery) && 
-        suggestion.toLowerCase() !== lowerQuery
-      )
-      suggestions.push(...partialSuggestions)
-    }
-    
-    return [...new Set(suggestions)].slice(0, 5)
-  }
-
-  const generateErrorSuggestion = (query: string): string => {
-    const lowerQuery = query.toLowerCase()
-    
-    // Detect common typos and provide corrections
-    const corrections = [
-      { typo: 'jerry', correction: 'Jerry' },
-      { typo: 'sarah', correction: 'Sarah Johnson' },
-      { typo: 'johnsn', correction: 'Johnson' },
-      { typo: 'oak st', correction: 'Oak Street' },
-      { typo: 'followup', correction: 'follow up' },
-      { typo: 'clent', correction: 'client' },
-      { typo: 'dela', correction: 'deal' },
-      { typo: 'taks', correction: 'task' },
-      { typo: 'emial', correction: 'email' }
-    ]
-    
-    for (const { typo, correction } of corrections) {
-      if (lowerQuery.includes(typo)) {
-        return `Did you mean "${correction}"? No results found for "${query}".`
-      }
-    }
-    
-    // Provide context-based suggestions
-    if (lowerQuery.includes('@') && !lowerQuery.includes('.')) {
-      return 'Try searching with a complete email address (e.g., john@email.com)'
-    }
-    
-    if (/^\d+$/.test(lowerQuery) && lowerQuery.length < 10) {
-      return 'Try searching with a complete phone number or add more context'
-    }
-    
-    if (lowerQuery.length < 3) {
-      return 'Try typing at least 3 characters for better results'
-    }
-    
-    return `No results found for "${query}". Try searching for clients, deals, tasks, or notes.`
-  }
-
   useEffect(() => {
+    const abortController = new AbortController()
+
+    // Clear immediately if empty
+    if (!query.trim()) {
+      setResults([])
+      setSuggestions([])
+      setSearchError(null)
+      setIsLoading(false)
+      return
+    }
+
     const debounceTimer = setTimeout(() => {
-      if (query) {
-        searchData(query)
-      } else {
-        setResults([])
-      }
+      searchData(query, abortController.signal)
     }, 300)
 
-    return () => clearTimeout(debounceTimer)
+    return () => {
+      clearTimeout(debounceTimer)
+      abortController.abort()
+    }
   }, [query, searchData])
 
   const handleSelect = (result: SearchResult) => {
@@ -182,7 +192,7 @@ export function GlobalSearch() {
 
   const handleSuggestionSelect = (suggestion: string) => {
     setQuery(suggestion)
-    searchData(suggestion)
+    // No need to call searchData here, useEffect will trigger it
   }
 
   const getIcon = (type: string) => {
@@ -239,7 +249,7 @@ export function GlobalSearch() {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[280px] sm:w-[400px] p-0" align="start">
-        <Command>
+        <Command shouldFilter={false}>
           <CommandInput
             placeholder="Search clients, deals, tasks..."
             value={query}
@@ -254,7 +264,7 @@ export function GlobalSearch() {
                 </div>
               </CommandEmpty>
             )}
-            
+
             {query && !isLoading && searchError && (
               <CommandEmpty>
                 <div className="text-center py-6 px-4">
@@ -269,7 +279,7 @@ export function GlobalSearch() {
                 </div>
               </CommandEmpty>
             )}
-            
+
             {query && !isLoading && !searchError && results.length === 0 && suggestions.length === 0 && (
               <CommandEmpty>
                 <div className="text-center py-6 px-4">
@@ -289,7 +299,7 @@ export function GlobalSearch() {
                   <CommandItem
                     key={`suggestion-${index}`}
                     onSelect={() => handleSuggestionSelect(suggestion)}
-                    className="flex items-center gap-3 p-2 text-sm text-blue-600"
+                    className="flex items-center gap-3 p-2 text-sm text-blue-600 cursor-pointer"
                   >
                     <Search className="h-4 w-4" />
                     <span>{suggestion}</span>
@@ -305,7 +315,7 @@ export function GlobalSearch() {
                   <CommandItem
                     key={`${result.type}-${result.id}`}
                     onSelect={() => handleSelect(result)}
-                    className="flex items-center gap-3 p-3"
+                    className="flex items-center gap-3 p-3 cursor-pointer"
                   >
                     <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-muted">
                       {getIcon(result.type)}

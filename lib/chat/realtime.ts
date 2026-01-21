@@ -59,7 +59,7 @@ class ChatRealtime {
 
     return new Promise((resolve, reject) => {
       this.presenceChannel = this.supabase.channel('presence', {
-        config: { presence: { key: this.userId } }
+        config: { presence: { key: this.userId ?? undefined } }
       })
 
       let subscribeTimeout: NodeJS.Timeout

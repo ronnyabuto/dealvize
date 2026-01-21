@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
           call_log_id,
           deal_id,
           transcription_id: transcription.id,
-          transcribed_text: transcriptionResult.text,
+          transcribed_text: transcriptionResult.text || '',
           keywords: transcriptionResult.keywords,
           sentiment: transcriptionResult.sentiment
         })
@@ -131,7 +131,7 @@ export async function GET(request: NextRequest) {
     const client_id = searchParams.get('client_id')
     const status = searchParams.get('status')
 
-    let query = supabase
+    let query: any = supabase
       .from('voice_transcriptions')
       .select(`
         *,
@@ -335,7 +335,7 @@ function generateCallSummary(text: string, keywords?: string[], sentiment?: any)
   const words = text.split(' ')
   const sentences = text.split(/[.!?]+/)
   
-  const importantSentences = []
+  const importantSentences: string[] = []
   
   // Always include first sentence
   if (sentences[0]) {

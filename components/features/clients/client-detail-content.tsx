@@ -79,19 +79,19 @@ export function ClientDetailContent({ client }: ClientDetailContentProps) {
 
         if (tasksError) throw tasksError
 
-        // Fetch notes for this client
-        const { data: notesData, error: notesError } = await supabase
-          .from('notes')
-          .select('*')
-          .eq('client_id', client.id)
-          .order('created_at', { ascending: false })
-          .limit(5)
-
-        if (notesError) throw notesError
+        // Note: notes table doesn't exist in current schema
+        // To enable notes, create a 'notes' table with: id, content, created_at, user_id, client_id
+        // const { data: notesData, error: notesError } = await supabase
+        //   .from('notes')
+        //   .select('*')
+        //   .eq('client_id', client.id)
+        //   .order('created_at', { ascending: false })
+        //   .limit(5)
+        // if (notesError) throw notesError
 
         setDeals(dealsData || [])
         setTasks(tasksData || [])
-        setNotes(notesData || [])
+        setNotes([]) // Notes disabled - table doesn't exist
       } catch (err: any) {
         setError(err.message)
       } finally {
@@ -195,7 +195,7 @@ export function ClientDetailContent({ client }: ClientDetailContentProps) {
                   <Mail className="h-5 w-5 text-gray-400" />
                   <span className="text-sm">{client.email}</span>
                 </div>
-                <EmailDialog 
+                <EmailDialog
                   clientId={client.id}
                   clientName={`${client.first_name} ${client.last_name}`}
                   clientEmail={client.email}
@@ -211,14 +211,14 @@ export function ClientDetailContent({ client }: ClientDetailContentProps) {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Phone className="h-5 w-5 text-gray-400" />
-                  <a 
+                  <a
                     href={`tel:${client.phone}`}
                     className="text-sm hover:text-blue-600 hover:underline"
                   >
                     {client.phone}
                   </a>
                 </div>
-                <SmsDialog 
+                <SmsDialog
                   clientId={client.id}
                   clientName={`${client.first_name} ${client.last_name}`}
                   clientPhone={client.phone}
@@ -290,9 +290,9 @@ export function ClientDetailContent({ client }: ClientDetailContentProps) {
                   </div>
                 ))}
                 {deals.length > 3 && (
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     className="w-full mt-2"
                     onClick={() => router.push(`/deals?client=${client.id}`)}
                   >
@@ -336,9 +336,9 @@ export function ClientDetailContent({ client }: ClientDetailContentProps) {
                   </div>
                 ))}
                 {notes.length >= 5 && (
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     className="w-full mt-2"
                     onClick={() => router.push(`/notes?client=${client.id}`)}
                   >
@@ -393,9 +393,9 @@ export function ClientDetailContent({ client }: ClientDetailContentProps) {
                     )}
                   </div>
                 ))}
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
+                <Button
+                  variant="ghost"
+                  size="sm"
                   className="w-full mt-2"
                   onClick={() => router.push(`/tasks?client=${client.id}`)}
                 >
@@ -441,7 +441,7 @@ export function ClientDetailContent({ client }: ClientDetailContentProps) {
                 Add Note
               </Button>
               {client.email && (
-                <EmailDialog 
+                <EmailDialog
                   clientId={client.id}
                   clientName={`${client.first_name} ${client.last_name}`}
                   clientEmail={client.email}
@@ -454,7 +454,7 @@ export function ClientDetailContent({ client }: ClientDetailContentProps) {
                 />
               )}
               {client.phone && (
-                <SmsDialog 
+                <SmsDialog
                   clientId={client.id}
                   clientName={`${client.first_name} ${client.last_name}`}
                   clientPhone={client.phone}
@@ -474,7 +474,7 @@ export function ClientDetailContent({ client }: ClientDetailContentProps) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Notes & Communication Section */}
         <ClientNotes clientId={client.id} clientName={`${client.first_name} ${client.last_name}`} />
-        
+
         {/* Activity Timeline */}
         <ActivityTimeline clientId={client.id} />
       </div>

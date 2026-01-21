@@ -4,6 +4,7 @@ import { useState } from "react"
 import { ClientsHeader } from "@/components/features/clients/clients-header"
 import { ClientsList } from "@/components/features/clients/clients-list"
 import { BreadcrumbNav } from "@/components/layout/breadcrumb-nav"
+import { PaginationControls } from "@/components/ui/pagination-controls"
 import { useClients } from "@/hooks/use-clients"
 
 export default function ClientsPage() {
@@ -76,7 +77,11 @@ export default function ClientsPage() {
           sortBy={sort.field}
           sortOrder={sort.order}
         />
-        {/* TODO: Add pagination component */}
+        <PaginationControls
+          currentPage={page}
+          totalPages={Math.ceil(totalCount / limit)}
+          onPageChange={setPage}
+        />
       </main>
     </div>
   )

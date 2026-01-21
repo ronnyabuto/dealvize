@@ -159,7 +159,7 @@ export function AILeadScoring() {
   }
 
   const getScoreBadgeVariant = (score: number) => {
-    if (score >= 80) return 'success' as const
+    if (score >= 80) return 'default' as const
     if (score >= 60) return 'secondary' as const
     return 'destructive' as const
   }
@@ -508,7 +508,7 @@ export function AILeadScoring() {
                       <h4 className="font-medium">Score Ranges</h4>
                       <div className="space-y-3">
                         <div className="flex items-center gap-2">
-                          <Badge variant="success">80-100</Badge>
+                          <Badge variant="default">80-100</Badge>
                           <span className="text-sm">High Priority - Immediate follow-up</span>
                         </div>
                         <div className="flex items-center gap-2">

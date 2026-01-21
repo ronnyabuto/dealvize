@@ -737,7 +737,7 @@ function MeetingDetails({ meeting, onUpdate }: { meeting: Meeting, onUpdate: () 
             <Label className="text-sm font-medium">Password</Label>
             <div className="flex items-center space-x-2 mt-1">
               <Input value={meeting.meeting_password} readOnly />
-              <Button size="sm" variant="outline" onClick={() => navigator.clipboard.writeText(meeting.meeting_password)}>
+              <Button size="sm" variant="outline" onClick={() => navigator.clipboard.writeText(meeting.meeting_password || '')}>
                 <Copy className="h-4 w-4" />
               </Button>
             </div>

@@ -54,8 +54,8 @@ export class NotificationManager {
       expiresAt: params.expiresAt,
       source: 'dealvize-crm',
       channels: params.channels || ['in_app'],
-      deliveryStatus: {},
-      attempts: {},
+      deliveryStatus: {} as any,
+      attempts: {} as any,
       userId: params.userId,
       entityType: params.entityType,
       entityId: params.entityId,
@@ -126,7 +126,7 @@ export class NotificationManager {
       notification.deliveryStatus[channel] = 'sent'
     } catch (error) {
       notification.deliveryStatus[channel] = 'failed'
-      logger.error(`Failed to send notification on ${channel}`, error, {
+      logger.error(`Failed to send notification on ${channel}`, error as any, {
         notificationId: notification.id,
         attempt: notification.attempts[channel],
       })
@@ -465,7 +465,7 @@ export class NotificationManager {
       try {
         callback(notification)
       } catch (error) {
-        logger.error('Notification subscriber error', error)
+        logger.error('Notification subscriber error', error as any)
       }
     })
   }
@@ -511,7 +511,7 @@ export class NotificationManager {
       // In a real implementation, fetch from database
       return defaultNotificationPreferences
     } catch (error) {
-      logger.error('Failed to get user notification preferences', error)
+      logger.error('Failed to get user notification preferences', error as any)
       return defaultNotificationPreferences
     }
   }

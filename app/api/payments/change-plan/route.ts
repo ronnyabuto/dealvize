@@ -5,7 +5,7 @@ import Stripe from 'stripe'
 // Initialize Stripe only if the key is available
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY
 const stripe = stripeSecretKey ? new Stripe(stripeSecretKey, {
-  apiVersion: '2024-06-20'
+  apiVersion: '2025-08-27.basil'
 }) : null
 
 export async function POST(request: NextRequest) {

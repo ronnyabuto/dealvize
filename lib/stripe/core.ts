@@ -56,7 +56,7 @@ export function getStripe(): Stripe {
   if (!_stripe && stripeConfig.isConfigured) {
     try {
       _stripe = new Stripe(stripeConfig.secretKey, {
-        apiVersion: '2024-11-20.acacia',
+        apiVersion: '2025-08-27.basil',
         typescript: true,
       })
     } catch (error) {
@@ -412,21 +412,22 @@ export class PaymentService {
       throw new PaymentError('Customer not found for subscription sync', 'CUSTOMER_NOT_FOUND', 404)
     }
 
+    const subscription = stripeSubscription as any
     const subscriptionData = {
       user_id: customer.user_id,
       customer_id: customer.id,
-      stripe_subscription_id: stripeSubscription.id,
-      price_id: stripeSubscription.items.data[0]?.price.id || '',
-      status: stripeSubscription.status,
-      cancel_at_period_end: stripeSubscription.cancel_at_period_end,
-      current_period_start: new Date(stripeSubscription.current_period_start * 1000).toISOString(),
-      current_period_end: new Date(stripeSubscription.current_period_end * 1000).toISOString(),
-      trial_start: stripeSubscription.trial_start ? 
-        new Date(stripeSubscription.trial_start * 1000).toISOString() : null,
-      trial_end: stripeSubscription.trial_end ? 
-        new Date(stripeSubscription.trial_end * 1000).toISOString() : null,
-      canceled_at: stripeSubscription.canceled_at ? 
-        new Date(stripeSubscription.canceled_at * 1000).toISOString() : null,
+      stripe_subscription_id: subscription.id,
+      price_id: subscription.items.data[0]?.price.id || '',
+      status: subscription.status,
+      cancel_at_period_end: subscription.cancel_at_period_end,
+      current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
+      current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+      trial_start: subscription.trial_start ?
+        new Date(subscription.trial_start * 1000).toISOString() : null,
+      trial_end: subscription.trial_end ?
+        new Date(subscription.trial_end * 1000).toISOString() : null,
+      canceled_at: subscription.canceled_at ?
+        new Date(subscription.canceled_at * 1000).toISOString() : null,
     }
 
     return await DB.upsertSubscription(subscriptionData)

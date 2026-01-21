@@ -589,10 +589,10 @@ export class PropertyService {
   private addressMatchesPartial(address: MLSProperty['address'], partial: string): boolean {
     const fullAddress = this.formatAddressForDisplay(address).toLowerCase()
     const partialLower = partial.toLowerCase()
-    
-    return fullAddress.includes(partialLower) || 
+
+    return !!(fullAddress.includes(partialLower) ||
            (address.streetNumber && address.streetNumber.startsWith(partial)) ||
-           (address.streetName && address.streetName.toLowerCase().includes(partialLower))
+           (address.streetName && address.streetName.toLowerCase().includes(partialLower)))
   }
 
   private formatAddressForDisplay(address: MLSProperty['address']): string {

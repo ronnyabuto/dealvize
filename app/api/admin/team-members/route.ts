@@ -69,9 +69,9 @@ export async function GET(request: NextRequest) {
       const transformedMembers = (members || []).map(member => ({
         id: member.id,
         user_id: member.user_id,
-        email: member.users?.email || '',
-        name: member.users?.name || 'Unknown User',
-        avatar_url: member.users?.avatar_url,
+        email: (member.users as any)?.email || '',
+        name: (member.users as any)?.name || 'Unknown User',
+        avatar_url: (member.users as any)?.avatar_url,
         role: member.role,
         status: member.status,
         joined_at: member.joined_at,
@@ -284,8 +284,8 @@ export async function DELETE(request: NextRequest) {
           entity_id: memberId,
           metadata: {
             removed_user_id: existingMember.user_id,
-            removed_user_name: existingMember.users?.name,
-            removed_user_email: existingMember.users?.email,
+            removed_user_name: (existingMember.users as any)?.name,
+            removed_user_email: (existingMember.users as any)?.email,
             role: existingMember.role
           }
         })

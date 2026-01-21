@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -32,18 +32,14 @@ export function ClientNotes({ clientId, clientName }: ClientNotesProps) {
   })
   const { toast } = useToast()
 
-  useEffect(() => {
-    fetchNotes()
-  }, [clientId, search, fetchNotes])
-
-  const fetchNotes = async () => {
+  const fetchNotes = useCallback(async () => {
     setLoading(true)
     try {
       const params = new URLSearchParams({
         client_id: clientId,
         limit: '50'
       })
-      
+
       if (search) {
         params.append('search', search)
       }
@@ -58,7 +54,11 @@ export function ClientNotes({ clientId, clientName }: ClientNotesProps) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [clientId, search])
+
+  useEffect(() => {
+    fetchNotes()
+  }, [fetchNotes])
 
   const addNote = async () => {
     if (!newNote.content.trim()) return

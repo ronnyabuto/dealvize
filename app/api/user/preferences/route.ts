@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     const requestedUserId = url.searchParams.get('userId')
 
     // Users can only access their own preferences unless they're admin
-    if (requestedUserId && requestedUserId !== userId && sessionValidation.sessionInfo?.role !== 'admin') {
+    if (requestedUserId && requestedUserId !== userId && (sessionValidation.sessionInfo as any)?.role !== 'admin') {
       return NextResponse.json({
         success: false,
         error: 'Unauthorized access to user preferences'
@@ -63,7 +63,7 @@ export async function PUT(request: NextRequest) {
     const { preferences, userId: requestedUserId } = await request.json()
 
     // Users can only update their own preferences unless they're admin
-    if (requestedUserId && requestedUserId !== userId && sessionValidation.sessionInfo?.role !== 'admin') {
+    if (requestedUserId && requestedUserId !== userId && (sessionValidation.sessionInfo as any)?.role !== 'admin') {
       return NextResponse.json({
         success: false,
         error: 'Unauthorized access to user preferences'
@@ -264,42 +264,42 @@ function validatePreferences(preferences: any): Partial<UserPreferences> {
 
   // Email notifications
   if (preferences.emailNotifications && typeof preferences.emailNotifications === 'object') {
-    validated.emailNotifications = {}
+    validated.emailNotifications = {} as any
     const emailNotifs = preferences.emailNotifications
     
     if (typeof emailNotifs.newDeals === 'boolean') {
-      validated.emailNotifications.newDeals = emailNotifs.newDeals
+      validated.emailNotifications!.newDeals = emailNotifs.newDeals
     }
     if (typeof emailNotifs.taskReminders === 'boolean') {
-      validated.emailNotifications.taskReminders = emailNotifs.taskReminders
+      validated.emailNotifications!.taskReminders = emailNotifs.taskReminders
     }
     if (typeof emailNotifs.systemUpdates === 'boolean') {
-      validated.emailNotifications.systemUpdates = emailNotifs.systemUpdates
+      validated.emailNotifications!.systemUpdates = emailNotifs.systemUpdates
     }
     if (typeof emailNotifs.marketingEmails === 'boolean') {
-      validated.emailNotifications.marketingEmails = emailNotifs.marketingEmails
+      validated.emailNotifications!.marketingEmails = emailNotifs.marketingEmails
     }
     if (typeof emailNotifs.weeklyDigest === 'boolean') {
-      validated.emailNotifications.weeklyDigest = emailNotifs.weeklyDigest
+      validated.emailNotifications!.weeklyDigest = emailNotifs.weeklyDigest
     }
   }
 
   // In-app notifications
   if (preferences.inAppNotifications && typeof preferences.inAppNotifications === 'object') {
-    validated.inAppNotifications = {}
+    validated.inAppNotifications = {} as any
     const inAppNotifs = preferences.inAppNotifications
-    
+
     if (typeof inAppNotifs.newMessages === 'boolean') {
-      validated.inAppNotifications.newMessages = inAppNotifs.newMessages
+      validated.inAppNotifications!.newMessages = inAppNotifs.newMessages
     }
     if (typeof inAppNotifs.taskDeadlines === 'boolean') {
-      validated.inAppNotifications.taskDeadlines = inAppNotifs.taskDeadlines
+      validated.inAppNotifications!.taskDeadlines = inAppNotifs.taskDeadlines
     }
     if (typeof inAppNotifs.dealUpdates === 'boolean') {
-      validated.inAppNotifications.dealUpdates = inAppNotifs.dealUpdates
+      validated.inAppNotifications!.dealUpdates = inAppNotifs.dealUpdates
     }
     if (typeof inAppNotifs.systemAlerts === 'boolean') {
-      validated.inAppNotifications.systemAlerts = inAppNotifs.systemAlerts
+      validated.inAppNotifications!.systemAlerts = inAppNotifs.systemAlerts
     }
   }
 

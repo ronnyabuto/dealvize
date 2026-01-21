@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { 
+import {
   TrendingUp,
   DollarSign,
   Users,
@@ -17,7 +17,9 @@ import {
   Target,
   Zap,
   Brain,
-  Lightbulb
+  Lightbulb,
+  ArrowDown,
+  ArrowUp
 } from 'lucide-react'
 import { getTrendIcon, getTrendColor, getConfidenceColor } from '@/lib/utils/ui-helpers'
 
@@ -299,7 +301,7 @@ export function BusinessIntelligence({ className }: BusinessIntelligenceProps) {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {insights.featureAdoption.map((feature) => (
+                {insights.featureAdoption.map((feature: any) => (
                   <div key={feature.name} className="space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium">{feature.name}</span>

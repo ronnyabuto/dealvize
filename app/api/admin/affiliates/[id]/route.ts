@@ -19,10 +19,10 @@ const UpdateAffiliateSchema = z.object({
 })
 
 // GET - Get specific affiliate with stats
-export async function GET(request: NextRequest, { params }: { params: Params }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<Params> }) {
   return withRBAC(request, async (req, context) => {
     const supabase = await createClient()
-    const affiliateId = params.id
+    const { id: affiliateId } = await params
 
     try {
       // Get affiliate details
@@ -136,10 +136,10 @@ export async function GET(request: NextRequest, { params }: { params: Params }) 
 }
 
 // PUT - Update affiliate program
-export async function PUT(request: NextRequest, { params }: { params: Params }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<Params> }) {
   return withRBAC(request, async (req, context) => {
     const serviceClient = createServiceClient()
-    const affiliateId = params.id
+    const { id: affiliateId } = await params
 
     try {
       const body = await request.json()
@@ -239,10 +239,10 @@ export async function PUT(request: NextRequest, { params }: { params: Params }) 
 }
 
 // DELETE - Suspend affiliate program
-export async function DELETE(request: NextRequest, { params }: { params: Params }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<Params> }) {
   return withRBAC(request, async (req, context) => {
     const serviceClient = createServiceClient()
-    const affiliateId = params.id
+    const { id: affiliateId } = await params
 
     try {
       // Verify affiliate exists

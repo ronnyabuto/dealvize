@@ -67,7 +67,7 @@ export async function GET(request: NextRequest) {
 
     const totalInvited = meetings.reduce((sum, meeting) => sum + (meeting.attendees?.length || 0), 0)
     const totalJoined = meetings.reduce((sum, meeting) => {
-      return sum + (meeting.attendees?.filter(a => a.joined_at).length || 0)
+      return sum + (meeting.attendees?.filter((a: any) => a.joined_at).length || 0)
     }, 0)
     const attendanceRate = totalInvited > 0 ? Math.round((totalJoined / totalInvited) * 100) : 0
 
@@ -96,11 +96,14 @@ export async function GET(request: NextRequest) {
       return acc
     }, {} as Record<string, number>)
 
-    const platformBreakdown = Object.entries(platformGroups).map(([platform, count]) => ({
-      platform: platform.charAt(0).toUpperCase() + platform.slice(1),
-      count,
-      percentage: Math.round((count / totalMeetings) * 100)
-    }))
+    const platformBreakdown = Object.entries(platformGroups).map(([platform, count]) => {
+      const meetingCount = count as number
+      return {
+        platform: platform.charAt(0).toUpperCase() + platform.slice(1),
+        count: meetingCount,
+        percentage: Math.round((meetingCount / totalMeetings) * 100)
+      }
+    })
 
     // Status breakdown
     const statusGroups = meetings.reduce((acc, meeting) => {
@@ -108,11 +111,14 @@ export async function GET(request: NextRequest) {
       return acc
     }, {} as Record<string, number>)
 
-    const statusBreakdown = Object.entries(statusGroups).map(([status, count]) => ({
-      status: status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
-      count,
-      percentage: Math.round((count / totalMeetings) * 100)
-    }))
+    const statusBreakdown = Object.entries(statusGroups).map(([status, count]) => {
+      const meetingCount = count as number
+      return {
+        status: status.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()),
+        count: meetingCount,
+        percentage: Math.round((meetingCount / totalMeetings) * 100)
+      }
+    })
 
     // Popular time slots analysis
     const timeSlotGroups = meetings.reduce((acc, meeting) => {
@@ -123,11 +129,14 @@ export async function GET(request: NextRequest) {
     }, {} as Record<string, number>)
 
     const popularTimeSlots = Object.entries(timeSlotGroups)
-      .map(([timeSlot, count]) => ({
-        time_slot: timeSlot,
-        meeting_count: count,
-        percentage: Math.round((count / totalMeetings) * 100)
-      }))
+      .map(([timeSlot, count]) => {
+        const meetingCount = count as number
+        return {
+          time_slot: timeSlot,
+          meeting_count: meetingCount,
+          percentage: Math.round((meetingCount / totalMeetings) * 100)
+        }
+      })
       .sort((a, b) => b.meeting_count - a.meeting_count)
       .slice(0, 5)
 
@@ -141,7 +150,7 @@ export async function GET(request: NextRequest) {
       
       const dayInvited = dayMeetings.reduce((sum, meeting) => sum + (meeting.attendees?.length || 0), 0)
       const dayJoined = dayMeetings.reduce((sum, meeting) => {
-        return sum + (meeting.attendees?.filter(a => a.joined_at).length || 0)
+        return sum + (meeting.attendees?.filter((a: any) => a.joined_at).length || 0)
       }, 0)
       
       attendanceTrends.push({

@@ -24,10 +24,11 @@ export class MLSPropertyHistoryService {
   async getPropertyHistory(listingId: string): Promise<MLSPropertyHistory> {
     try {
       // Get current property details
-      const property = await this.client.getPropertyDetails(listingId)
-      if (!property) {
+      const propertyResult = await this.client.getProperty(listingId)
+      if (!propertyResult.success || !propertyResult.data) {
         throw new Error('Property not found')
       }
+      const property = propertyResult.data
 
       // Fetch historical data from MLS
       const historyData = await this.fetchPropertyHistoryData(listingId)
@@ -122,10 +123,11 @@ export class MLSPropertyHistoryService {
     recommendations: string[]
   }> {
     try {
-      const property = await this.client.getPropertyDetails(listingId)
-      if (!property) {
+      const propertyResult = await this.client.getProperty(listingId)
+      if (!propertyResult.success || !propertyResult.data) {
         throw new Error('Property not found')
       }
+      const property = propertyResult.data
 
       const history = await this.getPropertyHistory(listingId)
       const priceHistory = await this.getPriceHistory(listingId)
@@ -230,7 +232,8 @@ export class MLSPropertyHistoryService {
         ? Math.floor((new Date().getTime() - firstEvent.date.getTime()) / (1000 * 60 * 60 * 24))
         : 0
 
-      const property = await this.client.getPropertyDetails(listingId)
+      const propertyResult = await this.client.getProperty(listingId)
+      const property = propertyResult.success ? propertyResult.data : undefined
 
       return {
         listingId,
@@ -251,8 +254,9 @@ export class MLSPropertyHistoryService {
   private async fetchPropertyHistoryData(listingId: string): Promise<any[]> {
     // In production, this would make specific API calls to get history data
     // For now, simulate based on property details
-    const property = await this.client.getPropertyDetails(listingId)
-    if (!property) return []
+    const propertyResult = await this.client.getProperty(listingId)
+    if (!propertyResult.success || !propertyResult.data) return []
+    const property = propertyResult.data
 
     const events = []
 

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { 
+import {
   TrendingUp,
   DollarSign,
   Users,
@@ -18,7 +18,9 @@ import {
   ExternalLink,
   Clock,
   CheckCircle,
-  Zap
+  Zap,
+  Activity,
+  Crown
 } from 'lucide-react'
 import { getTrendIcon, getTrendColor, getTierIcon, getTierColor } from '@/lib/utils/ui-helpers'
 
@@ -168,7 +170,7 @@ export function AffiliateMonitoring({ className }: AffiliateMonitoringProps) {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {affiliateData.topPerformers.map((affiliate, index) => {
+                {affiliateData.topPerformers.map((affiliate: any, index: number) => {
                   const TierIcon = getTierIcon(affiliate.tier)
                   
                   return (
@@ -179,7 +181,7 @@ export function AffiliateMonitoring({ className }: AffiliateMonitoringProps) {
                         </Badge>
                         <Avatar className="h-10 w-10">
                           <AvatarFallback className="bg-dealvize-teal text-white text-sm">
-                            {affiliate.name.split(' ').map(n => n[0]).join('')}
+                            {affiliate.name.split(' ').map((n: string) => n[0]).join('')}
                           </AvatarFallback>
                         </Avatar>
                       </div>
@@ -293,7 +295,7 @@ export function AffiliateMonitoring({ className }: AffiliateMonitoringProps) {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {affiliateData.recentActivity.map((activity) => {
+                {affiliateData.recentActivity.map((activity: any) => {
                   const ActivityIcon = getActivityIcon(activity.type)
                   
                   return (

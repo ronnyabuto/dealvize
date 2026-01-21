@@ -59,8 +59,8 @@ export async function GET(request: NextRequest) {
         expires_at: invitation.expires_at,
         accepted_at: invitation.accepted_at,
         custom_message: invitation.custom_message,
-        invited_by: invitation.invited_by_user?.name || 'Unknown',
-        invited_by_email: invitation.invited_by_user?.email
+        invited_by: (invitation.invited_by_user as any)?.name || 'Unknown',
+        invited_by_email: (invitation.invited_by_user as any)?.email
       }))
 
       return NextResponse.json({

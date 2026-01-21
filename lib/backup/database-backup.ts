@@ -71,7 +71,7 @@ export class DatabaseBackup {
 
           logger.info(`Backed up table ${table}`, { records: metadata.recordCount[table] })
         } catch (error) {
-          logger.error(`Failed to backup table ${table}`, error)
+          logger.error(`Failed to backup table ${table}`, error as any)
           throw error
         }
       }
@@ -134,7 +134,7 @@ export class DatabaseBackup {
       metadata.endTime = new Date()
       metadata.error = error instanceof Error ? error.message : 'Unknown error'
 
-      logger.error('Database backup failed', error)
+      logger.error('Database backup failed', error as any)
 
       // Store failed backup metadata
       await this.storeBackupMetadata(metadata)
@@ -190,7 +190,7 @@ export class DatabaseBackup {
 
           logger.info(`Incremental backup for table ${table}`, { records: metadata.recordCount[table] })
         } catch (error) {
-          logger.error(`Failed to create incremental backup for table ${table}`, error)
+          logger.error(`Failed to create incremental backup for table ${table}`, error as any)
           // Continue with other tables
         }
       }
@@ -282,9 +282,9 @@ export class DatabaseBackup {
       const tablesToRestore = options.tables || Object.keys(backupData.data)
 
       if (options.dryRun) {
-        logger.info('Dry run restore completed', { 
+        logger.info('Dry run restore completed', {
           tables: tablesToRestore,
-          totalRecords: Object.values(backupData.metadata.recordCount).reduce((a: number, b: number) => a + b, 0)
+          totalRecords: (Object.values(backupData.metadata.recordCount) as number[]).reduce((a: number, b: number) => a + b, 0)
         })
         return
       }
@@ -333,7 +333,7 @@ export class DatabaseBackup {
           logger.info(`Restored table ${table}`, { records: records.length })
 
         } catch (error) {
-          logger.error(`Failed to restore table ${table}`, error)
+          logger.error(`Failed to restore table ${table}`, error as any)
           if (table in ['clients', 'users']) {
             // Critical table - abort restore
             throw error
@@ -348,7 +348,7 @@ export class DatabaseBackup {
       })
 
     } catch (error) {
-      logger.error('Database restore failed', error)
+      logger.error('Database restore failed', error as any)
       throw error
     }
   }
@@ -404,7 +404,7 @@ export class DatabaseBackup {
     
     const key = crypto.scryptSync(encryptionKey, 'salt', 32)
     const iv = crypto.randomBytes(16)
-    const cipher = crypto.createCipher(algorithm, key)
+    const cipher = crypto.createCipheriv(algorithm, key, iv)
     
     let encrypted = cipher.update(data, 'utf8', 'hex')
     encrypted += cipher.final('hex')
@@ -426,7 +426,7 @@ export class DatabaseBackup {
     const key = crypto.scryptSync(encryptionKey, 'salt', 32)
     const [ivHex, encrypted] = encryptedData.split(':')
     const iv = Buffer.from(ivHex, 'hex')
-    const decipher = crypto.createDecipher(algorithm, key)
+    const decipher = crypto.createDecipheriv(algorithm, key, iv)
     
     let decrypted = decipher.update(encrypted, 'hex', 'utf8')
     decrypted += decipher.final('utf8')
@@ -497,7 +497,7 @@ export class DatabaseBackup {
       }
 
     } catch (error) {
-      logger.error('Failed to send backup notification', error)
+      logger.error('Failed to send backup notification', error as any)
     }
   }
 
@@ -522,7 +522,7 @@ export class DatabaseBackup {
       return backups.sort((a, b) => b.startTime.getTime() - a.startTime.getTime())
 
     } catch (error) {
-      logger.error('Failed to list backups', error)
+      logger.error('Failed to list backups', error as any)
       return []
     }
   }
@@ -555,7 +555,7 @@ export class DatabaseBackup {
       }
 
     } catch (error) {
-      logger.error('Failed to cleanup old backups', error)
+      logger.error('Failed to cleanup old backups', error as any)
     }
   }
 
