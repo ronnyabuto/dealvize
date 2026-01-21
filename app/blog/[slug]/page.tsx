@@ -4,7 +4,7 @@ import { Calendar, Clock, User, Share2, ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { BlogPostClient, ShareButton } from '@/app/(marketing)/blog/[slug]/blog-post-client'
+import { BlogPostClient, ShareButton } from '@/app/blog/[slug]/blog-post-client'
 
 // Helper function to calculate read time
 function calculateReadTime(content: string): string {
@@ -17,7 +17,7 @@ function calculateReadTime(content: string): string {
 async function getBlogPost(slug: string) {
   try {
     const supabase = await createClient()
-    
+
     // Fetch blog post by slug
     const { data: post, error } = await supabase
       .from('blog_posts')
@@ -69,7 +69,7 @@ interface BlogPostPageProps {
 export async function generateMetadata({ params }: BlogPostPageProps) {
   const { slug } = await params
   const post = await getBlogPost(slug)
-  
+
   if (!post) {
     return {
       title: 'Blog Post Not Found',
@@ -110,7 +110,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           <h1 className="text-4xl sm:text-5xl font-bold text-slate-900 mb-6 leading-tight">
             {post.title}
           </h1>
-          
+
           <div className="flex flex-wrap items-center gap-6 text-gray-600 mb-8">
             <div className="flex items-center">
               <User className="h-5 w-5 mr-2" />
@@ -118,10 +118,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             </div>
             <div className="flex items-center">
               <Calendar className="h-5 w-5 mr-2" />
-              <span>{new Date(post.date).toLocaleDateString('en-US', { 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
+              <span>{new Date(post.date).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
               })}</span>
             </div>
             <div className="flex items-center">
@@ -137,7 +137,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         </header>
 
         {/* Article Content */}
-        <div 
+        <div
           className="prose prose-lg max-w-none prose-headings:text-slate-900 prose-headings:font-bold prose-p:text-gray-700 prose-p:leading-relaxed prose-a:text-dealvize-teal prose-a:no-underline hover:prose-a:underline prose-strong:text-slate-900"
           dangerouslySetInnerHTML={{ __html: post.content }}
         />
