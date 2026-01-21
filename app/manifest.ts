@@ -15,44 +15,16 @@ export default function manifest(): MetadataRoute.Manifest {
     scope: '/',
     icons: [
       {
-        src: '/icon-192.png',
+        src: '/icon-192x192.png',
         sizes: '192x192',
         type: 'image/png',
         purpose: 'any',
       },
       {
-        src: '/icon-512.png',
+        src: '/icon-512x512.png',
         sizes: '512x512',
         type: 'image/png',
         purpose: 'any',
-      },
-      {
-        src: '/icon-maskable-192.png',
-        sizes: '192x192',
-        type: 'image/png',
-        purpose: 'maskable',
-      },
-      {
-        src: '/icon-maskable-512.png',
-        sizes: '512x512',
-        type: 'image/png',
-        purpose: 'maskable',
-      },
-    ],
-    screenshots: [
-      {
-        src: '/screenshot-wide.png',
-        sizes: '1024x768',
-        type: 'image/png',
-        form_factor: 'wide',
-        label: 'Dealvize CRM Dashboard - Desktop View',
-      },
-      {
-        src: '/screenshot-narrow.png',
-        sizes: '375x667',
-        type: 'image/png',
-        form_factor: 'narrow',
-        label: 'Dealvize CRM Dashboard - Mobile View',
       },
     ],
     shortcuts: [

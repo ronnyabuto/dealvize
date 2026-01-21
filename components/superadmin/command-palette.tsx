@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { 
+import {
   Search,
   Users,
   Settings,
@@ -178,13 +178,13 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault()
-        setSelectedIndex(prev => 
+        setSelectedIndex(prev =>
           prev < filteredCommands.length - 1 ? prev + 1 : 0
         )
         break
       case 'ArrowUp':
         e.preventDefault()
-        setSelectedIndex(prev => 
+        setSelectedIndex(prev =>
           prev > 0 ? prev - 1 : filteredCommands.length - 1
         )
         break
@@ -259,6 +259,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl p-0 gap-0">
+        <DialogTitle className="sr-only">Command Palette</DialogTitle>
         <DialogHeader className="p-4 pb-2">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -294,46 +295,40 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
               {filteredCommands.map((command, index) => {
                 const CategoryIcon = getCategoryIcon(command.category)
                 const isSelected = index === selectedIndex
-                
+
                 return (
                   <div
                     key={command.id}
-                    className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all ${
-                      isSelected 
-                        ? 'bg-dealvize-teal text-white' 
-                        : 'hover:bg-gray-50'
-                    }`}
+                    className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all ${isSelected
+                      ? 'bg-dealvize-teal text-white'
+                      : 'hover:bg-gray-50'
+                      }`}
                     onClick={() => executeCommand(command)}
                   >
-                    <div className={`p-2 rounded-lg ${
-                      isSelected 
-                        ? 'bg-white bg-opacity-20' 
-                        : 'bg-gray-100'
-                    }`}>
-                      <command.icon className={`h-4 w-4 ${
-                        isSelected ? 'text-white' : 'text-gray-600'
-                      }`} />
-                    </div>
-                    
-                    <div className="flex-1 min-w-0">
-                      <p className={`font-medium truncate ${
-                        isSelected ? 'text-white' : 'text-gray-900'
+                    <div className={`p-2 rounded-lg ${isSelected
+                      ? 'bg-white bg-opacity-20'
+                      : 'bg-gray-100'
                       }`}>
+                      <command.icon className={`h-4 w-4 ${isSelected ? 'text-white' : 'text-gray-600'
+                        }`} />
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <p className={`font-medium truncate ${isSelected ? 'text-white' : 'text-gray-900'
+                        }`}>
                         {command.title}
                       </p>
-                      <p className={`text-sm truncate ${
-                        isSelected ? 'text-white text-opacity-80' : 'text-gray-500'
-                      }`}>
+                      <p className={`text-sm truncate ${isSelected ? 'text-white text-opacity-80' : 'text-gray-500'
+                        }`}>
                         {command.description}
                       </p>
                     </div>
-                    
+
                     <div className="flex items-center gap-2">
-                      <Badge className={`text-xs ${
-                        isSelected 
-                          ? 'bg-white bg-opacity-20 text-white border-white border-opacity-30'
-                          : getCategoryColor(command.category)
-                      }`}>
+                      <Badge className={`text-xs ${isSelected
+                        ? 'bg-white bg-opacity-20 text-white border-white border-opacity-30'
+                        : getCategoryColor(command.category)
+                        }`}>
                         <CategoryIcon className="h-3 w-3 mr-1" />
                         {command.category}
                       </Badge>
