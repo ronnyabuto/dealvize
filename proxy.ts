@@ -2,7 +2,25 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { updateSession } from './lib/supabase/middleware'
 import { withCSRFProtection, setCSRFToken } from './lib/security/csrf'
 import { smartRateLimiter } from '@/lib/security/edge-rate-limiter'
-import { createClient } from '@/lib/supabase/server'
+import { createServerClient } from '@supabase/ssr'
+
+// Edge-compatible Supabase client creator
+function createEdgeClient(request: NextRequest) {
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll()
+        },
+        setAll() {
+          // Edge middleware cannot set cookies, handled by updateSession
+        },
+      },
+    }
+  )
+}
 
 // Essential security headers
 // NOTE: HSTS (Strict-Transport-Security) is applied conditionally in production only
@@ -49,16 +67,16 @@ export async function proxy(request: NextRequest) {
     }
 
     // Get client IP for rate limiting and security logging
-    const clientIP = request.headers.get('x-forwarded-for') || 
-                     request.headers.get('x-real-ip') || 
-                     'unknown'
+    const clientIP = request.headers.get('x-forwarded-for') ||
+      request.headers.get('x-real-ip') ||
+      'unknown'
 
     // Rate limiting for API routes
     if (request.nextUrl.pathname.startsWith('/api/')) {
-      const supabase = await createClient()
+      const supabase = createEdgeClient(request)
       const { data: { user } } = await supabase.auth.getUser()
       const identifier = user?.id || clientIP
-      
+
       // Different rate limits for different endpoints using edge-based limiting
       let rateLimit
       if (request.nextUrl.pathname.includes('/api/auth')) {
@@ -83,7 +101,7 @@ export async function proxy(request: NextRequest) {
             error: 'Rate limit exceeded',
             resetTime: rateLimit.resetTime
           }),
-          { 
+          {
             status: 429,
             headers: {
               'Content-Type': 'application/json',
@@ -107,21 +125,21 @@ export async function proxy(request: NextRequest) {
       '/dashboard',
       '/clients',
       '/deals',
-      '/messages', 
+      '/messages',
       '/calendar',
       '/analytics',
       '/settings',
       '/admin'
     ]
 
-    const isProtectedPath = protectedPaths.some(path => 
+    const isProtectedPath = protectedPaths.some(path =>
       request.nextUrl.pathname.startsWith(path)
     )
 
     if (isProtectedPath) {
-      const supabase = await createClient()
+      const supabase = createEdgeClient(request)
       const { data: { user } } = await supabase.auth.getUser()
-      
+
       if (!user) {
         const redirectUrl = new URL('/auth/signin', request.url)
         redirectUrl.searchParams.set('redirectTo', request.nextUrl.pathname)
@@ -136,7 +154,7 @@ export async function proxy(request: NextRequest) {
     const hostname = request.headers.get('host')
     if (hostname && hostname.includes('.') && !hostname.includes('localhost')) {
       const subdomain = hostname.split('.')[0]
-      
+
       // Skip www and api subdomains
       if (subdomain !== 'www' && subdomain !== 'api') {
         // Rewrite to tenant-specific routes
@@ -155,11 +173,11 @@ export async function proxy(request: NextRequest) {
 
   } catch (error) {
     console.error('Middleware error:', error)
-    
+
     // Return error response with security headers
     const errorResponse = new NextResponse(
       JSON.stringify({ error: 'Internal server error' }),
-      { 
+      {
         status: 500,
         headers: {
           'Content-Type': 'application/json',
@@ -167,7 +185,7 @@ export async function proxy(request: NextRequest) {
         }
       }
     )
-    
+
     return errorResponse
   }
 }
@@ -182,7 +200,7 @@ async function logSecurityEvent(request: NextRequest, userId: string, clientIP: 
     path: request.nextUrl.pathname,
     timestamp: new Date().toISOString()
   }
-  
+
   // For now, just log to console in development
   if (process.env.NODE_ENV === 'development') {
     console.log('Security event:', event)
