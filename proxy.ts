@@ -155,8 +155,8 @@ export async function proxy(request: NextRequest) {
     if (hostname && hostname.includes('.') && !hostname.includes('localhost')) {
       const subdomain = hostname.split('.')[0]
 
-      // Skip www and api subdomains
-      if (subdomain !== 'www' && subdomain !== 'api') {
+      // Skip www, api, and main domain subdomains
+      if (subdomain !== 'www' && subdomain !== 'api' && subdomain !== 'dealvize') {
         // Rewrite to tenant-specific routes
         const url = request.nextUrl.clone()
         url.pathname = `/tenant/${subdomain}${url.pathname}`
