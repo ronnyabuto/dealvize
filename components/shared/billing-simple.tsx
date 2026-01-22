@@ -32,7 +32,7 @@ const plans = [
     price: 79,
     priceId: process.env.NEXT_PUBLIC_STRIPE_PROFESSIONAL_PRICE_ID || "price_professional_monthly",
     popular: true,
-    features: ["2-4 Users", "500 Contacts", "Unlimited Deals", "MLS Integration", "Priority Support"]
+    features: ["2-4 Users", "500 Contacts", "Unlimited Deals", "Email Integration", "Priority Support"]
   },
   {
     id: "enterprise",

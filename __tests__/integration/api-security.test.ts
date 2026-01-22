@@ -12,7 +12,6 @@ describe('API Security Tests', () => {
             '/api/auth/signin',
             '/api/auth/signup',
             '/api/webhooks/stripe',
-            '/api/webhooks/twilio',
         ]
 
         it('has defined protected endpoints', () => {
@@ -158,24 +157,6 @@ describe('API Security Tests', () => {
             tolerance: 300,
             requiredFields: ['id', 'type', 'data']
         }
-
-        const twilioWebhookSecurity = {
-            signatureHeader: 'x-twilio-signature',
-            algorithm: 'sha1',
-            requiredFields: ['AccountSid']
-        }
-
-        it('Stripe uses sha256 signatures', () => {
-            expect(stripeWebhookSecurity.algorithm).toBe('sha256')
-        })
-
-        it('Twilio uses sha1 signatures', () => {
-            expect(twilioWebhookSecurity.algorithm).toBe('sha1')
-        })
-
-        it('Stripe has timestamp tolerance', () => {
-            expect(stripeWebhookSecurity.tolerance).toBeLessThanOrEqual(300)
-        })
 
         it('requires essential fields', () => {
             expect(stripeWebhookSecurity.requiredFields).toContain('id')

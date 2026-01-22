@@ -38,7 +38,6 @@ const ANALYTICS_MENU_ITEMS = [
 ] as const
 
 const BOTTOM_MENU_ITEMS = [
-  { title: "MLS Settings", url: "/mls-settings", icon: Building2 },
   { title: "Settings", url: "/settings", icon: Settings },
 ] as const
 

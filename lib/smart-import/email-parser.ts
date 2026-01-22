@@ -38,7 +38,7 @@ export class EmailParser {
     try {
       // First, check if this is likely a real estate email
       const confidence = this.calculateRealEstateConfidence(emailContent, emailMetadata?.subject)
-      
+
       if (confidence < 30) {
         return {
           success: false,
@@ -56,7 +56,7 @@ export class EmailParser {
 
       // Extract property details
       const propertyDetails = this.extractPropertyDetails(emailContent, emailMetadata)
-      
+
       // Validate extracted data
       const validation = this.validatePropertyData(propertyDetails)
 
@@ -93,7 +93,7 @@ export class EmailParser {
     const lowerSubject = subject?.toLowerCase() || ''
 
     // Check for real estate keywords
-    const keywordMatches = this.REAL_ESTATE_KEYWORDS.filter(keyword => 
+    const keywordMatches = this.REAL_ESTATE_KEYWORDS.filter(keyword =>
       lowerContent.includes(keyword) || lowerSubject.includes(keyword)
     ).length
 
@@ -175,12 +175,6 @@ export class EmailParser {
       }
     }
 
-    // Extract MLS number
-    const mlsMatch = content.match(this.MLS_REGEX)
-    if (mlsMatch) {
-      details.mlsNumber = mlsMatch[1]
-    }
-
     // Extract property type
     details.propertyType = this.extractPropertyType(content)
 
@@ -204,9 +198,9 @@ export class EmailParser {
 
     // Reset regex to ensure we get all matches
     this.BEDS_BATHS_REGEX.lastIndex = 0
-    
+
     const matches = [...content.matchAll(this.BEDS_BATHS_REGEX)]
-    
+
     for (const match of matches) {
       if (match[1]) {
         const beds = parseInt(match[1])
@@ -214,7 +208,7 @@ export class EmailParser {
           result.bedrooms = beds
         }
       }
-      
+
       if (match[2]) {
         const baths = parseFloat(match[2])
         if (!isNaN(baths) && baths > 0 && baths <= 20) {
@@ -231,10 +225,10 @@ export class EmailParser {
    */
   private static extractPropertyType(content: string): string | undefined {
     const lowerContent = content.toLowerCase()
-    
+
     for (const type of this.PROPERTY_TYPES) {
       if (lowerContent.includes(type)) {
-        return type.split(' ').map(word => 
+        return type.split(' ').map(word =>
           word.charAt(0).toUpperCase() + word.slice(1)
         ).join(' ')
       }
@@ -296,7 +290,7 @@ export class EmailParser {
    */
   private static extractDescription(content: string): string | undefined {
     const lines = content.split('\n').map(line => line.trim()).filter(line => line.length > 20)
-    
+
     // Look for paragraphs that don't contain contact info or technical details
     for (const line of lines) {
       if (
@@ -396,13 +390,13 @@ export class EmailParser {
    */
   static parseMultipleListings(emailContent: string): PropertyDetails[] {
     const listings: PropertyDetails[] = []
-    
+
     // Split content by common separators
     const sections = emailContent.split(/(?:\n\s*\n|\r\n\s*\r\n|[-=]{3,})/g)
-    
+
     for (const section of sections) {
       if (section.trim().length < 50) continue
-      
+
       const confidence = this.calculateRealEstateConfidence(section)
       if (confidence >= 30) {
         const property = this.extractPropertyDetails(section)
@@ -411,7 +405,7 @@ export class EmailParser {
         }
       }
     }
-    
+
     return listings
   }
 }

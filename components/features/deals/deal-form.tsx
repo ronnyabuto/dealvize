@@ -9,13 +9,11 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Badge } from '@/components/ui/badge'
-import { Loader2, Save, X, Search, Building2, MapPin, DollarSign } from 'lucide-react'
+import { Loader2, Save, X } from 'lucide-react'
 import { useDeals } from '@/hooks/use-deals'
 import { useClients } from '@/hooks/use-clients'
 import { type Deal } from '@/lib/types'
 import { calculateCommission, formatCurrency as formatCommissionCurrency } from '@/lib/commission'
-import { toast } from 'sonner'
 
 interface DealFormProps {
   deal?: Deal
@@ -30,9 +28,6 @@ export function DealForm({ deal, mode }: DealFormProps) {
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [mlsLoading, setMlsLoading] = useState(false)
-  const [mlsSearchInput, setMlsSearchInput] = useState('')
-  const [mlsData, setMlsData] = useState<any>(null)
 
   const [formData, setFormData] = useState({
     title: deal?.title || '',
@@ -70,7 +65,6 @@ export function DealForm({ deal, mode }: DealFormProps) {
     { value: 'Other', label: 'Other' }
   ]
 
-  // Recalculate commission when deal value or commission percentage changes
   useEffect(() => {
     if (formData.value && formData.commissionPercentage) {
       const calculatedCommission = calculateCommission(formData.value, parseFloat(formData.commissionPercentage))
@@ -126,8 +120,6 @@ export function DealForm({ deal, mode }: DealFormProps) {
       setError('Please enter a valid deal value')
       return false
     }
-
-    // Commission is auto-calculated, no validation needed
 
     if (formData.probability && (isNaN(parseInt(formData.probability)) || parseInt(formData.probability) < 0 || parseInt(formData.probability) > 100)) {
       setError('Probability must be a number between 0 and 100')
@@ -187,76 +179,6 @@ export function DealForm({ deal, mode }: DealFormProps) {
     router.push('/deals')
   }
 
-  const handleMLSSearch = async () => {
-    if (!mlsSearchInput.trim()) {
-      toast.error('Please enter an address or MLS number')
-      return
-    }
-
-    setMlsLoading(true)
-    try {
-      const isMLSNumber = /^\d+$/.test(mlsSearchInput.trim())
-
-      const response = await fetch('/api/mls/auto-populate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          [isMLSNumber ? 'mlsNumber' : 'address']: mlsSearchInput.trim()
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to search MLS')
-      }
-
-      const result = await response.json()
-
-      if (result.success) {
-        const property = result.property
-
-        // Auto-populate form fields
-        setFormData(prev => ({
-          ...prev,
-          title: prev.title || `${property.address}, ${property.city}`,
-          value: property.listPrice ? property.listPrice.toString() : prev.value,
-          propertyAddress: property.address,
-          propertyType: mapMLSPropertyType(property.propertyType),
-          propertyBedrooms: property.bedrooms?.toString() || '',
-          propertyBathrooms: property.bathrooms?.toString() || '',
-          propertySqft: property.squareFeet?.toString() || ''
-        }))
-
-        setMlsData(result)
-        toast.success(`Property found! Confidence: ${Math.round(result.confidence * 100)}%`)
-      } else {
-        toast.error(result.error || 'Property not found in MLS')
-      }
-    } catch (error) {
-      console.error('MLS search error:', error)
-      toast.error('Failed to search MLS. Please try again.')
-    } finally {
-      setMlsLoading(false)
-    }
-  }
-
-  const mapMLSPropertyType = (mlsType: string): string => {
-    const mapping: Record<string, string> = {
-      'Residential': 'Single Family',
-      'Condo': 'Condo',
-      'Townhouse': 'Townhouse',
-      'Commercial': 'Commercial',
-      'Land': 'Land'
-    }
-    return mapping[mlsType] || 'Other'
-  }
-
-  const clearMLSData = () => {
-    setMlsData(null)
-    setMlsSearchInput('')
-  }
-
   return (
     <div className="max-w-4xl mx-auto">
       <Card>
@@ -279,7 +201,6 @@ export function DealForm({ deal, mode }: DealFormProps) {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Basic Deal Information */}
             <div className="space-y-4">
               <h3 className="text-lg font-medium">Deal Information</h3>
 
@@ -403,116 +324,8 @@ export function DealForm({ deal, mode }: DealFormProps) {
               </div>
             </div>
 
-            {/* Property Information */}
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-medium">Property Information</h3>
-                {mlsData && (
-                  <Badge variant="secondary" className="bg-green-50 text-green-700 border-green-200">
-                    <Building2 className="h-3 w-3 mr-1" />
-                    MLS Data Loaded
-                  </Badge>
-                )}
-              </div>
-
-              {/* MLS Search */}
-              <Card className="bg-blue-50 border-blue-200">
-                <CardContent className="pt-4">
-                  <div className="flex items-center space-x-2">
-                    <div className="flex-1">
-                      <Label htmlFor="mlsSearch" className="text-sm font-medium text-blue-700">
-                        Quick Fill from MLS
-                      </Label>
-                      <div className="flex space-x-2 mt-1">
-                        <Input
-                          id="mlsSearch"
-                          value={mlsSearchInput}
-                          onChange={(e) => setMlsSearchInput(e.target.value)}
-                          placeholder="Enter address or MLS number..."
-                          className="bg-white"
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                              e.preventDefault()
-                              handleMLSSearch()
-                            }
-                          }}
-                        />
-                        <Button
-                          type="button"
-                          onClick={handleMLSSearch}
-                          disabled={mlsLoading || !mlsSearchInput.trim()}
-                          className="bg-blue-600 hover:bg-blue-700"
-                        >
-                          {mlsLoading ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <Search className="h-4 w-4" />
-                          )}
-                        </Button>
-                        {mlsData && (
-                          <Button
-                            type="button"
-                            onClick={clearMLSData}
-                            variant="outline"
-                            size="sm"
-                          >
-                            Clear
-                          </Button>
-                        )}
-                      </div>
-                      <p className="text-xs text-blue-600 mt-1">
-                        Search Columbus MLS to auto-populate property details
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* MLS Data Display */}
-              {mlsData && (
-                <Card className="bg-green-50 border-green-200">
-                  <CardContent className="pt-4">
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-medium text-green-800">MLS Property Details</h4>
-                        <Badge variant="outline" className="text-green-700 border-green-300">
-                          {mlsData.property.mlsNumber}
-                        </Badge>
-                      </div>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                        <div>
-                          <span className="text-green-600 font-medium">List Price:</span>
-                          <div className="flex items-center">
-                            <DollarSign className="h-3 w-3 text-green-500 mr-1" />
-                            {mlsData.property.listPrice?.toLocaleString() || 'N/A'}
-                          </div>
-                        </div>
-                        <div>
-                          <span className="text-green-600 font-medium">Type:</span>
-                          <div className="flex items-center">
-                            <Building2 className="h-3 w-3 text-green-500 mr-1" />
-                            {mlsData.property.propertyType || 'N/A'}
-                          </div>
-                        </div>
-                        <div>
-                          <span className="text-green-600 font-medium">Beds/Baths:</span>
-                          <div>{mlsData.property.bedrooms || 0} bed, {mlsData.property.bathrooms || 0} bath</div>
-                        </div>
-                        <div>
-                          <span className="text-green-600 font-medium">Square Feet:</span>
-                          <div>{mlsData.property.squareFeet?.toLocaleString() || 'N/A'} sq ft</div>
-                        </div>
-                      </div>
-                      {mlsData.property.listingAgent && (
-                        <div className="pt-2 border-t border-green-200">
-                          <span className="text-green-600 font-medium text-sm">Listing Agent:</span>
-                          <div className="text-sm">{mlsData.property.listingAgent.name}</div>
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
+              <h3 className="text-lg font-medium">Property Information</h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -583,7 +396,6 @@ export function DealForm({ deal, mode }: DealFormProps) {
               </div>
             </div>
 
-            {/* Actions */}
             <div className="flex items-center justify-end space-x-4 pt-6 border-t">
               <Button
                 type="button"

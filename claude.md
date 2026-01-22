@@ -187,7 +187,6 @@ When ambiguity exists, you pause and request clarification instead of inventing 
 
 #### Requires Real Estate Expert Approval
 
-- MLS integration changes
 - Property matching algorithm changes
 - Market analysis calculations
 - Compliance feature changes
@@ -258,7 +257,7 @@ Code that violates these standards will be rejected.
 
 - **Frontend**: Next.js 16, React 19, TypeScript 5, Tailwind CSS, Radix UI
 - **Backend**: Next.js API Routes, Supabase (PostgreSQL), Upstash Redis
-- **External Services**: Stripe, Twilio, Resend, RapidAPI (MLS)
+- **External Services**: Stripe, Resend, OpenRouter
 - **Deployment**: Vercel
 - **Monitoring**: Sentry
 
@@ -281,7 +280,7 @@ Refer to the comprehensive audit report for:
 ### Development Priorities
 
 1. Fix critical runtime bugs
-2. Implement missing webhooks (Stripe, Twilio)
+2. Implement webhook integrations (Stripe, Google)
 3. Add comprehensive test coverage
 4. Complete transaction management features
 5. Implement real AI/ML or remove mocked implementations

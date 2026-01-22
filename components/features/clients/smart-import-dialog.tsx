@@ -12,12 +12,12 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { 
-  Upload, 
-  Scan, 
-  Mail, 
-  Calendar, 
-  Camera, 
+import {
+  Upload,
+  Scan,
+  Mail,
+  Calendar,
+  Camera,
   FileText,
   CheckCircle,
   AlertCircle,
@@ -50,11 +50,11 @@ interface ProcessingState {
   warnings: string[]
 }
 
-export function SmartImportDialog({ 
-  onClientCreated, 
-  onDealCreated, 
+export function SmartImportDialog({
+  onClientCreated,
+  onDealCreated,
   onTasksCreated,
-  trigger 
+  trigger
 }: SmartImportDialogProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [activeTab, setActiveTab] = useState<ImportType>('business-card')
@@ -119,7 +119,7 @@ export function SmartImportDialog({
     }
 
     setBusinessCardFile(file)
-    
+
     // Create preview
     const reader = new FileReader()
     reader.onload = (e) => {
@@ -470,7 +470,7 @@ export function SmartImportDialog({
 
       onTasksCreated?.(createdTasks)
       toast.success(`Created ${createdTasks.length} tasks from calendar events`)
-      
+
       updateProcessing({
         step: 'complete',
         progress: 100,
@@ -602,9 +602,9 @@ export function SmartImportDialog({
                   {businessCardPreview && (
                     <div className="space-y-2">
                       <Label>Preview</Label>
-                      <img 
-                        src={businessCardPreview} 
-                        alt="Business card preview" 
+                      <img
+                        src={businessCardPreview}
+                        alt="Business card preview"
                         className="max-w-sm max-h-48 object-contain border rounded"
                       />
                     </div>
@@ -662,7 +662,7 @@ export function SmartImportDialog({
                           </div>
                         </CardContent>
                       </Card>
-                      
+
                       {processing.step !== 'creating' && (
                         <Button onClick={createClientFromBusinessCard} className="w-full">
                           <Users className="h-4 w-4 mr-2" />
@@ -712,9 +712,9 @@ export function SmartImportDialog({
                       id="email-timestamp"
                       type="date"
                       value={emailMetadata.timestamp.split('T')[0]}
-                      onChange={(e) => setEmailMetadata(prev => ({ 
-                        ...prev, 
-                        timestamp: new Date(e.target.value).toISOString() 
+                      onChange={(e) => setEmailMetadata(prev => ({
+                        ...prev,
+                        timestamp: new Date(e.target.value).toISOString()
                       }))}
                     />
                   </div>
@@ -779,16 +779,10 @@ export function SmartImportDialog({
                               <p>{extractedPropertyData.sqft.toLocaleString()}</p>
                             </div>
                           )}
-                          {extractedPropertyData.mlsNumber && (
-                            <div>
-                              <Label className="text-xs">MLS #</Label>
-                              <p>{extractedPropertyData.mlsNumber}</p>
-                            </div>
-                          )}
                         </div>
                       </CardContent>
                     </Card>
-                    
+
                     {processing.step !== 'creating' && (
                       <Button onClick={createDealFromEmail} className="w-full">
                         <Building className="h-4 w-4 mr-2" />

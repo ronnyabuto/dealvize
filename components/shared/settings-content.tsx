@@ -18,11 +18,12 @@ import { SimpleBilling } from "@/components/shared/billing-simple"
 import { userProfileSchema, userPreferencesSchema, type UserProfileFormData, type UserPreferencesFormData } from "@/lib/validations"
 import { CommissionForm } from "@/components/settings/commission-form"
 import { TenantManagement } from "@/components/shared/tenant-management"
+import { GoogleConnect } from "@/components/shared/google-connect"
 
 export function SettingsContent() {
   const [success, setSuccess] = useState<string | null>(null)
   const [notificationLoading, setNotificationLoading] = useState(false)
-  
+
   // Notification State
   const [notifications, setNotifications] = useState({
     email: true,
@@ -82,7 +83,7 @@ export function SettingsContent() {
   }
 
   // Simplified for brevity - Notification/Preferences handlers follow same pattern as above...
-  
+
   return (
     <div className="max-w-4xl space-y-6">
       {success && (
@@ -112,6 +113,9 @@ export function SettingsContent() {
           </Form>
         </CardContent>
       </Card>
+
+      {/* Google Integration */}
+      <GoogleConnect />
 
       {/* Organization & Team Management */}
       <TenantManagement />
