@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { checkIdempotency } from '@/lib/redis-utils'
 import { getHistoryChanges, getMessage, parseEmailContent } from '@/lib/google'
 import { extractFromEmail } from '@/lib/openrouter'
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/server'
 
 interface PubSubMessage {
     message: {
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
         const data = Buffer.from(body.message.data, 'base64').toString('utf-8')
         const notification: GmailNotification = JSON.parse(data)
 
-        const supabase = await createClient()
+        const supabase = createServiceClient()
 
         // Look up integration by the email address from the Gmail notification
         const { data: integration } = await supabase

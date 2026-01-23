@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { checkIdempotency } from '@/lib/redis-utils'
 import { getUpdatedEvents, isClosingEvent } from '@/lib/google'
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/server'
 
 export async function POST(request: NextRequest) {
     const channelId = request.headers.get('x-goog-channel-id')
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ status: 'duplicate' }, { status: 200 })
         }
 
-        const supabase = await createClient()
+        const supabase = createServiceClient()
 
         // Look up integration by the channel_id stored in sync_states
         const { data: syncStateWithUser } = await supabase
