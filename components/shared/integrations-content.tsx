@@ -156,21 +156,30 @@ export function IntegrationsContent() {
   const handleIntegrationAction = async (providerName: string, action: string, config?: any) => {
     setActionLoading(providerName)
     try {
+      // Get CSRF token from client cookie
+      const csrfToken = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('csrf-token-client='))
+        ?.split('=')[1] || ''
+
       const response = await fetch('/api/integrations', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-csrf-token': csrfToken
+        },
         body: JSON.stringify({ provider_name: providerName, action, config })
       })
 
       const data = await response.json()
-      
+
       if (response.ok) {
         if (data.auth_url) {
           // Redirect to OAuth URL
           window.location.href = data.auth_url
           return
         }
-        
+
         setMessage({ type: 'success', text: `Successfully ${action}ed ${providerName}` })
         fetchIntegrations() // Refresh the list
       } else {
@@ -190,12 +199,21 @@ export function IntegrationsContent() {
   const handleSetupIntegrations = async () => {
     setSetupLoading(true)
     try {
+      // Get CSRF token from client cookie
+      const csrfToken = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('csrf-token-client='))
+        ?.split('=')[1] || ''
+
       const response = await fetch('/api/integrations/setup', {
-        method: 'POST'
+        method: 'POST',
+        headers: {
+          'x-csrf-token': csrfToken
+        }
       })
-      
+
       const data = await response.json()
-      
+
       if (response.ok) {
         setMessage({ type: 'success', text: 'Integration providers setup completed!' })
         fetchIntegrations() // Refresh the list
@@ -241,7 +259,7 @@ export function IntegrationsContent() {
             </p>
           </CardHeader>
           <CardContent>
-            <Button 
+            <Button
               onClick={handleSetupIntegrations}
               disabled={setupLoading}
               className="bg-dealvize-teal hover:bg-dealvize-teal-dark text-white"
@@ -298,8 +316,8 @@ export function IntegrationsContent() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Button 
-                      size="sm" 
+                    <Button
+                      size="sm"
                       variant="outline"
                       onClick={() => handleIntegrationAction(integration.name, 'sync')}
                       disabled={actionLoading === integration.name}
@@ -310,8 +328,8 @@ export function IntegrationsContent() {
                         'Sync'
                       )}
                     </Button>
-                    <Button 
-                      size="sm" 
+                    <Button
+                      size="sm"
                       variant="destructive"
                       onClick={() => handleIntegrationAction(integration.name, 'disconnect')}
                       disabled={actionLoading === integration.name}
@@ -408,8 +426,8 @@ export function IntegrationsContent() {
                     </div>
                   </div>
                   <p className="text-sm text-gray-600 mb-4">{integration.description}</p>
-                  <Button 
-                    size="sm" 
+                  <Button
+                    size="sm"
                     className="w-full bg-dealvize-teal hover:bg-dealvize-teal-dark text-white"
                     onClick={() => handleIntegrationAction(integration.name, 'connect')}
                     disabled={actionLoading === integration.name}
