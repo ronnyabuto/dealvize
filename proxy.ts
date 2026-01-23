@@ -46,10 +46,17 @@ const protectedMiddleware = withCSRFProtection(updateSession)
 export async function proxy(request: NextRequest) {
   try {
     let response: NextResponse
+    const pathname = request.nextUrl.pathname
 
-    // Apply CSRF protection to API routes
-    if (request.nextUrl.pathname.startsWith('/api/')) {
+    // Webhook routes bypass CSRF and auth - they have their own validation
+    const isWebhookRoute = pathname.startsWith('/api/webhooks/')
+
+    // Apply CSRF protection to API routes (except webhooks)
+    if (request.nextUrl.pathname.startsWith('/api/') && !isWebhookRoute) {
       response = await protectedMiddleware(request)
+    } else if (isWebhookRoute) {
+      // Webhooks bypass auth entirely - just pass through with security headers
+      response = NextResponse.next({ request })
     } else {
       // Apply regular session middleware to other routes
       response = await updateSession(request)
@@ -71,8 +78,8 @@ export async function proxy(request: NextRequest) {
       request.headers.get('x-real-ip') ||
       'unknown'
 
-    // Rate limiting for API routes
-    if (request.nextUrl.pathname.startsWith('/api/')) {
+    // Rate limiting for API routes (skip webhooks - they handle their own validation)
+    if (request.nextUrl.pathname.startsWith('/api/') && !isWebhookRoute) {
       const supabase = createEdgeClient(request)
       const { data: { user } } = await supabase.auth.getUser()
       const identifier = user?.id || clientIP
