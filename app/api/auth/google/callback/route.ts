@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getTokensFromCode, watchUserMailbox, watchCalendar } from '@/lib/google'
+import { getTokensFromCode, getUserEmail, watchUserMailbox, watchCalendar } from '@/lib/google'
 import { createClient } from '@/lib/supabase/server'
 
 export async function GET(request: NextRequest) {
@@ -36,6 +36,9 @@ export async function GET(request: NextRequest) {
             throw new Error('No access token received')
         }
 
+        // Fetch the user's Google email for webhook lookup
+        const googleEmail = await getUserEmail(tokens.access_token)
+
         await supabase.from('user_integrations').upsert({
             user_id: user.id,
             provider: 'google',
@@ -43,6 +46,7 @@ export async function GET(request: NextRequest) {
             refresh_token: tokens.refresh_token,
             expires_at: tokens.expiry_date ? new Date(tokens.expiry_date).toISOString() : null,
             scopes: tokens.scope?.split(' ') || [],
+            metadata: { email: googleEmail },
             updated_at: new Date().toISOString(),
         }, {
             onConflict: 'user_id,provider'

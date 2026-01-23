@@ -39,4 +39,16 @@ export function getAuthenticatedClient(accessToken: string, refreshToken?: strin
     return client
 }
 
+export async function getUserEmail(accessToken: string): Promise<string | null> {
+    try {
+        const oauth2 = google.oauth2({ version: 'v2', auth: oauth2Client })
+        oauth2Client.setCredentials({ access_token: accessToken })
+        const { data } = await oauth2.userinfo.get()
+        return data.email || null
+    } catch (error) {
+        console.error('Failed to get user email:', error)
+        return null
+    }
+}
+
 export { oauth2Client }

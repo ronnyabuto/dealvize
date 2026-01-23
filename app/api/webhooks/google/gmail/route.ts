@@ -31,14 +31,18 @@ export async function POST(request: NextRequest) {
         const notification: GmailNotification = JSON.parse(data)
 
         const supabase = await createClient()
+
+        // Look up integration by the email address from the Gmail notification
         const { data: integration } = await supabase
             .from('user_integrations')
             .select('*')
             .eq('provider', 'google')
+            .filter('metadata->>email', 'eq', notification.emailAddress)
             .single()
 
         if (!integration?.access_token) {
-            return NextResponse.json({ status: 'no_integration' }, { status: 200 })
+            console.error('No integration found for email:', notification.emailAddress)
+            return NextResponse.json({ status: 'no_integration', email: notification.emailAddress }, { status: 200 })
         }
 
         const { data: syncState } = await supabase
