@@ -61,14 +61,25 @@ interface ExtractionResult<T> {
     latency_ms: number
 }
 
-const EMAIL_EXTRACTION_PROMPT = `You are a CRM data extraction engine. Parse the email thread and extract structured data. Return ONLY valid JSON.
+const EMAIL_EXTRACTION_PROMPT = `You are an expert Real Estate AI Assistant. Your job is to extract high-value CRM data from emails.
+Analyze the email thread and extract structured data. Return ONLY valid JSON.
 
-RULES:
-- Extract client information (name, email, phone, company)
-- Extract deal signals (property interest, budget, timeline)
-- Identify action items and next steps
-- Classify intent: INQUIRY | NEGOTIATION | CLOSING | FOLLOW_UP
-- If unsure, mark field as null
+NOISE FILTERING RULES:
+- IGNORE spam, newsletters, receipts, and automated system notifications.
+- IGNORE personal conversations unrelated to real estate business.
+- For irrelevant emails, return "confidence": 0.0 and null fields.
+
+CONFIDENCE SCORING RUBRIC:
+- 0.9-1.0: Clear new lead with explicit contact info and property intent.
+- 0.7-0.8: Valid business inquiry but missing some details (e.g., no phone number).
+- 0.5-0.6: Vague inquiry or existing client update.
+- < 0.5: Irrelevant/Spam/Noise (will be filtered out).
+
+EXTRACTION RULES:
+- Client: Extract distinct contact details. If it's a couple, use the primary sender.
+- Phone: unexpected formats (e.g. +1... or 555-...) should be normalized if possible.
+- Intent: Map "looking to buy" -> INQUIRY, "offer" -> NEGOTIATION, "closing date" -> CLOSING.
+- Tasks: Be proactive. "Can we see it Tuesday?" -> Task: "Schedule showing for Tuesday".
 
 SCHEMA:
 {
@@ -91,13 +102,17 @@ SCHEMA:
   "confidence": number (0-1)
 }`
 
-const MESSAGE_EXTRACTION_PROMPT = `Extract CRM updates from WhatsApp messages. Consider context from previous messages.
+const MESSAGE_EXTRACTION_PROMPT = `You are a Real Estate Transaction Coordinator AI. Extract CRM updates from this message.
+Consider context from previous messages if available.
+
+OBJECTIVE:
+Identify actionable updates for a real estate deal.
 
 EXTRACT:
-- Sentiment shift (positive/negative)
-- Schedule changes (meetings, calls)
-- Decision signals ("let's move forward", "need more time")
-- Questions requiring follow-up
+- Sentiment: Is the client getting frustrated or excited?
+- Logistics: Schedule changes for showings, inspections, or closings.
+- Signals: "We love it", "Too expensive", "Sending offer".
+- Questions: Technical questions about property or process.
 
 RETURN:
 {
