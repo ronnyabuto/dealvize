@@ -67,8 +67,17 @@ export function GoogleConnect() {
     const handleDisconnect = async () => {
         setState(prev => ({ ...prev, loading: true }))
         try {
+            // Get CSRF token from client cookie
+            const csrfToken = document.cookie
+                .split('; ')
+                .find(row => row.startsWith('csrf-token-client='))
+                ?.split('=')[1] || ''
+
             const response = await fetch('/api/integrations/google/disconnect', {
-                method: 'POST'
+                method: 'POST',
+                headers: {
+                    'x-csrf-token': csrfToken,
+                },
             })
             if (response.ok) {
                 setState({ connected: false, loading: false })
