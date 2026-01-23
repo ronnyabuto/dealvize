@@ -77,7 +77,12 @@ export async function updateSession(request: NextRequest) {
 
   // Public API endpoints that don't require authentication
   const publicApiRoutes = [
-    '/api/affiliate/health'
+    '/api/affiliate/health',
+    '/api/webhooks/google/gmail',
+    '/api/webhooks/google/calendar',
+    '/api/webhooks/stripe',
+    '/api/webhooks/whatsapp',
+    '/api/webhooks/email',
   ]
 
   // Auth routes
@@ -100,7 +105,7 @@ export async function updateSession(request: NextRequest) {
   ) || pathname.startsWith('/_next/') || pathname.startsWith('/favicon') || pathname.match(/\.(png|jpg|jpeg|svg|ico|webp|gif)$/)
 
   // Check if current path is a public API endpoint
-  const isPublicApiRoute = publicApiRoutes.some(route => 
+  const isPublicApiRoute = publicApiRoutes.some(route =>
     pathname === route || pathname === route + '/'
   )
 
