@@ -3,6 +3,7 @@ import { checkIdempotency } from '@/lib/redis-utils'
 import { getHistoryChanges, getMessage, parseEmailContent } from '@/lib/google'
 import { extractFromEmail } from '@/lib/openrouter'
 import { createServiceClient } from '@/lib/supabase/server'
+import { logger } from '@/lib/logger'
 
 interface PubSubMessage {
     message: {
@@ -21,14 +22,17 @@ interface GmailNotification {
 export async function POST(request: NextRequest) {
     try {
         const body: PubSubMessage = await request.json()
+        await logger.info('gmail_webhook', 'Received Pub/Sub notification', { messageId: body.message.messageId })
 
         const idempotencyResult = await checkIdempotency(`gmail:${body.message.messageId}`, 86400)
         if (idempotencyResult === 'DUPLICATE') {
+            await logger.debug('gmail_webhook', 'Duplicate message ignored', { messageId: body.message.messageId })
             return NextResponse.json({ status: 'duplicate' }, { status: 200 })
         }
 
         const data = Buffer.from(body.message.data, 'base64').toString('utf-8')
         const notification: GmailNotification = JSON.parse(data)
+        await logger.info('gmail_webhook', 'Processing notification for email', { email: notification.emailAddress, historyId: notification.historyId })
 
         const supabase = createServiceClient()
 
@@ -41,9 +45,11 @@ export async function POST(request: NextRequest) {
             .single()
 
         if (!integration?.access_token) {
-            console.error('No integration found for email:', notification.emailAddress)
+            await logger.warn('gmail_webhook', 'No integration found for email', { email: notification.emailAddress })
             return NextResponse.json({ status: 'no_integration', email: notification.emailAddress }, { status: 200 })
         }
+
+        await logger.info('gmail_webhook', 'Found integration', { userId: integration.user_id })
 
         const { data: syncState } = await supabase
             .from('sync_states')
@@ -59,6 +65,8 @@ export async function POST(request: NextRequest) {
             integration.refresh_token,
             startHistoryId
         )
+
+        await logger.info('gmail_webhook', 'Fetched history changes', { count: historyChanges.length })
 
         for (const history of historyChanges) {
             if (!history.messagesAdded) continue
@@ -76,11 +84,24 @@ export async function POST(request: NextRequest) {
                 )
 
                 const emailContent = parseEmailContent(fullMessage)
+                await logger.info('gmail_webhook', 'Parsed email content', {
+                    subject: emailContent.subject,
+                    from: emailContent.from
+                })
 
                 const emailText = `Subject: ${emailContent.subject}\nFrom: ${emailContent.from}\n\n${emailContent.body}`
                 const extraction = await extractFromEmail(emailText)
 
-                if (extraction.data.confidence < 0.5) continue
+                await logger.info('gmail_webhook', 'LLM Extraction Result', {
+                    confidence: extraction.data.confidence,
+                    client: extraction.data.client,
+                    tasks: extraction.data.tasks.length
+                })
+
+                if (extraction.data.confidence < 0.5) {
+                    await logger.info('gmail_webhook', 'Skipping low confidence email', { confidence: extraction.data.confidence })
+                    continue
+                }
 
                 const fromMatch = emailContent.from.match(/<([^>]+)>/) || [null, emailContent.from]
                 const senderEmail = fromMatch[1] || emailContent.from
@@ -99,6 +120,7 @@ export async function POST(request: NextRequest) {
 
                 if (existingClient) {
                     clientId = existingClient.id
+                    await logger.info('gmail_webhook', 'Matched existing client', { clientId })
                 } else if (extraction.data.client.name || extraction.data.client.email) {
                     const { data: newClient } = await supabase
                         .from('clients')
@@ -115,6 +137,7 @@ export async function POST(request: NextRequest) {
                         .single()
 
                     clientId = newClient?.id || null
+                    await logger.info('gmail_webhook', 'Created new client', { clientId })
                 }
 
                 for (const task of extraction.data.tasks) {
@@ -131,6 +154,7 @@ export async function POST(request: NextRequest) {
                         due_date: dueDate.toISOString(),
                         client_id: clientId,
                     })
+                    await logger.info('gmail_webhook', 'Created task', { task: task.description })
                 }
             }
         }
@@ -146,7 +170,9 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json({ status: 'processed' }, { status: 200 })
     } catch (error) {
-        console.error('Gmail webhook error:', error)
+        // Log error safely even if error object is complex
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        await logger.error('gmail_webhook', 'CRITICAL_FAILURE', { error: errorMessage })
         return NextResponse.json({ error: 'Internal error' }, { status: 500 })
     }
 }

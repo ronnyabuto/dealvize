@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { checkIdempotency } from '@/lib/redis-utils'
 import { getUpdatedEvents, isClosingEvent } from '@/lib/google'
 import { createServiceClient } from '@/lib/supabase/server'
+import { logger } from '@/lib/logger'
 
 export async function POST(request: NextRequest) {
     const channelId = request.headers.get('x-goog-channel-id')
@@ -17,12 +18,14 @@ export async function POST(request: NextRequest) {
     }
 
     if (!channelId) {
+        await logger.warn('calendar_webhook', 'Missing channel ID', { headers: Object.fromEntries(request.headers) })
         return NextResponse.json({ error: 'Missing channel ID' }, { status: 400 })
     }
 
     try {
         const idempotencyResult = await checkIdempotency(`cal:${channelId}:${Date.now()}`, 60)
         if (idempotencyResult === 'DUPLICATE') {
+            await logger.debug('calendar_webhook', 'Duplicate sync ignored', { channelId })
             return NextResponse.json({ status: 'duplicate' }, { status: 200 })
         }
 
@@ -37,7 +40,7 @@ export async function POST(request: NextRequest) {
             .single()
 
         if (!syncStateWithUser?.user_id) {
-            console.error('No sync state found for channel:', channelId)
+            await logger.error('calendar_webhook', 'No sync state found for channel', { channelId })
             return NextResponse.json({ status: 'no_sync_state' }, { status: 200 })
         }
 
@@ -49,6 +52,7 @@ export async function POST(request: NextRequest) {
             .single()
 
         if (!integration?.access_token) {
+            await logger.error('calendar_webhook', 'No integration found for user', { userId: syncStateWithUser.user_id })
             return NextResponse.json({ status: 'no_integration' }, { status: 200 })
         }
 
@@ -66,6 +70,8 @@ export async function POST(request: NextRequest) {
             syncState?.sync_token
         )
 
+        await logger.info('calendar_webhook', 'Fetched updated events', { count: events.length, userId: integration.user_id })
+
         for (const event of events) {
             if (!event.id || event.status === 'cancelled') continue
 
@@ -73,6 +79,7 @@ export async function POST(request: NextRequest) {
             if (eventIdempotency === 'DUPLICATE') continue
 
             if (isClosingEvent(event)) {
+                await logger.info('calendar_webhook', 'Detected closing event', { summary: event.summary, id: event.id })
                 const eventStart = event.start?.dateTime || event.start?.date
                 const dueDate = eventStart ? new Date(eventStart) : new Date()
                 dueDate.setDate(dueDate.getDate() - 1)
@@ -86,6 +93,7 @@ export async function POST(request: NextRequest) {
                     type: 'closing',
                     due_date: dueDate.toISOString(),
                 })
+                await logger.info('calendar_webhook', 'Created closing task', { summary: event.summary })
             }
         }
 
@@ -102,6 +110,8 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json({ status: 'processed', events_checked: events.length }, { status: 200 })
     } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        await logger.error('calendar_webhook', 'CRITICAL_FAILURE', { error: errorMessage })
         console.error('Calendar webhook error:', error)
         return NextResponse.json({ error: 'Internal error' }, { status: 500 })
     }
