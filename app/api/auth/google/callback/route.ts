@@ -66,12 +66,26 @@ export async function GET(request: NextRequest) {
 
         const webhookUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/webhooks/google/calendar`
         try {
-            await watchCalendar(
+            const calendarWatch = await watchCalendar(
                 tokens.access_token,
                 tokens.refresh_token!,
                 'primary',
                 webhookUrl
             )
+
+            // Store channel_id in sync_states so webhook can find this user's integration
+            if (calendarWatch.id) {
+                await supabase.from('sync_states').upsert({
+                    user_id: user.id,
+                    provider: 'calendar',
+                    channel_id: calendarWatch.id,
+                    resource_id: calendarWatch.resourceId,
+                    expiration: calendarWatch.expiration ? new Date(parseInt(calendarWatch.expiration)).toISOString() : null,
+                    updated_at: new Date().toISOString(),
+                }, {
+                    onConflict: 'user_id,provider'
+                })
+            }
         } catch (watchError) {
             console.error('Failed to set up Calendar watch:', watchError)
         }

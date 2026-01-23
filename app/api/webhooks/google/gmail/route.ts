@@ -85,10 +85,15 @@ export async function POST(request: NextRequest) {
                 const fromMatch = emailContent.from.match(/<([^>]+)>/) || [null, emailContent.from]
                 const senderEmail = fromMatch[1] || emailContent.from
 
+                // Get the user_id from the integration for data isolation
+                const userId = integration.user_id
+
                 let clientId: string | null = null
+                // Look for existing client owned by this user
                 const { data: existingClient } = await supabase
                     .from('clients')
                     .select('id')
+                    .eq('user_id', userId)
                     .eq('email', senderEmail)
                     .single()
 
@@ -98,6 +103,7 @@ export async function POST(request: NextRequest) {
                     const { data: newClient } = await supabase
                         .from('clients')
                         .insert({
+                            user_id: userId,
                             name: extraction.data.client.name || senderEmail.split('@')[0],
                             email: extraction.data.client.email || senderEmail,
                             phone: extraction.data.client.phone,
@@ -117,6 +123,7 @@ export async function POST(request: NextRequest) {
                     else if (task.due === 'next_week') dueDate.setDate(dueDate.getDate() + 14)
 
                     await supabase.from('tasks').insert({
+                        user_id: userId,
                         title: task.description,
                         status: 'pending',
                         priority: 'medium',

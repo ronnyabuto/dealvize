@@ -27,9 +27,24 @@ export async function POST(request: NextRequest) {
         }
 
         const supabase = await createClient()
+
+        // Look up integration by the channel_id stored in sync_states
+        const { data: syncStateWithUser } = await supabase
+            .from('sync_states')
+            .select('user_id')
+            .eq('channel_id', channelId)
+            .eq('provider', 'calendar')
+            .single()
+
+        if (!syncStateWithUser?.user_id) {
+            console.error('No sync state found for channel:', channelId)
+            return NextResponse.json({ status: 'no_sync_state' }, { status: 200 })
+        }
+
         const { data: integration } = await supabase
             .from('user_integrations')
             .select('*')
+            .eq('user_id', syncStateWithUser.user_id)
             .eq('provider', 'google')
             .single()
 
@@ -63,6 +78,7 @@ export async function POST(request: NextRequest) {
                 dueDate.setDate(dueDate.getDate() - 1)
 
                 await supabase.from('tasks').insert({
+                    user_id: integration.user_id,
                     title: `Prepare for closing: ${event.summary}`,
                     description: `Calendar event: ${event.summary}\nLocation: ${event.location || 'TBD'}\nTime: ${eventStart}`,
                     status: 'pending',
